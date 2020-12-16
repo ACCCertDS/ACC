@@ -1,5 +1,5 @@
 ---
-title: "comment-utiliser-ce-package"
+title: "Comment utiliser ce package"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{comment-utiliser-ce-package}
@@ -19,25 +19,55 @@ knitr::opts_chunk$set(
 ```{r setup}
 #library(ACC) 
 library(tidyverse)
+library(BARIS)
 ```
 
-## Téléchargement des données
+Ce package a pour objectif d'accéder et d'analyser les données publiques 
+d'accidents de la circulation.
+
+
+# Téléchargement des données
+
+Ces données sont disponibles sur plateforme open data 
+[data.gouv.fr](https://www.data.gouv.fr/fr/). 
+
+Le package [BARIS](https://cran.r-project.org/package=BARIS) permet de faire le
+lien entre l'API data.gouv.fr. On peut ainsi obtenir la présentation du *dataset* 
+à l'aide de `BARIS_explain`.
+
+```{r, results='asis'}
+
+id_donnees <- "53698f4ca3a729239d2036df"
+BARIS_explain(id_donnees) 
+
+```
+
+
+Ce jeu de données est divisé en 4 parties CARACTÉRISTIQUES, LIEUX, USAGERS, VÉHICULES. 
+Il existe un lot de ces 4 fichiers par année entre 2005 et 2019
+ 
+Un fichier descriptif accompagne ces données, et on reprend ici brièvement les
+définitions données dans ce document.
+
+1.  La rubrique CARACTERISTIQUES qui décrit les circonstances générales de l’accident 
+2.  La rubrique LIEUX qui  décrit le lieu principal de l’accident même si celui-ci s’est déroulé à une intersection 
+3.  La rubrique VEHICULES impliqués 
+4.  La rubrique USAGERS impliqués
+
+## Export rapide des données 2019
 
 ```{r}
-library(BARIS)
-iddonnees <- "53698f4ca3a729239d2036df"
-BARIS_explain(iddonnees)
-ressources <- BARIS_resources(iddonnees) #Tibble avec les URL
+ressources <- BARIS_resources(id_donnees) #Tibble avec les URL
 data_2019 <- ressources %>% 
   filter(str_detect(title,"2019"),format=="csv") #On garde les fichiers csv de 2019
 
 if(!dir.exists("data-raw"))
   dir.create("data-raw")
-
-for(i in 1:nrow(data_2019)){
-  tmp_df <- data_2019[i,]
-  download.file(url = tmp_df$url, 
-                destfile = paste0("data-raw/",tmp_df$title),overwrite = T)
-}
+# Commenté pour ne pas re-télécharger les données systématiquement
+# for(i in 1:nrow(data_2019)){
+#   tmp_df <- data_2019[i,]
+#   download.file(url = tmp_df$url, 
+#                 destfile = paste0("data-raw/",tmp_df$title),overwrite = T)
+# }
 ```
 
