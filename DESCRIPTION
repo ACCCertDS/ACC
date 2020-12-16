@@ -1,0 +1,26 @@
+Package: ACC
+Title: Base accident
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Alexandre",
+           family = "Atthar",
+           role = c("aut"),
+           email = "alexandre.atthar@gmail.com"),
+      person(given = "Cecile",
+           family = "Simon",
+           role = c("aut",  "cre"),
+           email = "cecile.simon2@gmail.com"),
+      person(given = "Coralie",
+           family = "Bos",
+           role = c("aut" ),
+           email = "coralie.bos@gmail.com"))     
+Description: Analyse des données de la base accident.
+License: AGPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
