@@ -3,8 +3,10 @@ title: "comment-utiliser-ce-package"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{comment-utiliser-ce-package}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, include = FALSE}
@@ -15,5 +17,20 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(ACC)
+#library(ACC) 
+library(tidyverse)
 ```
+
+## Téléchargement des données
+
+```{r}
+library(BARIS)
+iddonnees <- "53698f4ca3a729239d2036df"
+BARIS_explain(iddonnees)
+ressources <- BARIS_resources(iddonnees) #Tibble avec les URL
+ressources %>% 
+  filter(str_detect(title,"2019"),format=="csv") %>% #On garde les fichiers csv de 2019
+  nest(-id) %>% 
+  pwalk(data,~download.file(url=url,destfile=title))
+```
+
