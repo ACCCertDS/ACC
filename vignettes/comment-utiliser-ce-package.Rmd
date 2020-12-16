@@ -28,9 +28,16 @@ library(BARIS)
 iddonnees <- "53698f4ca3a729239d2036df"
 BARIS_explain(iddonnees)
 ressources <- BARIS_resources(iddonnees) #Tibble avec les URL
-ressources %>% 
-  filter(str_detect(title,"2019"),format=="csv") %>% #On garde les fichiers csv de 2019
-  nest(-id) %>% 
-  pwalk(data,~download.file(url=url,destfile=title))
+data_2019 <- ressources %>% 
+  filter(str_detect(title,"2019"),format=="csv") #On garde les fichiers csv de 2019
+
+if(!dir.exists("data-raw"))
+  dir.create("data-raw")
+
+for(i in 1:nrow(data_2019)){
+  tmp_df <- data_2019[i,]
+  download.file(url = tmp_df$url, 
+                destfile = paste0("data-raw/",tmp_df$title),overwrite = T)
+}
 ```
 
