@@ -24,3 +24,8 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Depends: 
+    tidyverse
+Imports: 
+    BARIS,
+    magrittr

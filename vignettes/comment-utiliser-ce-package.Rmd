@@ -1,5 +1,5 @@
 ---
-title: "comment-utiliser-ce-package"
+title: "Comment utiliser ce package"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{comment-utiliser-ce-package}
@@ -19,28 +19,84 @@ knitr::opts_chunk$set(
 ```{r setup}
 #library(ACC) 
 library(tidyverse)
+library(BARIS)
 ```
 
-## Téléchargement des données
+Ce package a pour objectif d'accéder et d'analyser les données publiques 
+d'accidents de la circulation.
+
+
+# Téléchargement des données
+
+Ces données sont disponibles sur plateforme open data 
+[data.gouv.fr](https://www.data.gouv.fr/fr/). 
+
+Le package [BARIS](https://cran.r-project.org/package=BARIS) permet de faire le
+lien entre l'API data.gouv.fr. On peut ainsi obtenir la présentation du *dataset* 
+à l'aide de `BARIS_explain`.
+
+```{r, results='asis'}
+
+id_donnees <- "53698f4ca3a729239d2036df"
+BARIS_explain(id_donnees) 
+
+```
+
+
+Ce jeu de données est divisé en 4 parties CARACTÉRISTIQUES, LIEUX, USAGERS, VÉHICULES. 
+Il existe un lot de ces 4 fichiers par année entre 2005 et 2019
+ 
+Un fichier descriptif accompagne ces données, et on reprend ici brièvement les
+définitions données dans ce document.
+
+1.  La rubrique CARACTERISTIQUES qui décrit les circonstances générales de l’accident 
+2.  La rubrique LIEUX qui  décrit le lieu principal de l’accident même si celui-ci s’est déroulé à une intersection 
+3.  La rubrique VEHICULES impliqués 
+4.  La rubrique USAGERS impliqués
+
+## Export rapide des données 2019
 
 ```{r}
-library(BARIS)
-iddonnees <- "53698f4ca3a729239d2036df"
-BARIS_explain(iddonnees)
-ressources <- BARIS_resources(iddonnees) #Tibble avec les URL
+ressources <- BARIS_resources(id_donnees) #Tibble avec les URL
 data_2019 <- ressources %>% 
   filter(str_detect(title,"2019"),format=="csv") #On garde les fichiers csv de 2019
 
 if(!dir.exists("data-raw"))
   dir.create("data-raw")
-
-for(i in 1:nrow(data_2019)){
-  tmp_df <- data_2019[i,]
-  download.file(url = tmp_df$url, 
-                destfile = paste0("data-raw/",tmp_df$title),overwrite = T)
-}
+# Commenté pour ne pas re-télécharger les données systématiquement
+# for(i in 1:nrow(data_2019)){
+#   tmp_df <- data_2019[i,]
+#   download.file(url = tmp_df$url, 
+#                 destfile = paste0("data-raw/",tmp_df$title),overwrite = T)
+# }
 ```
 
+
+# Exploration des données de la table Caractéristiques
+
+```{r}
+# caractéristiques générales de la table
+caracteristiques <- read.table("data-raw/caracteristiques-2019.csv",sep=";",header = T)
+summary(caracteristiques)
+names(caracteristiques)
+nrow(caracteristiques) #58 840
+caracteristiques %>% head(10)
+```
+
+```{r}
+# variable lum = Conditions d eclairage
+
+caracteristiques %>%
+  group_by(lum) %>%
+  summarise(n = n(),
+            prop = n / nrow(caracteristiques)) 
+
+hist(caracteristiques$lum, main = "Répartition de la variable Conditions d eclairage", col = "firebrick")
+  
+# on pourrait regrouper les modalités 3 et 4 en "sans éclairage"
+```
+
+<<<<<<< HEAD
 ## Insertion des libellés dans la table CARACTERISTIQUES
 
 ```{r}
@@ -115,3 +171,397 @@ lieux <- lieux %>%
 lieux
 ```
 
+=======
+```{r}
+# variable agg = Localisation
+
+caracteristiques %>%
+  group_by(agg) %>%
+  summarise(n = n(),
+            prop = n / nrow(caracteristiques)) 
+
+hist(caracteristiques$agg, main = "Répartition de la variable Localisation", col = "firebrick")
+```
+
+```{r}
+# variable int = Intersection
+
+caracteristiques %>%
+  group_by(int) %>%
+  summarise(n = n(),
+            prop = n / nrow(caracteristiques)) 
+
+hist(caracteristiques$int, main = "Répartition de la variable Intersection", col = "firebrick")
+
+# on pourrait créer une modalité "intersection" à partir des modalités (2, 3, 4, 5, 9)
+```
+
+```{r}
+# variable atm = Conditions atmosphériques
+
+caracteristiques %>%
+  group_by(atm) %>%
+  summarise(n = n(),
+            prop = n / nrow(caracteristiques)) 
+
+hist(caracteristiques$atm, main = "Répartition de la variable Conditions atmosphériques", col = "firebrick")
+
+# on pourrait créer une modalité "intersection" à partir des modalités 2 et 3 et créer une modalité autre à partir des modalités (-1, 4, 5, 6, 7, 8, 9)
+```
+
+```{r}
+# variable col = Type de collision
+
+caracteristiques %>%
+  group_by(col) %>%
+  summarise(n = n(),
+            prop = n / nrow(caracteristiques)) 
+
+hist(caracteristiques$col, main = "Répartition de la variable Type de collision", col = "firebrick")
+
+# on pourrait créer une modalité "3 et +" à partir des modalités 4 et 5
+```
+
+
+# Exploration des données de la table Lieux
+
+```{r}
+lieux <- read.table("data-raw/lieux-2019.csv",sep=";",header = T)
+summary(lieux)
+names(lieux)
+nrow(lieux) #58 840
+lieux %>% head(10)
+```
+
+```{r}
+# variable catr = Catégorie de la route
+
+lieux %>%
+  group_by(catr) %>%
+  summarise(n = n(),
+            prop = n / nrow(lieux)) 
+
+hist(lieux$catr, main = "Répartition de la variable Catégorie de la route", col = "lightblue")
+  
+# on pourrait garder les modalités 1, 2, 3 et 4 et regrouper les modalités 5 à 9 en 'autres'
+  
+```
+
+```{r}
+# variable circ = Régime de circulation
+
+lieux %>%
+  group_by(circ) %>%
+  summarise(n = n(),
+            prop = n / nrow(lieux)) 
+
+hist(lieux$circ, main = "Répartition de la variable Régime de circulation", col = "lightblue")
+
+# on pourrait garder les modalités 1, 2 et 3 et regrouper les modalités -1 et 4 en 'autres/non renseigné'
+```
+
+```{r}
+# variable nbv = Nombre total de voies de circulation
+
+lieux %>%
+  group_by(nbv) %>%
+  summarise(n = n(),
+            prop = n / nrow(lieux)) 
+
+hist(lieux$nbv, main = "Répartition de la variable Nombre total de voies de circulation", col = "lightblue")
+
+# on pourrait garder les modalités 1, 2 et créer la modalité "3 et +" et créer la modalité "non renseigné" pour les valeurs (-1,0)
+```
+
+```{r}
+# variable prof = Profil de la route
+
+lieux %>%
+  group_by(prof) %>%
+  summarise(n = n(),
+            prop = n / nrow(lieux)) 
+
+hist(lieux$prof, main = "Répartition de la variable Profil de la route", col = "lightblue")
+
+# on pourrait garder les modalités 1, 2 et regrouper les modalités -1, 3 et 4 en 'autres/non renseigné'
+```
+
+```{r}
+# variable plan = Tracé de la route
+
+lieux %>%
+  group_by(plan) %>%
+  summarise(n = n(),
+            prop = n / nrow(lieux)) 
+
+hist(lieux$plan, main = "Répartition de la variable Tracé de la route", col = "lightblue")
+
+# il y a une modalité 4 non cité dans la doc...
+# on pourrait créer une variable binaire : rectiligne/non rectiligne
+```
+
+```{r}
+# variable larrout = Largeur de la chaussée
+
+summary(lieux$larrout)
+# 58 468 valeurs manquantes => donnée inexploitable
+```
+
+```{r}
+# variable surf = Etat de la surface
+
+lieux %>%
+  group_by(surf) %>%
+  summarise(n = n(),
+            prop = n / nrow(lieux)) 
+
+hist(lieux$surf, main = "Répartition de la variable Etat de la surface", col = "lightblue")
+
+# surtout les modalités 1 et 2 => je ne sais pas si on regroupe 2, 3 et 4 pour "mouillée" et on fait une modalité autres pour le reste ou alors on ne fait que 2 modalités : normale/pas normale
+```
+
+```{r}
+# variable infra = Aménagement - Infrastructure
+
+lieux %>%
+  group_by(infra) %>%
+  summarise(n = n(),
+            prop = n / nrow(lieux)) 
+
+hist(lieux$infra, main = "Répartition de la variable Aménagement - Infrastructure", col = "lightblue")
+
+# je ne sais pas trop pour les regroupements possibles
+```
+
+```{r}
+# variable situ = Situation de l’accident
+
+lieux %>%
+  group_by(situ) %>%
+  summarise(n = n(),
+            prop = n / nrow(lieux)) 
+
+hist(lieux$situ, main = "Répartition de la variable Situation de l accident", col = "lightblue")
+
+# a minima on pourrait regrouper les modalités -1, 6 et 8 en "autres"
+```
+
+
+# Exploration des données de la table Véhicules
+
+```{r}
+vehicules <- read.table("data-raw/vehicules-2019.csv",sep=";",header = T)
+summary(vehicules)
+names(vehicules)
+nrow(vehicules) #100710
+vehicules %>% head(10)
+```
+
+```{r}
+# variable senc = Sens de circulation
+
+vehicules %>%
+  group_by(senc) %>%
+  summarise(n = n(),
+            prop = n / nrow(vehicules)) 
+
+hist(vehicules$senc, main = "Répartition de la variable Sens de circulation", col = "forestgreen")
+  
+# pas convaincue par l'intérêt de cette variable
+```
+
+```{r}
+# variable catv = Catégorie du véhicule
+
+vehicules %>%
+  group_by(catv) %>%
+  summarise(n = n(),
+            prop = n / nrow(vehicules)) %>%
+  arrange(desc(prop))
+
+hist(vehicules$catv, main = "Répartition de la variable Catégorie du véhicule", col = "forestgreen")
+
+# on pourrait commencer les données à partir de 2006 car cela supprimerait déjà 9 modalités
+```
+
+```{r}
+# variable obs = Obstacle fixe heurté
+
+vehicules %>%
+  group_by(obs) %>%
+  summarise(n = n(),
+            prop = n / nrow(vehicules))  %>%
+  arrange(desc(prop))
+
+hist(vehicules$obs, main = "Répartition de la variable Obstacle fixe heurté", col = "forestgreen")
+  
+# # on pourrait créer une variable binaire : oui/non
+```
+
+```{r}
+# variable obsm = Obstacle mobile heurté
+
+vehicules %>%
+  group_by(obsm) %>%
+  summarise(n = n(),
+            prop = n / nrow(vehicules))  %>%
+  arrange(desc(prop))
+
+hist(vehicules$obsm, main = "Répartition de la variable Obstacle mobile heurté", col = "forestgreen")
+  
+# on pourrait regrouper les modalités en : aucun/piéton/véhicules/animal/autre
+```
+
+```{r}
+# variable choc = Point de choc initial
+
+vehicules %>%
+  group_by(choc) %>%
+  summarise(n = n(),
+            prop = n / nrow(vehicules))  %>%
+  arrange(desc(prop))
+
+hist(vehicules$choc, main = "Répartition de la variable Point de choc initial", col = "forestgreen")
+  
+# Fait-on des regroupements du style : avant/arrière/côté et aucun ?
+```
+
+```{r}
+# variable manv = Manoeuvre principale avant l’accident
+
+vehicules %>%
+  group_by(manv) %>%
+  summarise(n = n(),
+            prop = n / nrow(vehicules))  %>%
+  arrange(desc(prop))
+
+hist(vehicules$manv, main = "Répartition de la variable Manoeuvre principale avant l’accident", col = "forestgreen")
+  
+# Vu les résultats de la répartition, pas convaincue de l'intérêt de la variable
+```
+
+```{r}
+# variable occutc = Nombre d’occupants dans le transport en commun
+
+summary(vehicules$occutc)
+# 99 818 valeurs manquantes => donnée inexploitable
+```
+
+
+# Exploration des données de la table usagers
+
+```{r}
+usagers <- read.table("data-raw/usagers-2019.csv",sep=";",header = T)
+summary(usagers)
+names(usagers)
+nrow(usagers) #132977
+usagers %>% head(10)
+```
+
+```{r}
+# variable place = Place occupée dans le véhicule
+
+usagers %>%
+  group_by(place) %>%
+  summarise(n = n(),
+            prop = n / nrow(usagers))  %>%
+  arrange(desc(prop))
+
+hist(usagers$place, main = "Répartition de la variable Place occupée dans le véhicule", col = "orange")
+  
+# pas convaincue de son apport par rapport à la variable catu
+```
+
+```{r}
+# variable catu = Catégorie d'usager
+
+usagers %>%
+  group_by(catu) %>%
+  summarise(n = n(),
+            prop = n / nrow(usagers))  %>%
+  arrange(desc(prop))
+
+hist(usagers$catu, main = "Répartition de la variable Catégorie d'usager", col = "orange")
+  
+# on garde telle quelle
+```
+
+```{r}
+# variable grav = Gravité de blessure de l'usager
+
+usagers %>%
+  group_by(grav) %>%
+  summarise(n = n(),
+            prop = n / nrow(usagers))  %>%
+  arrange(desc(prop))
+
+hist(usagers$grav, main = "Répartition de la variable Gravité de blessure de l'usager", col = "orange")
+  
+# on garde telle quelle
+```
+
+```{r}
+# variable -	an_nais = Année de naissance 
+
+summary(usagers$an_nais)
+hist(usagers$an_nais, main = "Répartition des accidentés selon leur année de naissance", col = "orange")
+  
+# à voir si on fait des classes
+```
+
+```{r}
+# variable trajet = Motif du déplacement au moment de l’accident
+
+usagers %>%
+  group_by(trajet) %>%
+  summarise(n = n(),
+            prop = n / nrow(usagers))  %>%
+  arrange(desc(prop))
+
+hist(usagers$trajet, main = "Répartition de la variable Motif du déplacement au moment de l’accident", col = "orange")
+  
+# les modalités non renseigné ou autre représentent 33 % => pas convaincue de son intérêt
+```
+
+```{r}
+# variable locp = Localisation du piéton
+
+usagers %>%
+  group_by(locp) %>%
+  summarise(n = n(),
+            prop = n / nrow(usagers))  %>%
+  arrange(desc(prop))
+
+hist(usagers$locp, main = "Répartition de la variable Localisation du piéton", col = "orange")
+  
+# les modalités non renseigné ou sans objet représentent 92 % => pas convaincue de son intérêt sauf si on fait un zoom sur les accidents avec piétons
+```
+
+```{r}
+# variable actp = Action du piéton
+
+usagers %>%
+  group_by(actp) %>%
+  summarise(n = n(),
+            prop = n / nrow(usagers))  %>%
+  arrange(desc(prop))
+
+hist(usagers$actp, main = "Répartition de la variable Action du piéton", col = "orange")
+  
+# idem variable locp
+```
+
+```{r}
+# variable etatp = Accompagnants du piéton
+
+usagers %>%
+  group_by(etatp) %>%
+  summarise(n = n(),
+            prop = n / nrow(usagers))  %>%
+  arrange(desc(prop))
+
+hist(usagers$etatp, main = "Répartition de la variable Accompagnants du piéton", col = "orange")
+  
+# idem variable locp
+```
+>>>>>>> e770997ad5af600e60e52ef3a81cf1ee8c5cdb8c
