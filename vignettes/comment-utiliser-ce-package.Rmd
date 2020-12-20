@@ -96,83 +96,6 @@ hist(caracteristiques$lum, main = "Répartition de la variable Conditions d ecla
 # on pourrait regrouper les modalités 3 et 4 en "sans éclairage"
 ```
 
-
-## Insertion des libellés dans la table CARACTERISTIQUES
-
-```{r}
-carac <- read.csv("~/Documents/Formation_R/Certificat_Data_Scientist/ACC/data-raw/caracteristiques-2019.csv",sep=";",header=T)
-# Ajout des libellés relatifs à la luminosité
-carac <- carac %>% 
-  mutate(libl_lum=ifelse(lum==1,"Plein jour", 
-                         ifelse(lum==2,"Crépuscule ou aube", 
-                                ifelse(lum==3,"Nuit sans éclairage public",
-                                       ifelse(lum==4,"Nuit avec éclairage public non allumé","Nuit avec éclairage public allumé")
-                                       )
-                                )
-                         )
-        ) %>%
-# Ajout des libellés relatifs à l'agglomération
-  mutate(libl_agg=ifelse(agg==1,"Hors agglomération","En agglomération")) %>%
-# Ajout des libellés relatifs aux types d'intersection
-  mutate(libl_int=ifelse(int==1,"Hors intersection", 
-                         ifelse(int==2,"Intersection en X", 
-                                ifelse(int==3,"Intersection en T",
-                                       ifelse(int==4,"Intersection en Y",
-                                              ifelse(int==5,"Intersection à plus de 4 branches",
-                                                     ifelse(int==6,"Giratoire",
-                                                            ifelse(int==7,"Place",
-                                                                   ifelse(int==8,"Passage à niveau","Autre intersection")
-                                                                   )
-                                                            )
-                                                     )
-                                              )
-                                      )
-                                )
-                        )
-        ) %>%
-# Ajout des libellés relatifs aux conditions atmosphériques
-  mutate(libl_atm=ifelse(atm==1,"Normale", 
-                         ifelse(atm==2,"Pluie légère", 
-                                ifelse(atm==3,"Pluie forte",
-                                       ifelse(atm==4,"Neige - grêle",
-                                              ifelse(atm==5,"Brouillard - fumée",
-                                                     ifelse(atm==6,"Vent fort - tempête",
-                                                            ifelse(atm==7,"Temps éblouissant",
-                                                                   ifelse(atm==8,"Temps couvert","Autre")
-                                                                   )
-                                                            )
-                                                     )
-                                              )
-                                      )
-                                )
-                        )
-        )
-carac
-```
-
-## Insertion des libellés dans la table LIEUX
-
-```{r}
-lieux <- read.csv("~/Documents/Formation_R/Certificat_Data_Scientist/ACC/data-raw/lieux-2019.csv",sep=";",header=T)
-# Ajout des libellés relatifs à la catégorie de route
-lieux <- lieux %>% 
-  mutate(libl_catr=ifelse(catr==1,"Autoroute", 
-                         ifelse(catr==2,"Route Nationale", 
-                                ifelse(catr==3,"Route Départementale",
-                                       ifelse(catr==4,"Voie Communale",
-                                              ifelse(catr==5,"Hors réseau public",
-                                                     ifelse(catr==6,"Parc de stationnement ouvert à la circulation publique","Autre")
-                                                     )
-                                              )
-                                      )
-                                )
-                        )
-        )
-lieux
-```
-
-
-
 ```{r}
 # variable agg = Localisation
 
@@ -221,6 +144,61 @@ caracteristiques %>%
 hist(caracteristiques$col, main = "Répartition de la variable Type de collision", col = "firebrick")
 
 # on pourrait créer une modalité "3 et +" à partir des modalités 4 et 5
+```
+
+## Insertion des libellés dans la table CARACTERISTIQUES
+
+```{r}
+# Ajout des libellés relatifs à la luminosité avec regroupement des modalités 3 et 4
+carac <- caracteristiques %>% 
+  mutate(libl_lum=ifelse(lum==1,"Plein jour", 
+                         ifelse(lum==2,"Crépuscule ou aube", 
+                                ifelse(lum==3 | lum==4,"Nuit sans éclairage","Nuit avec éclairage")
+                                )
+                          )
+        ) %>%
+# Ajout des libellés relatifs à l'agglomération
+  mutate(libl_agg=ifelse(agg==1,"Hors agglomération","En agglomération")) %>%
+# Ajout des libellés relatifs aux types d'intersection avec regroupement des modalités 2, 3, 4, 5 et 9
+  mutate(libl_int=ifelse(int==1,"Hors intersection", 
+                         ifelse(int==2 | int==3 | int==4 | int==5 | int==9,"Intersection", 
+                                                     ifelse(int==6,"Giratoire",
+                                                            ifelse(int==7,"Place","Passage à niveau")
+                                                            )
+                                )
+                        )
+        ) %>%
+# Ajout des libellés relatifs aux conditions atmosphériques
+  mutate(libl_atm=ifelse(atm==1,"Normale", 
+                         ifelse(atm==2,"Pluie légère", 
+                                ifelse(atm==3,"Pluie forte",
+                                       ifelse(atm==4,"Neige - grêle",
+                                              ifelse(atm==5,"Brouillard - fumée",
+                                                     ifelse(atm==6,"Vent fort - tempête",
+                                                            ifelse(atm==7,"Temps éblouissant",
+                                                                   ifelse(atm==8,"Temps couvert","Autre")
+                                                                   )
+                                                            )
+                                                     )
+                                              )
+                                      )
+                                )
+                        )
+        ) %>%
+# Ajout des libellés relatifs au nombre de véhicules impliqués dans la collision avec regroupement des modalités 4 et 5
+  mutate(libl_col=ifelse(col=='-1',"Non renseigné", 
+                         ifelse(col==1,"2 véhicules - frontale", 
+                                ifelse(col==2,"2 véhicules - par l'arrière",
+                                       ifelse(col==3,"2 véhicules - par le côté",
+                                              ifelse(col==4 | col==5,"3 véhicules et plus",
+                                                     ifelse(col==6,"Autre collision","Sans collision")
+                                                    )
+                                              )
+                                        )
+                                  )
+                        )
+        )
+carac
 ```
 
 
@@ -347,6 +325,41 @@ hist(lieux$situ, main = "Répartition de la variable Situation de l accident", c
 # a minima on pourrait regrouper les modalités -1, 6 et 8 en "autres"
 ```
 
+## Insertion des libellés dans la table LIEUX
+
+```{r}
+# Ajout des libellés relatifs à la catégorie de route avec regroupement des madalités 5 à 9 en "autres"
+lieux <- lieux %>% 
+  mutate(libl_catr=ifelse(catr==1,"Autoroute", 
+                         ifelse(catr==2,"Route Nationale", 
+                                ifelse(catr==3,"Route Départementale",
+                                       ifelse(catr==4,"Voie Communale","Autre")
+                                      )
+                                )
+                        )
+        ) %>%
+# Ajout des libellés relatifs au régime de circulation avec regroupement des modalités -1 et 4 en "Autres/Non renseigné"
+ mutate(libl_circ=ifelse(circ==1,"A sens unique", 
+                         ifelse(circ==2,"Bidirectionnelle", 
+                                ifelse(circ==3,"A chaussées séparées","Autres/Non renseigné")
+                                )
+                        )
+        ) %>%
+# Ajout des libellés relatifs au nombre de voies de circulation avec regroupement des modalités 3 et plus en une seule modalité et regroupement des modalités -1 et 0 en "Non renseigné"
+  mutate(nbvoies=ifelse(nbv==1 | nbv==2,nbv, 
+                         ifelse(nbv>=3,"3 et plus", "Non renseigné")
+                        )
+        ) %>%
+# Ajout des libellés relatifs au profil de la route avec regroupement des modalités -1, 3 et 4 en "Autres/Non renseigné"
+   mutate(libl_prof=ifelse(prof==1,"Plat", 
+                         ifelse(prof==2,"Pente","Autres/Non renseigné")
+                          )
+        ) %>%
+# Ajout des libellés relatifs au tracé de la route dans une variable binaire "Rectiligne/Non rectiligne"
+  mutate(libl_plan=ifelse(plan==1,"Rectiligne","Autres/Non renseigné")) 
+# Attente du choix de l'équipe pour les variables suivantes
+lieux
+```
 
 # Exploration des données de la table Véhicules
 
@@ -448,6 +461,39 @@ summary(vehicules$occutc)
 # 99 818 valeurs manquantes => donnée inexploitable
 ```
 
+# Insertion des libellés dans la table VEHICULES
+
+```{r}
+# Ajout d'une variable binaire "Oui/Non" si un obstacle fixe a été heurté
+vehi <- vehicules %>% 
+  mutate(libl_obs=ifelse(obs=='-1',"Non renseigné", 
+                         ifelse(obs==0,"Non","Oui")
+                        )
+        ) %>%
+# Ajout des libellés relatifs à l'obstale mobile heurté
+    mutate(libl_obsm=ifelse(obsm==1,"Piéton", 
+                         ifelse(obsm==2 | obsm==4,"Véhicule", 
+                                ifelse(obsm==5 | obsm==6,"Animal",
+                                       ifelse(obsm==9,"Autre",
+                                              ifelse(obsm==0,"Aucun","Autre")
+                                              )
+                                      )
+                                )
+                            )
+        ) %>%
+# Ajout des libellés relatifs au point de choc initial
+  mutate(libl_choc=ifelse(choc==1 | choc==2 | choc==3,"Avant", 
+                         ifelse(choc==4 | choc==5 | choc==6,"Arrière", 
+                                ifelse(obsm==7 | obsm==8,"Côté",
+                                       ifelse(obsm==9,"Chocs multiples (tonneaux)",
+                                              ifelse(obsm==0,"Aucun","Non renseigné")
+                                              )
+                                      )
+                                )
+                            )
+        )
+vehi
+```
 
 # Exploration des données de la table usagers
 
