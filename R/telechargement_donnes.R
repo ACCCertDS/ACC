@@ -186,6 +186,7 @@ dl_vehicules <- function(.annee = 2008:2019){
 read_acc <- function(df, carac_col_types){
   usethis::ui_info("Chargement de {usethis::ui_field(df$title)}")
 
+  Sys.sleep(5) # 5 secondes entre chaque téléchargement pour être poli
   tmp_file <- tempfile()
   curl::curl_download(df$url, tmp_file)
   #from https://stackoverflow.com/a/33417611 détecter le type de séparateur csv
