@@ -2,4 +2,8 @@
 
 export("%>%")
 export(ACC_ressources)
+export(dl_caracteristiques)
+export(dl_lieux)
+export(dl_usagers)
+export(dl_vehicules)
 importFrom(magrittr,"%>%")

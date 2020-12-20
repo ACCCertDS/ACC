@@ -33,4 +33,7 @@ Imports:
     purrr,
     dplyr,
     stringr,
-    here
+    here,
+    readr,
+    curl,
+    usethis
