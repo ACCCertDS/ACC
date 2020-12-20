@@ -2,7 +2,7 @@
 title: "Comment utiliser ce package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{comment-utiliser-ce-package}
+  %\VignetteIndexEntry{Comment utiliser ce package}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -76,7 +76,7 @@ if(!dir.exists("data-raw"))
 
 ```{r}
 # caractéristiques générales de la table
-caracteristiques <- read.table("data-raw/caracteristiques-2019.csv",sep=";",header = T)
+caracteristiques <- read.table(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header = T)
 summary(caracteristiques)
 names(caracteristiques)
 nrow(caracteristiques) #58 840
@@ -100,7 +100,7 @@ hist(caracteristiques$lum, main = "Répartition de la variable Conditions d ecla
 ## Insertion des libellés dans la table CARACTERISTIQUES
 
 ```{r}
-carac <- read.csv("~/Documents/Formation_R/Certificat_Data_Scientist/ACC/data-raw/caracteristiques-2019.csv",sep=";",header=T)
+carac <- read.csv(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header=T)
 # Ajout des libellés relatifs à la luminosité
 carac <- carac %>% 
   mutate(libl_lum=ifelse(lum==1,"Plein jour", 
@@ -153,7 +153,7 @@ carac
 ## Insertion des libellés dans la table LIEUX
 
 ```{r}
-lieux <- read.csv("~/Documents/Formation_R/Certificat_Data_Scientist/ACC/data-raw/lieux-2019.csv",sep=";",header=T)
+lieux <- read.csv(here::here("data-raw","lieux-2019.csv"),sep=";",header=T)
 # Ajout des libellés relatifs à la catégorie de route
 lieux <- lieux %>% 
   mutate(libl_catr=ifelse(catr==1,"Autoroute", 
@@ -227,7 +227,7 @@ hist(caracteristiques$col, main = "Répartition de la variable Type de collision
 # Exploration des données de la table Lieux
 
 ```{r}
-lieux <- read.table("data-raw/lieux-2019.csv",sep=";",header = T)
+lieux <- read.table(here::here("data-raw","lieux-2019.csv"),sep=";",header = T)
 summary(lieux)
 names(lieux)
 nrow(lieux) #58 840
@@ -351,7 +351,7 @@ hist(lieux$situ, main = "Répartition de la variable Situation de l accident", c
 # Exploration des données de la table Véhicules
 
 ```{r}
-vehicules <- read.table("data-raw/vehicules-2019.csv",sep=";",header = T)
+vehicules <- read.table(here::here("data-raw","vehicules-2019.csv"),sep=";",header = T)
 summary(vehicules)
 names(vehicules)
 nrow(vehicules) #100710
@@ -452,7 +452,7 @@ summary(vehicules$occutc)
 # Exploration des données de la table usagers
 
 ```{r}
-usagers <- read.table("data-raw/usagers-2019.csv",sep=";",header = T)
+usagers <- read.table(here::here("data-raw","usagers-2019.csv"),sep=";",header = T)
 summary(usagers)
 names(usagers)
 nrow(usagers) #132977
@@ -547,7 +547,7 @@ usagers %>%
             prop = n / nrow(usagers))  %>%
   arrange(desc(prop))
 
-hist(usagers$actp, main = "Répartition de la variable Action du piéton", col = "orange")
+hist(as.numeric(usagers$actp), main = "Répartition de la variable Action du piéton", col = "orange")
   
 # idem variable locp
 ```
