@@ -223,6 +223,8 @@ hist(caracteristiques$col, main = "Répartition de la variable Type de collision
 # on pourrait créer une modalité "3 et +" à partir des modalités 4 et 5
 ```
 
+## Insertion des libellés dans la table CARACTERISTIQUES
+
 ```{r}
 # Ajout des libellés relatifs à la luminosité avec regroupement des modalités 3 et 4
 carac <- caracteristiques %>% 
