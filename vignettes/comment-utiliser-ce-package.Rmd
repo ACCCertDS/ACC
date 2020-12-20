@@ -96,7 +96,7 @@ hist(caracteristiques$lum, main = "Répartition de la variable Conditions d ecla
 # on pourrait regrouper les modalités 3 et 4 en "sans éclairage"
 ```
 
-<<<<<<< HEAD
+
 ## Insertion des libellés dans la table CARACTERISTIQUES
 
 ```{r}
@@ -171,7 +171,8 @@ lieux <- lieux %>%
 lieux
 ```
 
-=======
+
+
 ```{r}
 # variable agg = Localisation
 
@@ -564,4 +565,3 @@ hist(usagers$etatp, main = "Répartition de la variable Accompagnants du piéton
   
 # idem variable locp
 ```
->>>>>>> e770997ad5af600e60e52ef3a81cf1ee8c5cdb8c
