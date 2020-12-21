@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-#library(ACC) 
+library(ACC) 
 library(tidyverse)
 library(BARIS)
 ```
@@ -76,7 +76,8 @@ if(!dir.exists("data-raw"))
 
 ```{r}
 # caractéristiques générales de la table
-caracteristiques <- read.table(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header = T)
+# caracteristiques <- read.table(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header = T)
+data("caracteristiques", package = "ACC")
 summary(caracteristiques)
 names(caracteristiques)
 nrow(caracteristiques) #58 840
@@ -100,7 +101,8 @@ hist(caracteristiques$lum, main = "Répartition de la variable Conditions d ecla
 ## Insertion des libellés dans la table CARACTERISTIQUES
 
 ```{r}
-carac <- read.csv(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header=T)
+# carac <- read.csv(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header=T)
+carac <- caracteristiques
 # Ajout des libellés relatifs à la luminosité
 carac <- carac %>% 
   mutate(libl_lum=ifelse(lum==1,"Plein jour", 
@@ -148,27 +150,6 @@ carac <- carac %>%
                         )
         )
 carac
-```
-
-## Insertion des libellés dans la table LIEUX
-
-```{r}
-lieux <- read.csv(here::here("data-raw","lieux-2019.csv"),sep=";",header=T)
-# Ajout des libellés relatifs à la catégorie de route
-lieux <- lieux %>% 
-  mutate(libl_catr=ifelse(catr==1,"Autoroute", 
-                         ifelse(catr==2,"Route Nationale", 
-                                ifelse(catr==3,"Route Départementale",
-                                       ifelse(catr==4,"Voie Communale",
-                                              ifelse(catr==5,"Hors réseau public",
-                                                     ifelse(catr==6,"Parc de stationnement ouvert à la circulation publique","Autre")
-                                                     )
-                                              )
-                                      )
-                                )
-                        )
-        )
-lieux
 ```
 
 
@@ -406,6 +387,7 @@ hist(lieux$situ, main = "Répartition de la variable Situation de l accident", c
 
 ```{r}
 # Ajout des libellés relatifs à la catégorie de route avec regroupement des madalités 5 à 9 en "autres"
+data("lieux",package = "ACC")
 lieux <- lieux %>% 
   mutate(libl_catr=ifelse(catr==1,"Autoroute", 
                          ifelse(catr==2,"Route Nationale", 
@@ -441,7 +423,8 @@ lieux
 # Exploration des données de la table Véhicules
 
 ```{r}
-vehicules <- read.table(here::here("data-raw","vehicules-2019.csv"),sep=";",header = T)
+data("vehicules",package = "ACC")
+# vehicules <- read.table(here::here("data-raw","vehicules-2019.csv"),sep=";",header = T)
 summary(vehicules)
 names(vehicules)
 nrow(vehicules) #100710
@@ -547,7 +530,8 @@ summary(vehicules$occutc)
 # Exploration des données de la table usagers
 
 ```{r}
-usagers <- read.table(here::here("data-raw","usagers-2019.csv"),sep=";",header = T)
+# usagers <- read.table(here::here("data-raw","usagers-2019.csv"),sep=";",header = T)
+usagers <- data("usagers",package = "ACC")
 summary(usagers)
 names(usagers)
 nrow(usagers) #132977
