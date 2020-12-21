@@ -2,7 +2,7 @@
 title: "Comment utiliser ce package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{comment-utiliser-ce-package}
+  %\VignetteIndexEntry{Comment utiliser ce package}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -76,7 +76,7 @@ if(!dir.exists("data-raw"))
 
 ```{r}
 # caractéristiques générales de la table
-caracteristiques <- read.table("data-raw/caracteristiques-2019.csv",sep=";",header = T)
+caracteristiques <- read.table(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header = T)
 summary(caracteristiques)
 names(caracteristiques)
 nrow(caracteristiques) #58 840
@@ -95,6 +95,83 @@ hist(caracteristiques$lum, main = "Répartition de la variable Conditions d ecla
   
 # on pourrait regrouper les modalités 3 et 4 en "sans éclairage"
 ```
+
+
+## Insertion des libellés dans la table CARACTERISTIQUES
+
+```{r}
+carac <- read.csv(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header=T)
+# Ajout des libellés relatifs à la luminosité
+carac <- carac %>% 
+  mutate(libl_lum=ifelse(lum==1,"Plein jour", 
+                         ifelse(lum==2,"Crépuscule ou aube", 
+                                ifelse(lum==3,"Nuit sans éclairage public",
+                                       ifelse(lum==4,"Nuit avec éclairage public non allumé","Nuit avec éclairage public allumé")
+                                       )
+                                )
+                         )
+        ) %>%
+# Ajout des libellés relatifs à l'agglomération
+  mutate(libl_agg=ifelse(agg==1,"Hors agglomération","En agglomération")) %>%
+# Ajout des libellés relatifs aux types d'intersection
+  mutate(libl_int=ifelse(int==1,"Hors intersection", 
+                         ifelse(int==2,"Intersection en X", 
+                                ifelse(int==3,"Intersection en T",
+                                       ifelse(int==4,"Intersection en Y",
+                                              ifelse(int==5,"Intersection à plus de 4 branches",
+                                                     ifelse(int==6,"Giratoire",
+                                                            ifelse(int==7,"Place",
+                                                                   ifelse(int==8,"Passage à niveau","Autre intersection")
+                                                                   )
+                                                            )
+                                                     )
+                                              )
+                                      )
+                                )
+                        )
+        ) %>%
+# Ajout des libellés relatifs aux conditions atmosphériques
+  mutate(libl_atm=ifelse(atm==1,"Normale", 
+                         ifelse(atm==2,"Pluie légère", 
+                                ifelse(atm==3,"Pluie forte",
+                                       ifelse(atm==4,"Neige - grêle",
+                                              ifelse(atm==5,"Brouillard - fumée",
+                                                     ifelse(atm==6,"Vent fort - tempête",
+                                                            ifelse(atm==7,"Temps éblouissant",
+                                                                   ifelse(atm==8,"Temps couvert","Autre")
+                                                                   )
+                                                            )
+                                                     )
+                                              )
+                                      )
+                                )
+                        )
+        )
+carac
+```
+
+## Insertion des libellés dans la table LIEUX
+
+```{r}
+lieux <- read.csv(here::here("data-raw","lieux-2019.csv"),sep=";",header=T)
+# Ajout des libellés relatifs à la catégorie de route
+lieux <- lieux %>% 
+  mutate(libl_catr=ifelse(catr==1,"Autoroute", 
+                         ifelse(catr==2,"Route Nationale", 
+                                ifelse(catr==3,"Route Départementale",
+                                       ifelse(catr==4,"Voie Communale",
+                                              ifelse(catr==5,"Hors réseau public",
+                                                     ifelse(catr==6,"Parc de stationnement ouvert à la circulation publique","Autre")
+                                                     )
+                                              )
+                                      )
+                                )
+                        )
+        )
+lieux
+```
+
+
 
 ```{r}
 # variable agg = Localisation
@@ -205,7 +282,7 @@ carac
 # Exploration des données de la table Lieux
 
 ```{r}
-lieux <- read.table("data-raw/lieux-2019.csv",sep=";",header = T)
+lieux <- read.table(here::here("data-raw","lieux-2019.csv"),sep=";",header = T)
 summary(lieux)
 names(lieux)
 nrow(lieux) #58 840
@@ -364,7 +441,7 @@ lieux
 # Exploration des données de la table Véhicules
 
 ```{r}
-vehicules <- read.table("data-raw/vehicules-2019.csv",sep=";",header = T)
+vehicules <- read.table(here::here("data-raw","vehicules-2019.csv"),sep=";",header = T)
 summary(vehicules)
 names(vehicules)
 nrow(vehicules) #100710
@@ -502,7 +579,7 @@ vehi
 # Exploration des données de la table usagers
 
 ```{r}
-usagers <- read.table("data-raw/usagers-2019.csv",sep=";",header = T)
+usagers <- read.table(here::here("data-raw","usagers-2019.csv"),sep=";",header = T)
 summary(usagers)
 names(usagers)
 nrow(usagers) #132977
@@ -597,7 +674,7 @@ usagers %>%
             prop = n / nrow(usagers))  %>%
   arrange(desc(prop))
 
-hist(usagers$actp, main = "Répartition de la variable Action du piéton", col = "orange")
+hist(as.numeric(usagers$actp), main = "Répartition de la variable Action du piéton", col = "orange")
   
 # idem variable locp
 ```
