@@ -464,6 +464,7 @@ summary(vehicules$occutc)
 # Insertion des libellés dans la table VEHICULES
 
 ```{r}
+<<<<<<< HEAD
 # Ajout d'une variable binaire "Oui/Non" si un obstacle fixe a été heurté
 vehi <- vehicules %>% 
   mutate(libl_obs=ifelse(obs=='-1',"Non renseigné", 
@@ -493,6 +494,9 @@ vehi <- vehicules %>%
                             )
         )
 vehi
+=======
+
+>>>>>>> 8c726b9cd80a98749a3b517f84230333b8c740c7
 ```
 
 # Exploration des données de la table usagers
