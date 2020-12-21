@@ -524,7 +524,39 @@ summary(vehicules$occutc)
 # Insertion des libellés dans la table VEHICULES
 
 ```{r}
+<<<<<<< HEAD
+# Ajout d'une variable binaire "Oui/Non" si un obstacle fixe a été heurté
+vehi <- vehicules %>% 
+  mutate(libl_obs=ifelse(obs=='-1',"Non renseigné", 
+                         ifelse(obs==0,"Non","Oui")
+                        )
+        ) %>%
+# Ajout des libellés relatifs à l'obstale mobile heurté
+    mutate(libl_obsm=ifelse(obsm==1,"Piéton", 
+                         ifelse(obsm==2 | obsm==4,"Véhicule", 
+                                ifelse(obsm==5 | obsm==6,"Animal",
+                                       ifelse(obsm==9,"Autre",
+                                              ifelse(obsm==0,"Aucun","Autre")
+                                              )
+                                      )
+                                )
+                            )
+        ) %>%
+# Ajout des libellés relatifs au point de choc initial
+  mutate(libl_choc=ifelse(choc==1 | choc==2 | choc==3,"Avant", 
+                         ifelse(choc==4 | choc==5 | choc==6,"Arrière", 
+                                ifelse(obsm==7 | obsm==8,"Côté",
+                                       ifelse(obsm==9,"Chocs multiples (tonneaux)",
+                                              ifelse(obsm==0,"Aucun","Non renseigné")
+                                              )
+                                      )
+                                )
+                            )
+        )
+vehi
+=======
 
+>>>>>>> 8c726b9cd80a98749a3b517f84230333b8c740c7
 ```
 
 # Exploration des données de la table usagers
