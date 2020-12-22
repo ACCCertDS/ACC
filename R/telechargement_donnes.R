@@ -60,7 +60,7 @@ NULL
 #' @export
 dl_caracteristiques <- function(.annee = 2008:2019){
   carac_col_types <-
-    cols(
+    readr::cols(
       Num_Acc = readr::col_character(),
       jour = readr::col_integer(),
       mois = readr::col_integer(),
@@ -92,7 +92,7 @@ dl_caracteristiques <- function(.annee = 2008:2019){
 #' @export
 dl_lieux <- function(.annee = 2008:2019){
   carac_col_types <-
-    cols(
+    readr::cols(
       Num_Acc = readr::col_character(),
       catr = readr::col_integer(),
       voie = readr::col_character(),
@@ -127,7 +127,7 @@ dl_lieux <- function(.annee = 2008:2019){
 #' @export
 dl_usagers <- function(.annee = 2008:2019){
   carac_col_types <-
-    cols(
+    readr::cols(
       Num_Acc = readr::col_character(),
       id_vehicule = readr::col_character(),
       num_veh = readr::col_character(),
@@ -160,7 +160,7 @@ dl_usagers <- function(.annee = 2008:2019){
 #' @export
 dl_vehicules <- function(.annee = 2008:2019){
   carac_col_types <-
-    cols(
+    readr::cols(
       Num_Acc = readr::col_character(),
       id_vehicule = readr::col_character(),
       num_veh = readr::col_character(),
@@ -197,19 +197,19 @@ read_acc <- function(df, carac_col_types){
   if(count.fields(textConnection(L), sep = ";") > 1L)
     data <- readr::read_delim(tmp_file, delim = ";",
                               col_types = carac_col_types,
-                              locale = locale("fr", decimal_mark = ".", grouping_mark = ""),
+                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = ""),
                               na = c('','NA','-','-1', ' -1'))
 
   if(count.fields(textConnection(L), sep = ",") > 1L)
     data <- readr::read_delim(tmp_file, delim = ",",
                               col_types = carac_col_types,
-                              locale = locale("fr", decimal_mark = ".", grouping_mark = ""),
+                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = ""),
                               na = c('','NA','-','-1', ' -1'))
 
   if(count.fields(textConnection(L), sep = "\t") > 1L )
     data <- readr::read_delim(tmp_file, delim = "\t",
                               col_types = carac_col_types,
-                              locale = locale("fr", decimal_mark = ".", grouping_mark = ""),
+                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = ""),
                               na = c('','NA','-','-1', ' -1'))
 
   unlink(tmp_file) # le fichier temporaire n'est plus utile
