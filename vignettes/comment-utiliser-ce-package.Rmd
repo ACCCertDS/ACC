@@ -184,7 +184,7 @@ caracteristiques <- caracteristiques %>%
         ) %>%
 # Ajout des libellés relatifs au nombre de véhicules impliqués dans la collision avec regroupement des modalités 4 et 5
   mutate(libl_col=case_when(
-                            col=='-1' ~ "Non renseigné",
+                            col=='-1' ~ "Non Renseigné",
                             col==1 ~ "2 véhicules - frontale",
                             col==2 ~ "2 véhicules - par l'arrière",
                             col==3 ~ "2 véhicules - par le côté",
@@ -270,7 +270,7 @@ lieux %>%
 
 hist(lieux$plan, main = "Répartition de la variable Tracé de la route", col = "lightblue")
 
-# il y a une modalité 4 non cité dans la doc...
+# il y a une modalité 4 non cité dans la doc... La modalité 4 est "en S" mais citée sur la même ligne que la modalité 3 dans la doc.
 # on pourrait créer une variable binaire : rectiligne/non rectiligne
 ```
 
@@ -323,45 +323,75 @@ hist(lieux$situ, main = "Répartition de la variable Situation de l accident", c
 ## Insertion des libellés dans la table LIEUX
 
 ```{r}
-# Ajout des libellés relatifs à la catégorie de route avec regroupement des madalités 5 à 9 en "autres"
-data("lieux",package = "ACC")
+# Ajout des libellés relatifs à la catégorie de route avec regroupement les madalités 5 à 9 en "Autre"
+# data("lieux",package = "ACC")
 lieux <- lieux %>% 
-  mutate(libl_catr=ifelse(catr==1,"Autoroute", 
-                         ifelse(catr==2,"Route Nationale", 
-                                ifelse(catr==3,"Route Départementale",
-                                       ifelse(catr==4,"Voie Communale","Autre")
-                                      )
-                                )
+  select(-larrout) %>% #On retire la variable larrout
+  mutate(libl_catr=case_when(
+                            catr==1 ~ "Autoroute",
+                            catr==2 ~ "Route Nationale",
+                            catr==3 ~ "Route Départementale",
+                            catr==4 ~ "Voie Communale",
+                            TRUE  ~  "Autre")
+        ) %>%
+# Ajout des libellés relatifs au régime de circulation avec regroupement des modalités -1 et 4 en "Autre/Non Renseigné"
+ mutate(libl_circ=case_when(
+                            circ==1 ~ "A sens unique", 
+                            circ==2 ~ "Bidirectionnelle",
+                            circ==3 ~ "A chaussées séparées",
+                            TRUE ~ "Autre/Non Renseigné")
+        ) %>%
+# Ajout des libellés relatifs au nombre de voies de circulation avec regroupement des modalités 3 et plus en une seule modalité et regroupement des modalités -1 et 0 en "Non Renseigné"
+  mutate(nbvoies=ifelse(
+                        nbv %in% c(1,2),nbv,
+                        ifelse(
+                              nbv >=3, "3 et plus","Non Renseigné"
+                              )
                         )
         ) %>%
-# Ajout des libellés relatifs au régime de circulation avec regroupement des modalités -1 et 4 en "Autres/Non renseigné"
- mutate(libl_circ=ifelse(circ==1,"A sens unique", 
-                         ifelse(circ==2,"Bidirectionnelle", 
-                                ifelse(circ==3,"A chaussées séparées","Autres/Non renseigné")
-                                )
-                        )
-        ) %>%
-# Ajout des libellés relatifs au nombre de voies de circulation avec regroupement des modalités 3 et plus en une seule modalité et regroupement des modalités -1 et 0 en "Non renseigné"
-  mutate(nbvoies=ifelse(nbv==1 | nbv==2,nbv, 
-                         ifelse(nbv>=3,"3 et plus", "Non renseigné")
-                        )
-        ) %>%
-# Ajout des libellés relatifs au profil de la route avec regroupement des modalités -1, 3 et 4 en "Autres/Non renseigné"
-   mutate(libl_prof=ifelse(prof==1,"Plat", 
-                         ifelse(prof==2,"Pente","Autres/Non renseigné")
-                          )
+# Ajout des libellés relatifs au profil de la route avec regroupement des modalités -1, 3 et 4 en "Autre/Non Renseigné"
+   mutate(libl_prof=case_when(
+                              prof==1 ~ "Plat",
+                              prof==2 ~ "Pente",
+                              TRUE ~ "Autre/Non Renseigné")
         ) %>%
 # Ajout des libellés relatifs au tracé de la route dans une variable binaire "Rectiligne/Non rectiligne"
-  mutate(libl_plan=ifelse(plan==1,"Rectiligne","Autres/Non renseigné")) 
-# Attente du choix de l'équipe pour les variables suivantes
+  mutate(libl_plan=case_when(
+                             plan==1 ~ "Rectiligne",
+                             plan %in% c(2,3,4) ~ "Non Rectiligne",
+                             TRUE ~ "Non Renseigné")
+         ) %>%
+# Ajout des libellés relatifs à la surface en faisant 2 modalités : Normale et Anormale. 
+  mutate(libl_surf=case_when(
+                             surf==1 ~ "Normale",
+                             surf %in% c(2:9) ~ "Anormale",
+                             TRUE ~ "Non Renseigné")
+         ) %>%
+# Ajout des libellés relatifs à la présence d'un aménagement ou d'une infrastructure, regroupement en 3 modalités "Oui/Non/Non Renseigné"
+  mutate(libl_infra=case_when(
+                             infra==0 ~ "Non",
+                             infra %in% c(1:9) ~ "Oui",
+                             TRUE ~ "Non Renseigné")
+         ) %>%
+# Ajout des libellés relatifs à la situation de l'accident en regroupant les modalités -1, 6 et 8 en "Autre/Non Renseigné"
+  mutate(libl_situ=case_when(
+                            situ==0 ~ "Aucun",
+                            situ==1 ~ "Sur chaussée",
+                            situ==2 ~ "Sur bande d'arrêt d'urgence",
+                            situ==3 ~ "Sur accotement",
+                            situ==4 ~ "Sur trottoir",
+                            situ==5 ~ "Sur piste cyclable",
+                            TRUE  ~  "Autre/Non Renseigné")
+        )
 lieux
 ```
 
 # Exploration des données de la table Véhicules
 
 ```{r}
-data("vehicules",package = "ACC")
+# data("vehicules",package = "ACC")
 # vehicules <- read.table(here::here("data-raw","vehicules-2019.csv"),sep=";",header = T)
+data(vehicules)
 summary(vehicules)
 names(vehicules)
 nrow(vehicules) #100710
@@ -406,7 +436,7 @@ vehicules %>%
 
 hist(vehicules$obs, main = "Répartition de la variable Obstacle fixe heurté", col = "forestgreen")
   
-# # on pourrait créer une variable binaire : oui/non
+# on pourrait créer une variable binaire : oui/non
 ```
 
 ```{r}
@@ -461,34 +491,44 @@ summary(vehicules$occutc)
 # Insertion des libellés dans la table VEHICULES
 
 ```{r}
-
+# Ajout des libellés relatifs à la catégorie de véhicules 
+ vehicules <- vehicules %>% 
+  select(-c(senc,manv,occutc)) %>% # On retire les variables inexploitables
+  mutate(libl_catv=case_when(
+                            catv==1 ~ "Bicyclette",
+                            catv %in% c(2,30:34) ~ "2 roues motorisé",
+                            catv==7 ~ "VL seul",
+                            catv==10 ~ "VU seul",
+                            catv %in% c(13:15) ~ "Poids lourd",
+                            catv %in% c(16:17,20:21) ~ "Engin agricole",
+                            catv %in% c(37,38) ~ "Bus",
+                            catv==39 ~ "Train",
+                            catv==40 ~ "Tramway",
+                            catv %in% c(35,36) ~ "Quad",
+                            TRUE ~ "Autre")
+        ) %>%
 # Ajout d'une variable binaire "Oui/Non" si un obstacle fixe a été heurté
-vehicules <- vehicules %>% 
-  mutate(libl_obs=ifelse(obs=='-1',"Non renseigné", 
-                         ifelse(obs==0,"Non","Oui")
-                        )
+  mutate(libl_obs=case_when(
+                            obs==0 ~ "Non",
+                            obs %in% c(1:17) ~ "Oui",
+                            TRUE ~ "Non Renseigné")
         ) %>%
-# Ajout des libellés relatifs à l'obstale mobile heurté
-    mutate(libl_obsm=ifelse(obsm==1,"Piéton", 
-                         ifelse(obsm==2 | obsm==4,"Véhicule", 
-                                ifelse(obsm==5 | obsm==6,"Animal",
-                                       ifelse(obsm==9,"Autre",
-                                              ifelse(obsm==0,"Aucun","Autre")
-                                              )
-                                      )
-                                )
-                            )
+# Ajout des libellés relatifs à l'obstale mobile heurté avec regroupement en Aucun/Piéton/Véhicule/Animal/Autre
+    mutate(libl_obsm=case_when(
+                              obsm==0 ~ "Aucun",
+                              obsm==1 ~ "Piéton",
+                              obsm %in% c(2,4) ~ "Véhicule",
+                              obsm %in% c(5,6) ~ "Animal",
+                              TRUE ~ "Autre")
         ) %>%
-# Ajout des libellés relatifs au point de choc initial
-  mutate(libl_choc=ifelse(choc==1 | choc==2 | choc==3,"Avant", 
-                         ifelse(choc==4 | choc==5 | choc==6,"Arrière", 
-                                ifelse(obsm==7 | obsm==8,"Côté",
-                                       ifelse(obsm==9,"Chocs multiples (tonneaux)",
-                                              ifelse(obsm==0,"Aucun","Non renseigné")
-                                              )
-                                      )
-                                )
-                            )
+# Ajout des libellés relatifs au point de choc initial avec regroupement Avant/Arrière/Côté/Aucun
+  mutate(libl_choc=case_when(
+                            choc==0 ~ "Aucun",
+                            choc %in% c(1:3) ~ "Avant",
+                            choc %in% c(4:6) ~ "Arrière",
+                            choc %in% c(7,8) ~ "Côté",
+                            choc==9 ~ "Chocs multiples (tonneaux)",
+                            TRUE ~ "Non Renseigné")
         )
 vehicules
 ```
@@ -497,7 +537,8 @@ vehicules
 
 ```{r}
 # usagers <- read.table(here::here("data-raw","usagers-2019.csv"),sep=";",header = T)
-usagers <- data("usagers",package = "ACC")
+# usagers <- data("usagers",package = "ACC")
+data(usagers)
 summary(usagers)
 names(usagers)
 nrow(usagers) #132977
@@ -609,4 +650,30 @@ usagers %>%
 hist(usagers$etatp, main = "Répartition de la variable Accompagnants du piéton", col = "orange")
   
 # idem variable locp
+```
+
+# Insertion des libellés dans la table USAGERS
+
+```{r}
+# Ajout des libellés relatifs à la catégorie d'usager
+usagers <- usagers %>% 
+  select(-c(place,trajet,locp,actp,etatp)) %>% # On retire les variables inexploitables
+  mutate(libl_catu=case_when(
+                            catu==1 ~ "Conducteur",
+                            catu==2 ~ "Passager",
+                            catu==3 ~ "Piéton")
+        ) %>%
+# Ajout des libellés relatifs à la gravité de blessure de l'usager
+  mutate(libl_grav=case_when(
+                            grav==1 ~ "Indemne",
+                            grav==2 ~ "Tué",
+                            grav==3 ~ "Blessé hospitalisé",
+                            grav==4 ~ "Blessé léger")
+        ) %>%
+# Ajout des libellés relatifs au sexe de l'usager
+    mutate(libl_sexe=case_when(
+                              sexe==1 ~ "Masculin",
+                              sexe==2 ~ "Féminin")
+        )
+usagers
 ```
