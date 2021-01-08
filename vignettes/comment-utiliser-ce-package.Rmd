@@ -199,6 +199,20 @@ caracteristiques <- caracteristiques %>%
     annee = ifelse(an<2000L, an+2000, an),
     date_acc = lubridate::ymd(paste(annee, mois, jour, sep = '-'))
   ) %>% select(-an, -annee, -jour, -mois)
+
+coord_gps_code_commune <- BARIS::BARIS_resources("545b55e1c751df52de9b6045") %>%
+  dplyr::filter(stringr::str_detect(title,"Base off")) %>% 
+  dplyr::pull(id) %>% 
+  BARIS::BARIS_extract(format = "csv") %>%
+  dplyr::filter(coordonnees_gps!="") %>% 
+  dplyr::distinct(code_commune_insee, coordonnees_gps) %>% 
+  tidyr::separate(coordonnees_gps, sep = ",", into = c('lat','long'))
+
+caracteristiques_avec_gps <- filter(caracteristiques, !is.na(lat))
+caracteristiques_sans_gps <- filter(caracteristiques, is.na(lat)) %>% select(-lat,-lon) %>%
+  left_join(coord_gps_code_commune, by = c("com"="code_commune_insee"))
+caracteristiques <- bind_rows(caracteristiques_avec_gps, caracteristiques_sans_gps)
+
 caracteristiques
 ```
 
@@ -391,8 +405,8 @@ lieux <- lieux %>%
                           TRUE  ~  "Autre/Non Renseigné")
         )
 lieux
-# filter(caracteristiques, is.na(lat)) %>% mutate(adresse = adr, code_insee = paste0(str_sub(dep, 1,2),com)) %>% distinct(Num_Acc, adresse, code_insee) -> temp
-# geocode_tbl(temp, adresse = adresse, code_insee = code_insee)
+
+
 ```
 
 # Exploration des données de la table Véhicules
