@@ -192,7 +192,12 @@ caracteristiques <- caracteristiques %>%
                             col %in% c(4,5) ~ "3 véhicules et plus",
                             col==6 ~ "Autre collision",
                             TRUE~ "Sans collision")
-        )
+        ) %>% 
+  # Date de l'accident
+  mutate(
+    annee = ifelse(an<2000L, an+2000, an),
+    date_acc = lubridate::ymd(paste(annee, mois, jour, sep = '-'))
+  ) %>% select(-an, -annee, -jour, -mois)
 caracteristiques
 ```
 
@@ -678,3 +683,16 @@ usagers <- usagers %>%
         )
 usagers
 ```
+
+## Jointure des tables
+
+
+```{r}
+usagers %>% 
+  left_join(vehicules %>% distinct(Num_Acc, num_veh, catv),
+            by = c("Num_Acc", "num_veh")) %>% 
+  left_join(caracteristiques, by = c("Num_Acc")) %>% 
+  left_join(lieux,by = c("Num_Acc"))
+
+```
+
