@@ -155,6 +155,7 @@ hist(caracteristiques$col, main = "Répartition de la variable Type de collision
 # carac <- caracteristiques
 # Ajout des libellés relatifs à la luminosité avec regroupement des modalités 3 et 4
 caracteristiques <- caracteristiques %>% 
+  select(-gps) %>% 
   mutate(lum=case_when(
                             lum==1 ~ "Plein jour",
                             lum==2 ~ "Crépuscule ou aube",
@@ -332,7 +333,7 @@ hist(lieux$situ, main = "Répartition de la variable Situation de l accident", c
 # Ajout des libellés relatifs à la catégorie de route avec regroupement les madalités 5 à 9 en "Autre"
 # data("lieux",package = "ACC")
 lieux <- lieux %>% 
-  select(-larrout) %>% #On retire la variable larrout
+  select(-larrout, -lartpc, -env1, -v1, -v2, -vosp, -pr, -pr1) %>% #On retire la variable larrout, lartpc, env1 (non ducmentée)
   mutate(catr=case_when(
                           catr==1 ~ "Autoroute",
                           catr==2 ~ "Route Nationale",
@@ -688,7 +689,7 @@ usagers
 
 
 ```{r}
-usagers %>% 
+accidents <- usagers %>% 
   left_join(vehicules %>% distinct(Num_Acc, num_veh, catv),
             by = c("Num_Acc", "num_veh")) %>% 
   left_join(caracteristiques, by = c("Num_Acc")) %>% 
