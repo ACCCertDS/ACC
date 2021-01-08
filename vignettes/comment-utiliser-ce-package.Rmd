@@ -155,24 +155,24 @@ hist(caracteristiques$col, main = "Répartition de la variable Type de collision
 # carac <- caracteristiques
 # Ajout des libellés relatifs à la luminosité avec regroupement des modalités 3 et 4
 caracteristiques <- caracteristiques %>% 
-  mutate(libl_lum=case_when(
+  mutate(lum=case_when(
                             lum==1 ~ "Plein jour",
                             lum==2 ~ "Crépuscule ou aube",
                             lum %in% c(3,4) ~ "Nuit sans éclairage",
                             TRUE ~ "Nuit avec éclairage public")
         ) %>%
 # Ajout des libellés relatifs à l'agglomération
-  mutate(libl_agg=ifelse(agg==1,"Hors agglomération","En agglomération")) %>%
+  mutate(agg=ifelse(agg==1,"Hors agglomération","En agglomération")) %>%
 # Ajout des libellés relatifs aux types d'intersection avec regroupement des variables 2, 3, 4, 5 et 9 en "Intersection"
-  mutate(libl_int=case_when(
+  mutate(intersection=case_when(
                             int==1 ~ "Hors intersection", 
                             int %in% c(2:5,9) ~ "Intersection",
                             int==6 ~ "Giratoire",
                             int==7 ~ "Place",
                             TRUE ~ "Passage à niveau")
-        ) %>%
+        ) %>% select(-`int`) %>% 
 # Ajout des libellés relatifs aux conditions atmosphériques
-  mutate(libl_atm=case_when(
+  mutate(atm=case_when(
                             atm==1 ~ "Normale",
                             atm==2 ~ "Pluie légère",
                             atm==3 ~ "Pluie forte",
@@ -184,7 +184,7 @@ caracteristiques <- caracteristiques %>%
                             TRUE ~ "Autre")
         ) %>%
 # Ajout des libellés relatifs au nombre de véhicules impliqués dans la collision avec regroupement des modalités 4 et 5
-  mutate(libl_col=case_when(
+  mutate(col=case_when(
                             col=='-1' ~ "Non Renseigné",
                             col==1 ~ "2 véhicules - frontale",
                             col==2 ~ "2 véhicules - par l'arrière",
