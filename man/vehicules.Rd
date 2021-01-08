@@ -5,8 +5,51 @@
 \alias{vehicules}
 \title{Vehicules}
 \format{
-Un data.frame avec les variables :
+Un data.frame avec avec 504 834 lignes et 8 variables
+\itemize{
+\item \strong{Num_Acc} : Identifiant de l’accident
+\item \strong{id_vehicule} : Identifiant unique du vehicule
+\item \strong{num_veh} : Identifiant du vehicule repris pour chacun des usagers occupant ce vehicule
+\item \strong{catv} : Categorie du vehicule
+\itemize{
+\item \code{Bicyclette}
+\item \verb{2 roues motorisé}
+\item \verb{VL seul}
+\item \verb{VU seul}
+\item \verb{Poids lourd}
+\item \verb{Engin agricole}
+\item \code{Bus}
+\item \code{Train}
+\item \code{Tramway}
+\item \code{Quad}
+\item \code{Autre}
+}
+\item \strong{obs} : Obstacle fixe heurté
+\itemize{
+\item \code{Non}
+\item \code{Oui}
+\item \verb{Non Renseigné}
+}
+\item \strong{obsm} : Obstacle mobile heurté
+\itemize{
+\item \code{Aucun}
+\item \code{Piéton}
+\item \code{Véhicule}
+\item \code{Animal}
+\item \code{Autre}
+}
+\item \strong{choc} : Point de choc initial
+\itemize{
+\item \code{Aucun}
+\item \code{Avant}
+\item \code{Arrière}
+\item \code{Côté}
+\item \verb{Chocs multiples (tonneaux)}
+\item \verb{Non Renseigné}
+}
+
 ...
+}
 }
 \usage{
 vehicules

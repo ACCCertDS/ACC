@@ -5,13 +5,69 @@
 \alias{caracteristiques}
 \title{Caracteristiques}
 \format{
-Un data.frame avec les variables :
+Un data.frame avec 295 410 lignes et 16 variables
+\itemize{
+\item \strong{Num_Acc} : Identifiant de l’accident
+\item \strong{jour} : Jour de l accident
+\item \strong{mois} : Mois de l accident
+\item \strong{an} : Annee de l accident
+\item \strong{hrmn} : Heure et minutes de l accident
+\item \strong{lum} : Conditions d eclairage
+\itemize{
+\item \verb{Plein jour}
+\item \verb{Crépuscule ou aube}
+\item \verb{Nuit sans éclairage}
+\item \verb{Nuit avec éclairage public}
+}
+\item \strong{dep} : Departement
+\item \strong{com} : Commune
+\item \strong{agg} : Localisation
+\itemize{
+\item \verb{Hors agglomération}
+\item \verb{En agglomération}
+}
+\item \strong{atm} : Conditions atmospheriques
+\itemize{
+\item \code{Normale}
+\item \verb{Pluie légère}
+\item \verb{Pluie forte}
+\item \code{Neige - grêle}
+\item \code{Brouillard - fumée}
+\item \verb{Vent fort - tempête}
+\item \verb{Temps éblouissant}
+\item \verb{Temps couvert}
+\item \code{Autre}
+}
+\item \strong{col} : Type de collision
+\itemize{
+\item \verb{Non Renseigné}
+\item \verb{2 véhicules - frontale}
+\item \verb{2 véhicules - par l'arrière}
+\item \verb{2 véhicules - par le côté}
+\item \verb{3 véhicules et plus}
+\item \verb{Autre collision}
+\item \verb{Sans collision}
+}
+\item \strong{adr} : Adresse postale (renseignée pour les accidents survenus en agglomeration)
+\item \strong{lat} : Latitude
+\item \strong{long} : Longitude
+\item \strong{gps}
+\item \strong{intersection} : Intersection
+\itemize{
+\item \verb{Hors intersection}
+\item \code{Intersection}
+\item \code{Giratoire}
+\item \code{Place}
+\item \verb{Passage à niveau}
+}
+
 ...
+}
 }
 \usage{
 caracteristiques
 }
 \description{
-Ajouter la description de la table caracteristiques
+Caracteristiques
 }
 \keyword{datasets}
