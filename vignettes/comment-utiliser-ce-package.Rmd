@@ -155,6 +155,7 @@ hist(caracteristiques$col, main = "Répartition de la variable Type de collision
 # carac <- caracteristiques
 # Ajout des libellés relatifs à la luminosité avec regroupement des modalités 3 et 4
 caracteristiques <- caracteristiques %>% 
+  select(-gps) %>% 
   mutate(lum=case_when(
                             lum==1 ~ "Plein jour",
                             lum==2 ~ "Crépuscule ou aube",
@@ -192,7 +193,26 @@ caracteristiques <- caracteristiques %>%
                             col %in% c(4,5) ~ "3 véhicules et plus",
                             col==6 ~ "Autre collision",
                             TRUE~ "Sans collision")
-        )
+        ) %>% 
+  # Date de l'accident
+  mutate(
+    annee = ifelse(an<2000L, an+2000, an),
+    date_acc = lubridate::ymd(paste(annee, mois, jour, sep = '-'))
+  ) %>% select(-an, -annee, -jour, -mois)
+
+coord_gps_code_commune <- BARIS::BARIS_resources("545b55e1c751df52de9b6045") %>%
+  dplyr::filter(stringr::str_detect(title,"Base off")) %>% 
+  dplyr::pull(id) %>% 
+  BARIS::BARIS_extract(format = "csv") %>%
+  dplyr::filter(coordonnees_gps!="") %>% 
+  dplyr::distinct(code_commune_insee, coordonnees_gps) %>% 
+  tidyr::separate(coordonnees_gps, sep = ",", into = c('lat','long'))
+
+caracteristiques_avec_gps <- filter(caracteristiques, !is.na(lat))
+caracteristiques_sans_gps <- filter(caracteristiques, is.na(lat)) %>% select(-lat,-lon) %>%
+  left_join(coord_gps_code_commune, by = c("com"="code_commune_insee"))
+caracteristiques <- bind_rows(caracteristiques_avec_gps, caracteristiques_sans_gps)
+
 caracteristiques
 ```
 
@@ -327,7 +347,7 @@ hist(lieux$situ, main = "Répartition de la variable Situation de l accident", c
 # Ajout des libellés relatifs à la catégorie de route avec regroupement les madalités 5 à 9 en "Autre"
 # data("lieux",package = "ACC")
 lieux <- lieux %>% 
-  select(-larrout) %>% #On retire la variable larrout
+  select(-larrout, -lartpc, -env1, -v1, -v2, -vosp, -pr, -pr1) %>% #On retire la variable larrout, lartpc, env1 (non ducmentée)
   mutate(catr=case_when(
                           catr==1 ~ "Autoroute",
                           catr==2 ~ "Route Nationale",
@@ -385,6 +405,8 @@ lieux <- lieux %>%
                           TRUE  ~  "Autre/Non Renseigné")
         )
 lieux
+
+
 ```
 
 # Exploration des données de la table Véhicules
@@ -678,3 +700,16 @@ usagers <- usagers %>%
         )
 usagers
 ```
+
+## Jointure des tables
+
+
+```{r}
+accidents <- usagers %>% 
+  left_join(vehicules %>% distinct(Num_Acc, num_veh, catv),
+            by = c("Num_Acc", "num_veh")) %>% 
+  left_join(caracteristiques, by = c("Num_Acc")) %>% 
+  left_join(lieux,by = c("Num_Acc"))
+
+```
+
