@@ -391,6 +391,8 @@ lieux <- lieux %>%
                           TRUE  ~  "Autre/Non Renseigné")
         )
 lieux
+# filter(caracteristiques, is.na(lat)) %>% mutate(adresse = adr, code_insee = paste0(str_sub(dep, 1,2),com)) %>% distinct(Num_Acc, adresse, code_insee) -> temp
+# geocode_tbl(temp, adresse = adresse, code_insee = code_insee)
 ```
 
 # Exploration des données de la table Véhicules
