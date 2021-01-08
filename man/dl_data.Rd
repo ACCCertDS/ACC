@@ -6,7 +6,7 @@
 \alias{dl_lieux}
 \alias{dl_usagers}
 \alias{dl_vehicules}
-\title{Telechargement des donnees}
+\title{Téléchargement des données}
 \usage{
 dl_caracteristiques(.annee = 2008:2019)
 
@@ -17,14 +17,14 @@ dl_usagers(.annee = 2008:2019)
 dl_vehicules(.annee = 2008:2019)
 }
 \arguments{
-\item{.annee}{Un entier ou un vecteur d'entiers pour l'annee souhaitee}
+\item{.annee}{Un entier ou un vecteur d'entiers pour l'année souhaite}
 }
 \value{
 Un \code{tibble}
 }
 \description{
-Ces fonctions permettent de telecharger pour les 4 differentes ressources,
-les donnees pour differentes annees.
+Ces fonctions permettent de télécharger pour les 4 différentes ressources,
+les données pour différentes années.
 Les ressources sont :
 }
 \details{
@@ -37,23 +37,23 @@ Les ressources sont :
 }
 \section{Functions}{
 \itemize{
-\item \code{dl_caracteristiques}: Telechargement des donnees
+\item \code{dl_caracteristiques}: Téléchargement des données
 
-\item \code{dl_lieux}: Telechargement des donnees
+\item \code{dl_lieux}: Téléchargement des données
 
-\item \code{dl_usagers}: Telechargement des donnees
+\item \code{dl_usagers}: Téléchargement des données
 
-\item \code{dl_vehicules}: Telechargement des donnees
+\item \code{dl_vehicules}: Téléchargement des données
 }}
 
 \examples{
-# Caracteristiques des accidents en 2019
+# CaractÃ©ristiques des accidents en 2019
 
 \dontrun{
-caracteristiques <- dl_caracteristiques()
-usagers <- dl_usagers()
-vehicules <- dl_vehicules()
-lieux <- dl_lieux()
+caracteristiques <- dl_caracteristiques(2019)
+usagers <- dl_usagers(2019)
+vehicules <- dl_vehicules(2015:1019)
+lieux <- dl_lieux(2019)
 }
 
 }

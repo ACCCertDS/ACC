@@ -28,11 +28,11 @@ ACC_ressources <- function(){
     tidyr::extract(title, c('type_fichier','annee'), "(.*)[[:punct:]]([0-9]{4}).csv", remove = FALSE)
 }
 
-#' Telechargement des donnees
+#' Téléchargement des données
 #'
 #'
-#' Ces fonctions permettent de telecharger pour les 4 differentes ressources,
-#' les donnees pour differentes annees.
+#' Ces fonctions permettent de télécharger pour les 4 différentes ressources,
+#' les données pour différentes années.
 #' Les ressources sont :
 #'
 #' + CARACTERISTIQUES
@@ -43,20 +43,20 @@ ACC_ressources <- function(){
 #' @return Un `tibble`
 #'
 #' @examples
-#' # Caracteristiques des accidents en 2019
+#' # Caractéristiques des accidents en 2019
 #'
 #' \dontrun{
-#' caracteristiques <- dl_caracteristiques()
-#' usagers <- dl_usagers()
-#' vehicules <- dl_vehicules()
-#' lieux <- dl_lieux()
+#' caracteristiques <- dl_caracteristiques(2019)
+#' usagers <- dl_usagers(2019)
+#' vehicules <- dl_vehicules(2015:1019)
+#' lieux <- dl_lieux(2019)
 #' }
 #'
-#' @param .annee Un entier ou un vecteur d'entiers pour l'annee souhaitee
+#' @param .annee Un entier ou un vecteur d'entiers pour l'année souhaite
 #' @name dl_data
 NULL
 
-#' @describeIn dl_data Telechargement des donnees
+#' @describeIn dl_data Téléchargement des données
 #' @export
 dl_caracteristiques <- function(.annee = 2008:2019){
   carac_col_types <-
@@ -88,7 +88,7 @@ dl_caracteristiques <- function(.annee = 2008:2019){
 
 
 
-#' @describeIn dl_data Telechargement des donnees
+#' @describeIn dl_data Téléchargement des données
 #' @export
 dl_lieux <- function(.annee = 2008:2019){
   carac_col_types <-
@@ -123,7 +123,7 @@ dl_lieux <- function(.annee = 2008:2019){
 
 
 
-#' @describeIn dl_data Telechargement des donnees
+#' @describeIn dl_data Téléchargement des données
 #' @export
 dl_usagers <- function(.annee = 2008:2019){
   carac_col_types <-
@@ -156,7 +156,7 @@ dl_usagers <- function(.annee = 2008:2019){
 }
 
 
-#' @describeIn dl_data Telechargement des donnees
+#' @describeIn dl_data Téléchargement des données
 #' @export
 dl_vehicules <- function(.annee = 2008:2019){
   carac_col_types <-
