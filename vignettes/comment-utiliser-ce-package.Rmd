@@ -328,61 +328,61 @@ hist(lieux$situ, main = "Répartition de la variable Situation de l accident", c
 # data("lieux",package = "ACC")
 lieux <- lieux %>% 
   select(-larrout) %>% #On retire la variable larrout
-  mutate(libl_catr=case_when(
-                            catr==1 ~ "Autoroute",
-                            catr==2 ~ "Route Nationale",
-                            catr==3 ~ "Route Départementale",
-                            catr==4 ~ "Voie Communale",
-                            TRUE  ~  "Autre")
+  mutate(catr=case_when(
+                          catr==1 ~ "Autoroute",
+                          catr==2 ~ "Route Nationale",
+                          catr==3 ~ "Route Départementale",
+                          catr==4 ~ "Voie Communale",
+                          TRUE  ~  "Autre")
         ) %>%
 # Ajout des libellés relatifs au régime de circulation avec regroupement des modalités -1 et 4 en "Autre/Non Renseigné"
- mutate(libl_circ=case_when(
-                            circ==1 ~ "A sens unique", 
-                            circ==2 ~ "Bidirectionnelle",
-                            circ==3 ~ "A chaussées séparées",
-                            TRUE ~ "Autre/Non Renseigné")
+ mutate(circ=case_when(
+                          circ==1 ~ "A sens unique", 
+                          circ==2 ~ "Bidirectionnelle",
+                          circ==3 ~ "A chaussées séparées",
+                          TRUE ~ "Autre/Non Renseigné")
         ) %>%
 # Ajout des libellés relatifs au nombre de voies de circulation avec regroupement des modalités 3 et plus en une seule modalité et regroupement des modalités -1 et 0 en "Non Renseigné"
-  mutate(nbvoies=ifelse(
-                        nbv %in% c(1,2),nbv,
-                        ifelse(
-                              nbv >=3, "3 et plus","Non Renseigné"
-                              )
-                        )
+  mutate(nbv=ifelse(
+                      nbv %in% c(1,2),nbv,
+                      ifelse(
+                            nbv >=3, "3 et plus","Non Renseigné"
+                            )
+                    )
         ) %>%
 # Ajout des libellés relatifs au profil de la route avec regroupement des modalités -1, 3 et 4 en "Autre/Non Renseigné"
-   mutate(libl_prof=case_when(
-                              prof==1 ~ "Plat",
-                              prof==2 ~ "Pente",
-                              TRUE ~ "Autre/Non Renseigné")
+   mutate(prof=case_when(
+                            prof==1 ~ "Plat",
+                            prof==2 ~ "Pente",
+                            TRUE ~ "Autre/Non Renseigné")
         ) %>%
 # Ajout des libellés relatifs au tracé de la route dans une variable binaire "Rectiligne/Non rectiligne"
-  mutate(libl_plan=case_when(
-                             plan==1 ~ "Rectiligne",
-                             plan %in% c(2,3,4) ~ "Non Rectiligne",
-                             TRUE ~ "Non Renseigné")
+  mutate(plan=case_when(
+                          plan==1 ~ "Rectiligne",
+                          plan %in% c(2,3,4) ~ "Non Rectiligne",
+                          TRUE ~ "Non Renseigné")
          ) %>%
 # Ajout des libellés relatifs à la surface en faisant 2 modalités : Normale et Anormale. 
-  mutate(libl_surf=case_when(
-                             surf==1 ~ "Normale",
-                             surf %in% c(2:9) ~ "Anormale",
-                             TRUE ~ "Non Renseigné")
+  mutate(surf=case_when(
+                          surf==1 ~ "Normale",
+                          surf %in% c(2:9) ~ "Anormale",
+                          TRUE ~ "Non Renseigné")
          ) %>%
 # Ajout des libellés relatifs à la présence d'un aménagement ou d'une infrastructure, regroupement en 3 modalités "Oui/Non/Non Renseigné"
-  mutate(libl_infra=case_when(
-                             infra==0 ~ "Non",
-                             infra %in% c(1:9) ~ "Oui",
-                             TRUE ~ "Non Renseigné")
+  mutate(infra=case_when(
+                          infra==0 ~ "Non",
+                          infra %in% c(1:9) ~ "Oui",
+                          TRUE ~ "Non Renseigné")
          ) %>%
 # Ajout des libellés relatifs à la situation de l'accident en regroupant les modalités -1, 6 et 8 en "Autre/Non Renseigné"
-  mutate(libl_situ=case_when(
-                            situ==0 ~ "Aucun",
-                            situ==1 ~ "Sur chaussée",
-                            situ==2 ~ "Sur bande d'arrêt d'urgence",
-                            situ==3 ~ "Sur accotement",
-                            situ==4 ~ "Sur trottoir",
-                            situ==5 ~ "Sur piste cyclable",
-                            TRUE  ~  "Autre/Non Renseigné")
+  mutate(situ=case_when(
+                          situ==0 ~ "Aucun",
+                          situ==1 ~ "Sur chaussée",
+                          situ==2 ~ "Sur bande d'arrêt d'urgence",
+                          situ==3 ~ "Sur accotement",
+                          situ==4 ~ "Sur trottoir",
+                          situ==5 ~ "Sur piste cyclable",
+                          TRUE  ~  "Autre/Non Renseigné")
         )
 lieux
 ```
