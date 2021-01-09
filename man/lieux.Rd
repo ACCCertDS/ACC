@@ -5,13 +5,16 @@
 \alias{lieux}
 \title{Lieux}
 \format{
-Un data.frame avec les variables :
+Un data.frame avec avec xx lignes et xx variables
+\itemize{
+\item \strong{gehe}
 ...
+}
 }
 \usage{
 lieux
 }
 \description{
-Ajouter la description de la table lieux
+Lieux
 }
 \keyword{datasets}
