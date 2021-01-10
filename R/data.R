@@ -4,12 +4,6 @@
 #'
 #' + **Num_Acc** : Identifiant de l’accident
 #'
-#' + **jour** : Jour de l accident
-#'
-#' + **mois** : Mois de l accident
-#'
-#' + **an** : Annee de l accident
-#'
 #' + **hrmn** : Heure et minutes de l accident
 #'
 #' + **lum** : Conditions d eclairage
@@ -52,14 +46,14 @@
 #'
 #' + **long** : Longitude
 #'
-#' + **gps**
-#'
 #' + **intersection** : Intersection
 #'   + `Hors intersection`
 #'   + `Intersection`
 #'   + `Giratoire`
 #'   + `Place`
 #'   + `Passage à niveau`
+#'
+#' + **date_acc** : Date de l'accident (format aaaa-mm-jj)
 #'
 #'   ...
 "caracteristiques"
@@ -97,15 +91,69 @@
 #' + **secu2**
 #'
 #' + **secu3**
+#'
 #'   ...
 "usagers"
 
 
 #' Lieux
 #'
-#' @format Un data.frame avec avec xx lignes et xx variables
+#' @format Un data.frame avec avec 295 410 lignes et 11 variables
 #'
-#' + **gehe**
+#' + **Num_Acc** : Identifiant de l accident
+#'
+#' + **catr** : Categorie de route
+#'    + `Autoroute`
+#'    + `Route Nationale`
+#'    + `Route Départementale`
+#'    + `Voie Communale`
+#'    + `Autre`
+#'
+#' + **voie** : Numero de la route
+#'
+#' + **circ** : Regime de circulation
+#'    + `A sens unique`
+#'    + `Bidirectionnelle`
+#'    + `A chaussées séparées`
+#'    + `Autre/Non Renseigné`
+#'
+#' + **nbv** : Nombre total de voies de circulation
+#'   + `1`
+#'   + `2`
+#'   + `3 et plus`
+#'   + `Non Renseigné`
+#'
+#' + **prof** : Profil en long decrit la declivité de la route à l'endroit de l'accident
+#'   + `Plat`
+#'   + `Pente`
+#'   + `Autre/Non Renseigné`
+#'
+#' + **plan** : Trace en plan
+#'   + `Rectiligne`
+#'   + `Non Rectiligne`
+#'   + `Non Renseigné`
+#'
+#' + **surf** : Etat de la surface
+#'   + `Normale`
+#'   + `Anormale`
+#'   + `Non Renseigné`
+#'
+#' + **infra** : Aménagement - Infrastructure
+#'   + `Non`
+#'   + `Oui`
+#'   + `Non Renseigné`
+#'
+#' + **situ** : Situation de l’accident
+#'   + `Aucun`
+#'   + `Sur chaussée`
+#'   + `Sur bande d'arrêt d'urgence`
+#'   + `Sur accotement`
+#'   + `Sur trottoir`
+#'   + `Sur piste cyclable`
+#'   + `Autre/Non Renseigné`
+#'
+#' + **vma** : Vitesse maximale autorisée sur le lieu et au moment de l’accident (nouvelle modalité à compter de 2019)
+#'
 #'   ...
 "lieux"
 
