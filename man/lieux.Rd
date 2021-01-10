@@ -5,9 +5,68 @@
 \alias{lieux}
 \title{Lieux}
 \format{
-Un data.frame avec avec xx lignes et xx variables
+Un data.frame avec avec 295 410 lignes et 11 variables
 \itemize{
-\item \strong{gehe}
+\item \strong{Num_Acc} : Identifiant de l accident
+\item \strong{catr} : Categorie de route
+\itemize{
+\item \code{Autoroute}
+\item \verb{Route Nationale}
+\item \verb{Route Départementale}
+\item \verb{Voie Communale}
+\item \code{Autre}
+}
+\item \strong{voie} : Numero de la route
+\item \strong{circ} : Regime de circulation
+\itemize{
+\item \verb{A sens unique}
+\item \code{Bidirectionnelle}
+\item \verb{A chaussées séparées}
+\item \verb{Autre/Non Renseigné}
+}
+\item \strong{nbv} : Nombre total de voies de circulation
+\itemize{
+\item \code{1}
+\item \code{2}
+\item \verb{3 et plus}
+\item \verb{Non Renseigné}
+}
+\item \strong{prof} : Profil en long decrit la declivité de la route à l'endroit de l'accident
+\itemize{
+\item \code{Plat}
+\item \code{Pente}
+\item \verb{Autre/Non Renseigné}
+}
+\item \strong{plan} : Trace en plan
+\itemize{
+\item \code{Rectiligne}
+\item \verb{Non Rectiligne}
+\item \verb{Non Renseigné}
+}
+\item \strong{surf} : Etat de la surface
+\itemize{
+\item \code{Normale}
+\item \code{Anormale}
+\item \verb{Non Renseigné}
+}
+\item \strong{infra} : Aménagement - Infrastructure
+\itemize{
+\item \code{Non}
+\item \code{Oui}
+\item \verb{Non Renseigné}
+}
+\item \strong{situ} : Situation de l’accident
+\itemize{
+\item \code{Aucun}
+\item \verb{Sur chaussée}
+\item \verb{Sur bande d'arrêt d'urgence}
+\item \verb{Sur accotement}
+\item \verb{Sur trottoir}
+\item \verb{Sur piste cyclable}
+\item \verb{Autre/Non Renseigné}
+}
+\item \strong{vma} : Vitesse maximale autorisée sur le lieu et au moment de l’accident (nouvelle modalité à compter de 2019)
+
 ...
 }
 }

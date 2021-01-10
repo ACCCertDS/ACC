@@ -8,9 +8,6 @@
 Un data.frame avec 295 410 lignes et 16 variables
 \itemize{
 \item \strong{Num_Acc} : Identifiant de l’accident
-\item \strong{jour} : Jour de l accident
-\item \strong{mois} : Mois de l accident
-\item \strong{an} : Annee de l accident
 \item \strong{hrmn} : Heure et minutes de l accident
 \item \strong{lum} : Conditions d eclairage
 \itemize{
@@ -51,7 +48,6 @@ Un data.frame avec 295 410 lignes et 16 variables
 \item \strong{adr} : Adresse postale (renseignée pour les accidents survenus en agglomeration)
 \item \strong{lat} : Latitude
 \item \strong{long} : Longitude
-\item \strong{gps}
 \item \strong{intersection} : Intersection
 \itemize{
 \item \verb{Hors intersection}
@@ -60,6 +56,7 @@ Un data.frame avec 295 410 lignes et 16 variables
 \item \code{Place}
 \item \verb{Passage à niveau}
 }
+\item \strong{date_acc} : Date de l'accident (format aaaa-mm-jj)
 
 ...
 }

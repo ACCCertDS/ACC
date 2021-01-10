@@ -32,6 +32,7 @@ Un data.frame avec avec 1 702 132 lignes et 10 variables
 \item \strong{secu1} : Presence et l utilisation de l equipement de securite
 \item \strong{secu2}
 \item \strong{secu3}
+
 ...
 }
 }
