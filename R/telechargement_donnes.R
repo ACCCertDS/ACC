@@ -197,19 +197,19 @@ read_acc <- function(df, carac_col_types){
   if(count.fields(textConnection(L), sep = ";") > 1L)
     data <- readr::read_delim(tmp_file, delim = ";",
                               col_types = carac_col_types,
-                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = ""),
+                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = "", encoding = "ISO8859-1"),
                               na = c('','NA','-','-1', ' -1'))
 
   if(count.fields(textConnection(L), sep = ",") > 1L)
     data <- readr::read_delim(tmp_file, delim = ",",
                               col_types = carac_col_types,
-                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = ""),
+                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = "", encoding = "ISO8859-1"),
                               na = c('','NA','-','-1', ' -1'))
 
   if(count.fields(textConnection(L), sep = "\t") > 1L )
     data <- readr::read_delim(tmp_file, delim = "\t",
                               col_types = carac_col_types,
-                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = ""),
+                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = "", encoding = "ISO8859-1"),
                               na = c('','NA','-','-1', ' -1'))
 
   unlink(tmp_file) # le fichier temporaire n'est plus utile
