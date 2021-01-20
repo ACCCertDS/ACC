@@ -91,8 +91,8 @@ recod_caracteristiques <- function(caracteristiques){
 #'
 #' @examples
 #' \dontrun{
-#'  lieux <- dl_caracteristiques()
-#'  lieux <- recod_caracteristiques(lieux)
+#'  lieux <- dl_lieux()
+#'  lieux <- recod_lieux(lieux)
 #' }
 
 recod_lieux <- function(lieux){
@@ -165,3 +165,63 @@ recod_lieux <- function(lieux){
     )
   lieux
 }
+
+#' Recodage et sélection de la table vehicules
+#'
+#' @param vehicules Table des vehicules d'accidents "brute"
+#'
+#' @return Un `data.frame` des vehicules avec une sélection de variables
+#'   et un recodage de certaines variables avec les libellés correspondants
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'  vehicules <- dl_vehicules()
+#'  vehicules <- recod_vehicules(vehicules)
+#' }
+recod_vehicules <- function(vehicules){
+  vehicules <- vehicules %>%
+    dplyr::select(-c(senc,manv,occutc)) %>% # On retire les variables
+    inexploitables
+    dplyr::mutate(catv = dplyr::case_when(
+      catv==1 ~ "Bicyclette",
+      catv %in% c(2,30:34) ~ "2 roues motorisé",
+      catv==7 ~ "VL seul",
+      catv==10 ~ "VU seul",
+      catv %in% c(13:15) ~ "Poids lourd",
+      catv %in% c(16:17,20:21) ~ "Engin agricole",
+      catv %in% c(37,38) ~ "Bus",
+      catv==39 ~ "Train",
+      catv==40 ~ "Tramway",
+      catv %in% c(35,36) ~ "Quad",
+      TRUE ~ "Autre")
+    ) %>%
+    # Ajout d'une variable binaire "Oui/Non" si un obstacle fixe a été heurté
+    dplyr::mutate(obs = dplyr::case_when(
+      obs==0 ~ "Non",
+      obs %in% c(1:17) ~ "Oui",
+      TRUE ~ "Non Renseigné")
+    ) %>%
+    # Ajout des libellés relatifs à l'obstale mobile heurté avec regroupement en
+    #  Aucun/Piéton/Véhicule/Animal/Autre
+    dplyr::mutate(obsm = dplyr::case_when(
+      obsm==0 ~ "Aucun",
+      obsm==1 ~ "Piéton",
+      obsm %in% c(2,4) ~ "Véhicule",
+      obsm %in% c(5,6) ~ "Animal",
+      TRUE ~ "Autre")
+    ) %>%
+    # Ajout des libellés relatifs au point de choc initial avec regroupement
+    #  Avant/Arrière/Côté/Aucun
+    dplyr::mutate(choc = dplyr::case_when(
+      choc==0 ~ "Aucun",
+      choc %in% c(1:3) ~ "Avant",
+      choc %in% c(4:6) ~ "Arrière",
+      choc %in% c(7,8) ~ "Côté",
+      choc==9 ~ "Chocs multiples (tonneaux)",
+      TRUE ~ "Non Renseigné")
+    )
+  vehicules
+}
+

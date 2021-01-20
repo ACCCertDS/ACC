@@ -18,7 +18,7 @@ Recodage et sélection de la table lieux
 }
 \examples{
 \dontrun{
- lieux <- dl_caracteristiques()
- lieux <- recod_caracteristiques(lieux)
+ lieux <- dl_lieux()
+ lieux <- recod_lieux(lieux)
 }
 }
