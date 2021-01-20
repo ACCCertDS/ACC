@@ -209,7 +209,7 @@ coord_gps_code_commune <- BARIS::BARIS_resources("545b55e1c751df52de9b6045") %>%
   tidyr::separate(coordonnees_gps, sep = ",", into = c('lat','long'))
 
 caracteristiques_avec_gps <- filter(caracteristiques, !is.na(lat))
-caracteristiques_sans_gps <- filter(caracteristiques, is.na(lat)) %>% select(-lat,-lon) %>%
+caracteristiques_sans_gps <- filter(caracteristiques, is.na(lat)) %>% select(-lat,-long) %>%
   left_join(coord_gps_code_commune, by = c("com"="code_commune_insee"))
 caracteristiques <- bind_rows(caracteristiques_avec_gps, caracteristiques_sans_gps)
 
