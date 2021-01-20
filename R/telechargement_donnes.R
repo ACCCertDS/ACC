@@ -13,19 +13,19 @@
 #' \dontrun{
 #' ressources <- ACC_ressources()
 #' }
-ACC_ressources <- function(){
+ACC_ressources <- function() {
 
-  #Identifiant data.gouv.fr du jeu de données
+  # Identifiant data.gouv.fr du jeu de données
   id_donnees <- "53698f4ca3a729239d2036df"
 
   BARIS::BARIS_resources(id_donnees) %>%
     # csv pour retirer les pdf explicatifs
     # certains fichiers sont agrégés sur certaines années seulement et sont nommés "Base de données..."
     #   On ne souhaite pas garder ces fichiers
-    dplyr::filter(format=="csv", ! stringr::str_detect(title,"^Base de donn")) %>%
+    dplyr::filter(format == "csv", !stringr::str_detect(title, "^Base de donn")) %>%
     # L'année est contenue dans le nom du fichier parfois fichier-annee parfois fichier_annee
     # L'ajout de la variable annee permettra de filtrer
-    tidyr::extract(title, c('type_fichier','annee'), "(.*)[[:punct:]]([0-9]{4}).csv", remove = FALSE)
+    tidyr::extract(title, c("type_fichier", "annee"), "(.*)[[:punct:]]([0-9]{4}).csv", remove = FALSE)
 }
 
 #' Téléchargement des données
@@ -43,8 +43,7 @@ ACC_ressources <- function(){
 #' @return Un `tibble`
 #'
 #' @examples
-#' # Caractéristiques des accidents en 2019
-#'
+#' # CaractÃ©ristiques des accidents en 2019
 #' \dontrun{
 #' caracteristiques <- dl_caracteristiques(2019)
 #' usagers <- dl_usagers(2019)
@@ -58,7 +57,7 @@ NULL
 
 #' @describeIn dl_data Téléchargement des données
 #' @export
-dl_caracteristiques <- function(.annee = 2008:2019){
+dl_caracteristiques <- function(.annee = 2008:2019) {
   carac_col_types <-
     readr::cols(
       Num_Acc = readr::col_character(),
@@ -80,7 +79,7 @@ dl_caracteristiques <- function(.annee = 2008:2019){
 
 
   ACC_ressources() %>%
-    dplyr::filter(type_fichier=='caracteristiques', annee %in% .annee) %>%
+    dplyr::filter(type_fichier == "caracteristiques", annee %in% .annee) %>%
     dplyr::rowwise() %>%
     dplyr::group_map(~ read_acc(.x, carac_col_types)) %>%
     dplyr::bind_rows()
@@ -90,7 +89,7 @@ dl_caracteristiques <- function(.annee = 2008:2019){
 
 #' @describeIn dl_data Téléchargement des données
 #' @export
-dl_lieux <- function(.annee = 2008:2019){
+dl_lieux <- function(.annee = 2008:2019) {
   carac_col_types <-
     readr::cols(
       Num_Acc = readr::col_character(),
@@ -115,7 +114,7 @@ dl_lieux <- function(.annee = 2008:2019){
 
 
   ACC_ressources() %>%
-    dplyr::filter(type_fichier=='lieux', annee %in% .annee) %>%
+    dplyr::filter(type_fichier == "lieux", annee %in% .annee) %>%
     dplyr::rowwise() %>%
     dplyr::group_map(~ read_acc(.x, carac_col_types)) %>%
     dplyr::bind_rows()
@@ -125,7 +124,7 @@ dl_lieux <- function(.annee = 2008:2019){
 
 #' @describeIn dl_data Téléchargement des données
 #' @export
-dl_usagers <- function(.annee = 2008:2019){
+dl_usagers <- function(.annee = 2008:2019) {
   carac_col_types <-
     readr::cols(
       Num_Acc = readr::col_character(),
@@ -148,17 +147,17 @@ dl_usagers <- function(.annee = 2008:2019){
 
 
   ACC_ressources() %>%
-    dplyr::filter(type_fichier=='usagers', annee %in% .annee) %>%
+    dplyr::filter(type_fichier == "usagers", annee %in% .annee) %>%
     dplyr::rowwise() %>%
     dplyr::group_map(~ read_acc(.x, carac_col_types)) %>%
-    purrr::map(~ dplyr::rename_all(.x, dplyr::recode, secu = 'secu1')) %>%  # https://stackoverflow.com/a/53842689
+    purrr::map(~ dplyr::rename_all(.x, dplyr::recode, secu = "secu1")) %>% # https://stackoverflow.com/a/53842689
     dplyr::bind_rows()
 }
 
 
 #' @describeIn dl_data Téléchargement des données
 #' @export
-dl_vehicules <- function(.annee = 2008:2019){
+dl_vehicules <- function(.annee = 2008:2019) {
   carac_col_types <-
     readr::cols(
       Num_Acc = readr::col_character(),
@@ -176,43 +175,51 @@ dl_vehicules <- function(.annee = 2008:2019){
 
 
   ACC_ressources() %>%
-    dplyr::filter(type_fichier=='vehicules', annee %in% .annee) %>%
+    dplyr::filter(type_fichier == "vehicules", annee %in% .annee) %>%
     dplyr::rowwise() %>%
     dplyr::group_map(~ read_acc(.x, carac_col_types)) %>%
     dplyr::bind_rows()
 }
 
 
-read_acc <- function(df, carac_col_types){
+read_acc <- function(df, carac_col_types) {
   usethis::ui_info("Chargement de {usethis::ui_field(df$title)}")
 
   Sys.sleep(5) # 5 secondes entre chaque téléchargement pour être poli
   tmp_file <- tempfile()
   curl::curl_download(df$url, tmp_file)
-  #from https://stackoverflow.com/a/33417611 détecter le type de séparateur csv
+  # from https://stackoverflow.com/a/33417611 détecter le type de séparateur csv
   L <- readLines(tmp_file, n = 1L)
 
 
   # Certains fichiers sont même séparés par des tabulations
-  if(count.fields(textConnection(L), sep = ";") > 1L)
-    data <- readr::read_delim(tmp_file, delim = ";",
-                              col_types = carac_col_types,
-                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = "", encoding = "ISO8859-1"),
-                              na = c('','NA','-','-1', ' -1'))
+  if (count.fields(textConnection(L), sep = ";") > 1L) {
+    data <- readr::read_delim(tmp_file,
+      delim = ";",
+      col_types = carac_col_types,
+      locale = readr::locale("fr", decimal_mark = ".", grouping_mark = "", encoding = "ISO8859-1"),
+      na = c("", "NA", "-", "-1", " -1")
+    )
+  }
 
-  if(count.fields(textConnection(L), sep = ",") > 1L)
-    data <- readr::read_delim(tmp_file, delim = ",",
-                              col_types = carac_col_types,
-                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = "", encoding = "ISO8859-1"),
-                              na = c('','NA','-','-1', ' -1'))
+  if (count.fields(textConnection(L), sep = ",") > 1L) {
+    data <- readr::read_delim(tmp_file,
+      delim = ",",
+      col_types = carac_col_types,
+      locale = readr::locale("fr", decimal_mark = ".", grouping_mark = "", encoding = "ISO8859-1"),
+      na = c("", "NA", "-", "-1", " -1")
+    )
+  }
 
-  if(count.fields(textConnection(L), sep = "\t") > 1L )
-    data <- readr::read_delim(tmp_file, delim = "\t",
-                              col_types = carac_col_types,
-                              locale = readr::locale("fr", decimal_mark = ".", grouping_mark = "", encoding = "ISO8859-1"),
-                              na = c('','NA','-','-1', ' -1'))
+  if (count.fields(textConnection(L), sep = "\t") > 1L) {
+    data <- readr::read_delim(tmp_file,
+      delim = "\t",
+      col_types = carac_col_types,
+      locale = readr::locale("fr", decimal_mark = ".", grouping_mark = "", encoding = "ISO8859-1"),
+      na = c("", "NA", "-", "-1", " -1")
+    )
+  }
 
   unlink(tmp_file) # le fichier temporaire n'est plus utile
   data
-
 }
