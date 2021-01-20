@@ -151,7 +151,7 @@ dl_usagers <- function(.annee = 2008:2019){
     dplyr::filter(type_fichier=='usagers', annee %in% .annee) %>%
     dplyr::rowwise() %>%
     dplyr::group_map(~ read_acc(.x, carac_col_types)) %>%
-    purrr::map(~ dplyr::rename_all(.x, recode, secu = 'secu1')) %>%  # https://stackoverflow.com/a/53842689
+    purrr::map(~ dplyr::rename_all(.x, dplyr::recode, secu = 'secu1')) %>%  # https://stackoverflow.com/a/53842689
     dplyr::bind_rows()
 }
 
