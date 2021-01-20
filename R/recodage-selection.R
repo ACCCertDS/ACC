@@ -225,3 +225,41 @@ recod_vehicules <- function(vehicules){
   vehicules
 }
 
+
+#' Recodage et sélection de la table usagers
+#'
+#' @param usagers Table des usagers d'accidents "brute"
+#'
+#' @return Un `data.frame` des usagers avec une sélection de variables
+#'   et un recodage de certaines variables avec les libellés correspondants
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'  usagers <- dl_usagers()
+#'  usagers <- recod_usagers(usagers)
+#' }
+recod_usagers <- function(usagers){
+  usagers <- usagers %>%
+    # On retire les variables inexploitables
+    dplyr::select(-c(place,trajet,locp,actp,etatp)) %>%
+    dplyr::mutate(catu = dplyr::case_when(
+      catu==1 ~ "Conducteur",
+      catu==2 ~ "Passager",
+      catu==3 ~ "Piéton")
+    ) %>%
+    # Ajout des libellés relatifs à la gravité de blessure de l'usager
+    dplyr::mutate(grav = dplyr::case_when(
+      grav==1 ~ "Indemne",
+      grav==2 ~ "Tué",
+      grav==3 ~ "Blessé hospitalisé",
+      grav==4 ~ "Blessé léger")
+    ) %>%
+    # Ajout des libellés relatifs au sexe de l'usager
+    dplyr::mutate(sexe = dplyr::case_when(
+      sexe==1 ~ "Masculin",
+      sexe==2 ~ "Féminin")
+    )
+  usagers
+}
