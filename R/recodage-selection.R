@@ -182,8 +182,7 @@ recod_lieux <- function(lieux) {
 #' }
 recod_vehicules <- function(vehicules) {
   vehicules <- vehicules %>%
-    dplyr::select(-c(senc, manv, occutc)) %>% # On retire les variables
-    inexploitables()
+    dplyr::select(-c(senc, manv, occutc)) %>% # On retire les variables inexploitables
   dplyr::mutate(catv = dplyr::case_when(
     catv == 1 ~ "Bicyclette",
     catv %in% c(2, 30:34) ~ "2 roues motorisé",
