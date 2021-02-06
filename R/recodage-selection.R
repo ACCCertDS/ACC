@@ -295,6 +295,22 @@ recod_usagers <- function(usagers) {
     dplyr::mutate(sexe = dplyr::case_when(
       sexe == 1 ~ "Masculin",
       sexe == 2 ~ "Féminin"
-    ))
+    )) %>%
+    #Ajout libellés relatifs aux équipements de sécurité
+    dplyr::mutate(
+      secu1 = dplyr::case_when(
+        is.na(secu1) ~ 'Non déterminable',
+        secu1 %in% c(0, 12, 22, 32, 42,92) ~ 'Aucun équipement',
+        secu1 %in% c(1,11) ~ 'Ceinture',
+        secu1 %in% c(2,21) ~ 'Casque',
+        secu1 %in% c(3,31) ~ 'Dispositif enfants',
+        secu1 %in% c(4,41) ~ 'Gilet réfléchissant',
+        secu1 == 5 ~ 'Airbag (2RM/3RM)',
+        secu1 == 6 ~ 'Gants (2RM/3RM)',
+        secu1 == 7 ~ 'Gants + Airbag (2RM/3RM)',
+        secu1 %in% c(-1,8,13,23,33,43,93) ~ 'Non déterminable',
+        secu1 %in% c(4,41) ~ 'Autre'
+      )
+    )
   usagers
 }
