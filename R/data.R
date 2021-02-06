@@ -1,18 +1,18 @@
-#' Caracteristiques
+#' Caractéristiques
 #'
 #' @format Un data.frame avec 295 410 lignes et 16 variables
 #'
-#' + **Num_Acc** : Identifiant de l’accident
+#' + **Num_Acc** : Identifiant de l'accident
 #'
-#' + **hrmn** : Heure et minutes de l accident
+#' + **hrmn** : Heure et minutes de l'accident
 #'
-#' + **lum** : Conditions d eclairage
+#' + **lum** : Conditions d'éclairage
 #'   + `Plein jour`
 #'   + `Crépuscule ou aube`
 #'   + `Nuit sans éclairage`
 #'   + `Nuit avec éclairage public`
 #'
-#' + **dep** : Departement
+#' + **dep** : Département
 #'
 #' + **com** : Commune
 #'
@@ -20,7 +20,7 @@
 #'   + `Hors agglomération`
 #'   + `En agglomération`
 #'
-#' + **atm** : Conditions atmospheriques
+#' + **atm** : Conditions atmosphériques
 #'   + `Normale`
 #'   + `Pluie légère`
 #'   + `Pluie forte`
@@ -63,30 +63,30 @@
 #'
 #' @format Un data.frame avec avec 1 702 132 lignes et 10 variables
 #'
-#' + **Num_Acc** : Identifiant de l accident
+#' + **Num_Acc** : Identifiant de l'accident
 #'
-#' + **id_vehicule** : Identifiant unique du vehicule
+#' + **id_vehicule** : Identifiant unique du véhicule
 #'
-#' + **num_veh** : Identifiant du vehicule repris pour chacun des usagers occupant ce vehicule
+#' + **num_veh** : Identifiant du véhicule repris pour chacun des usagers occupant ce véhicule
 #'
 #' + **catu** : Categorie de l usager
 #'   + `Conducteur`
 #'   + `Passager`
 #'   + `Piéton`
 #'
-#' + **grav** : Gravite de blessure de l usager
+#' + **grav** : Gravite de blessure de l'usager
 #'   + `Indemne`
 #'   + `Tué`
 #'   + `Blessé hospitalisé`
 #'   + `Blessé léger`
 #'
-#' + **sexe** : Sexe de l usager
+#' + **sexe** : Sexe de l'usager
 #'   + `Masculin`
 #'   + `Féminin`
 #'
-#' + **an_nais** : Annee de naissance de l usager
+#' + **an_nais** : Année de naissance de l'usager
 #'
-#' + **secu1** : Presence et l utilisation de l equipement de securite
+#' + **secu1** : Présence et l'utilisation de l'équipement de sécurité
 #'
 #' + **secu2**
 #'
@@ -102,14 +102,14 @@
 #'
 #' + **Num_Acc** : Identifiant de l accident
 #'
-#' + **catr** : Categorie de route
+#' + **catr** : Catégorie de route
 #'    + `Autoroute`
 #'    + `Route Nationale`
 #'    + `Route Départementale`
 #'    + `Voie Communale`
 #'    + `Autre`
 #'
-#' + **voie** : Numero de la route
+#' + **voie** : Numéro de la route
 #'
 #' + **circ** : Regime de circulation
 #'    + `A sens unique`
@@ -123,7 +123,7 @@
 #'   + `3 et plus`
 #'   + `Non Renseigné`
 #'
-#' + **prof** : Profil en long decrit la declivité de la route à l'endroit de l'accident
+#' + **prof** : Profil en long décrit la déclivité de la route à l'endroit de l'accident
 #'   + `Plat`
 #'   + `Pente`
 #'   + `Autre/Non Renseigné`
@@ -152,25 +152,23 @@
 #'   + `Sur piste cyclable`
 #'   + `Autre/Non Renseigné`
 #'
-#' + **vma** : Vitesse maximale autorisée sur le lieu et au moment de l’accident (nouvelle modalité à compter de 2019)
+#' + **vma** : Vitesse maximale autorisée sur le lieu et au moment de l'accident (nouvelle modalité à compter de 2019)
 #'
 #'   ...
 "lieux"
 
 
-#' Vehicules
-#'
-#' Ajouter la description de la table vehicules
+#' véhicules
 #'
 #' @format Un data.frame avec avec 504 834 lignes et 8 variables
 #'
 #' + **Num_Acc** : Identifiant de l’accident
 #'
-#' + **id_vehicule** : Identifiant unique du vehicule
+#' + **id_véhicule** : Identifiant unique du véhicule
 #'
-#' + **num_veh** : Identifiant du vehicule repris pour chacun des usagers occupant ce vehicule
+#' + **num_veh** : Identifiant du véhicule repris pour chacun des usagers occupant ce véhicule
 #'
-#' + **catv** : Categorie du vehicule
+#' + **catv** : Categorie du véhicule
 #'   + `Bicyclette`
 #'   + `2 roues motorisé`
 #'   + `VL seul`

@@ -43,7 +43,7 @@ ACC_ressources <- function() {
 #' @return Un `tibble`
 #'
 #' @examples
-#' # CaractÃ©ristiques des accidents en 2019
+#' # Caractéristiques des accidents en 2019
 #' \dontrun{
 #' caracteristiques <- dl_caracteristiques(2019)
 #' usagers <- dl_usagers(2019)

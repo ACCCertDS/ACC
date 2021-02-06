@@ -1,10 +1,10 @@
 
 #' Table unique des accidents
 #'
-#' @param caracteristiques
-#' @param usagers
-#' @param lieux
-#' @param vehicules
+#' @param caracteristiques data.frame obtenu par [dl_caracteristiques()] `%>%` [recod_caracteristiques()]
+#' @param usagers data.frame obtenu par [dl_usagers()] `%>%` [recod_usagers()]
+#' @param lieux data.frame obtenu par [dl_lieux()] `%>%` [recod_lieux()]
+#' @param vehicules data.frame obtenu par [dl_vehicules()] `%>%` [recod_vehicules()]
 #'
 #' @return Un tibble des différentes tables jointes
 #' @export
