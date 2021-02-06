@@ -57,7 +57,10 @@ recod_caracteristiques <- function(caracteristiques) {
     # Date de l'accident
     dplyr::mutate(
       annee = ifelse(an < 2000L, an + 2000, an),
-      date_acc = lubridate::ymd(paste(annee, mois, jour, sep = "-"))
+      date_acc = lubridate::ymd(paste(annee, mois, jour, sep = "-")),
+      hrmn = lubridate::hm(hrmn),
+      mois_acc =  lubridate::month(date_acc, label=TRUE, abbr = FALSE),
+      jour_acc = lubridate::wday(date_acc, label=TRUE, abbr = FALSE)
     ) %>%
     dplyr::select(-an, -annee, -jour, -mois)
 
