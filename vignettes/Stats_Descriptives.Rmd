@@ -1,0 +1,101 @@
+---
+title: "Statistiques descriptives avec ggplot2"
+output: html_document
+---
+
+## Chargement des packages nécessaires au traitement
+
+```{r}
+library(lubridate) #Pour représenter l'évolution des accidents par année
+library(tidyverse)
+library(ggplot2)
+library(esquisse)
+```
+
+## Evolution du nombre d'accidents par année depuis 2015
+
+```{r}
+regr_accidents <- accidents %>%
+  mutate(annee = year(date_acc)) %>%
+  select(Num_Acc,annee) %>%
+  group_by(Num_Acc,annee) %>%
+  summarise(n_distinct(Num_Acc))
+
+ggplot(regr_accidents) +
+ aes(x = annee) +
+ geom_histogram(bins = 10L, fill = "#440154") +
+ labs(x = "Année", y = "Nombre d'accidents",title = "Nombre d'accidents par année") +
+ theme_light()
+
+```
+
+## Répartition des accidents par mois et par année
+
+```{r}
+acc_par_mois <- accidents %>%
+  mutate(annee = year(date_acc)) %>%
+  group_by(Num_Acc,annee,mois_acc) %>%
+  summarise(n_distinct(Num_Acc))
+
+ggplot(acc_par_mois) +
+ aes(x = mois_acc) +
+ geom_bar(fill = "#0c4c8a") +
+ labs(x = "Mois", y = "Nombre d'accidents", title = "Répartition des accidents par année et par mois") +
+ theme_minimal() +
+ facet_wrap(vars(annee))
+```
+
+## Répartition des accidents de la route par sexe lorsque l'usager est conducteur
+
+```{r}
+repart_sexe <- accidents %>%
+  mutate(annee=year(date_acc)) %>%
+  select(Num_Acc,catu,sexe,annee) %>%
+  filter(catu=="Conducteur")
+
+ggplot(repart_sexe) +
+ aes(x = sexe, fill = sexe) +
+ geom_bar() +
+ scale_fill_hue() +
+ labs(y = "Nombre d'accidents", title = "Répartition des accidents de la route par année et par sexe", subtitle = "L'usager est conducteur") +
+ theme_light() +
+ facet_wrap(vars(annee))
+
+```
+
+# Quelle que soit l'année, on note que les femmes sont impliquées dans 3 fois moins d'accidents que les hommes. Nous étudions la répartition des accidents selon le sexe et la gravité ci-dessous. 
+
+## Répartition des accidents selon le sexe et la gravité (de 2015 à 2019)
+
+```{r}
+ggplot(accidents) +
+ aes(x = sexe, fill = grav) +
+ geom_bar() +
+ scale_fill_hue() +
+ labs(x = "Sexe", y = "Nombre d'accidents", title="Répartition des accidents selon le sexe et la gravité de 2015 à 2019") +
+ theme_light()
+```
+
+## Gravité de l'accident
+
+```{r}
+ggplot(accidents) +
+ aes(x = grav, fill = grav) +
+ geom_bar() +
+ scale_fill_viridis_d(option = "inferno") +
+ labs(x = "Gravité", y = "Nombre d'accidents", title = "Gravité des accidents ayant eu lieu de 2015 à 2019") +
+ theme_minimal()
+```
+
+## Conditions d'éclairage et gravité de l'accident
+
+```{r}
+ggplot(accidents) +
+ aes(x = lum, fill = grav) +
+ geom_bar() +
+ scale_fill_viridis_d(option = "inferno") +
+ labs(x = "Conditions d'éclairage", y = "Nombre d'accidents",title = "Conditions d'éclairage et gravité des accidents") +
+ theme_minimal()
+```
+
+
