@@ -2,6 +2,7 @@
 
 export("%>%")
 export(ACC_ressources)
+export(create_table_accidents)
 export(dl_caracteristiques)
 export(dl_lieux)
 export(dl_usagers)

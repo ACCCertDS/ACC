@@ -8,7 +8,7 @@
 Un data.frame avec avec 295 410 lignes et 11 variables
 \itemize{
 \item \strong{Num_Acc} : Identifiant de l accident
-\item \strong{catr} : Categorie de route
+\item \strong{catr} : Catégorie de route
 \itemize{
 \item \code{Autoroute}
 \item \verb{Route Nationale}
@@ -16,7 +16,7 @@ Un data.frame avec avec 295 410 lignes et 11 variables
 \item \verb{Voie Communale}
 \item \code{Autre}
 }
-\item \strong{voie} : Numero de la route
+\item \strong{voie} : Numéro de la route
 \item \strong{circ} : Regime de circulation
 \itemize{
 \item \verb{A sens unique}
@@ -31,7 +31,7 @@ Un data.frame avec avec 295 410 lignes et 11 variables
 \item \verb{3 et plus}
 \item \verb{Non Renseigné}
 }
-\item \strong{prof} : Profil en long decrit la declivité de la route à l'endroit de l'accident
+\item \strong{prof} : Profil en long décrit la déclivité de la route à l'endroit de l'accident
 \itemize{
 \item \code{Plat}
 \item \code{Pente}
@@ -65,7 +65,7 @@ Un data.frame avec avec 295 410 lignes et 11 variables
 \item \verb{Sur piste cyclable}
 \item \verb{Autre/Non Renseigné}
 }
-\item \strong{vma} : Vitesse maximale autorisée sur le lieu et au moment de l’accident (nouvelle modalité à compter de 2019)
+\item \strong{vma} : Vitesse maximale autorisée sur le lieu et au moment de l'accident (nouvelle modalité à compter de 2019)
 
 ...
 }

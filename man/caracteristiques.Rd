@@ -3,27 +3,27 @@
 \docType{data}
 \name{caracteristiques}
 \alias{caracteristiques}
-\title{Caracteristiques}
+\title{Caractéristiques}
 \format{
 Un data.frame avec 295 410 lignes et 16 variables
 \itemize{
-\item \strong{Num_Acc} : Identifiant de l’accident
-\item \strong{hrmn} : Heure et minutes de l accident
-\item \strong{lum} : Conditions d eclairage
+\item \strong{Num_Acc} : Identifiant de l'accident
+\item \strong{hrmn} : Heure et minutes de l'accident
+\item \strong{lum} : Conditions d'éclairage
 \itemize{
 \item \verb{Plein jour}
 \item \verb{Crépuscule ou aube}
 \item \verb{Nuit sans éclairage}
 \item \verb{Nuit avec éclairage public}
 }
-\item \strong{dep} : Departement
+\item \strong{dep} : Département
 \item \strong{com} : Commune
 \item \strong{agg} : Localisation
 \itemize{
 \item \verb{Hors agglomération}
 \item \verb{En agglomération}
 }
-\item \strong{atm} : Conditions atmospheriques
+\item \strong{atm} : Conditions atmosphériques
 \itemize{
 \item \code{Normale}
 \item \verb{Pluie légère}
@@ -65,6 +65,6 @@ Un data.frame avec 295 410 lignes et 16 variables
 caracteristiques
 }
 \description{
-Caracteristiques
+Caractéristiques
 }
 \keyword{datasets}
