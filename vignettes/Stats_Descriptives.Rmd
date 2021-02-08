@@ -29,6 +29,24 @@ ggplot(regr_accidents) +
 
 ```
 
+## Evolution du nombre de tués par année depuis 2015
+
+```{r}
+regr_tues <- accidents %>%
+  filter(grav == "Tué") %>%
+  mutate(annee = year(date_acc)) %>%
+  select(Num_Acc,annee,grav) %>%
+  group_by(Num_Acc,annee,grav) %>%
+  summarise(n_distinct(Num_Acc))
+
+ggplot(regr_tues) +
+ aes(x = annee) +
+ geom_histogram(bins = 10L, fill = "#440154") +
+ labs(x = "Année", y = "Nombre de tués",title = "Nombre de décédés d'un accident de la routé par année") +
+ theme_light()
+
+```
+
 ## Répartition des accidents par mois et par année
 
 ```{r}
@@ -51,7 +69,9 @@ ggplot(acc_par_mois) +
 repart_sexe <- accidents %>%
   mutate(annee=year(date_acc)) %>%
   select(Num_Acc,catu,sexe,annee) %>%
-  filter(catu=="Conducteur")
+  filter(catu=="Conducteur") %>%
+  group_by(Num_Acc,annee,sexe) %>%
+  summarise(n_distinct(Num_Acc))
 
 ggplot(repart_sexe) +
  aes(x = sexe, fill = sexe) +
@@ -65,15 +85,70 @@ ggplot(repart_sexe) +
 
 # Quelle que soit l'année, on note que les femmes sont impliquées dans 3 fois moins d'accidents que les hommes. Nous étudions la répartition des accidents selon le sexe et la gravité ci-dessous. 
 
+## Usagers et gravité de l'accident entre 2015 et 2019
+
+```{r}
+us_grav <- accidents %>%
+  select(catu,grav,Num_Acc) %>%
+  group_by(Num_Acc,catu,grav) %>%
+  summarise(n_distinct(Num_Acc))
+
+ggplot(us_grav) +
+ aes(x = catu, fill = grav) +
+ geom_bar() +
+ scale_fill_hue() +
+  labs(x = "Catégorie d'usager", y = "Nombre d'accidents", title="Répartition des accidents selon la catégorie d'usager et la gravité") +
+ theme_minimal()
+```
+
+## Répartition des accidents par âge
+
+```{r}
+acc_par_age <- accidents %>%
+  select(Num_Acc,age,grav) %>%
+  group_by(Num_Acc,age,grav) %>%
+  summarise(n_distinct(Num_Acc))
+
+ggplot(acc_par_age) +
+ aes(x = age, fill = grav) +
+ geom_histogram(bins = 10L) +
+ scale_fill_hue() +
+  labs(x = "Age", y = "Nombre d'accidents", title="Répartition des accidents par âge et par gravité") +
+ theme_minimal()
+```
+
 ## Répartition des accidents selon le sexe et la gravité (de 2015 à 2019)
 
 ```{r}
-ggplot(accidents) +
+acc_sexe_grav <- accidents %>%
+  select(sexe,grav,Num_Acc) %>%
+  group_by(Num_Acc,sexe,grav) %>%
+  summarise(n_distinct(Num_Acc))
+
+ggplot(acc_sexe_grav) +
  aes(x = sexe, fill = grav) +
  geom_bar() +
  scale_fill_hue() +
  labs(x = "Sexe", y = "Nombre d'accidents", title="Répartition des accidents selon le sexe et la gravité de 2015 à 2019") +
  theme_light()
+```
+
+## Répartition du nombre d'accidents par an et par jour de la semaine
+
+```{r}
+acc_par_jour <- accidents %>%
+  mutate(annee = year(date_acc)) %>%
+  select(Num_Acc,jour_acc,annee) %>%
+  group_by(Num_Acc,jour_acc,annee) %>%
+  summarise(n_distinct(Num_Acc))
+
+ggplot(acc_par_jour) +
+ aes(x = jour_acc) +
+ geom_bar(fill = "#0c4c8a") +
+ labs(x = "Jour de l'accident", y = "Nombre d'accidents", title = "Nombre d'accidents par jour de la semaine et par année") +
+ theme_minimal() +
+ facet_wrap(vars(annee))
+
 ```
 
 ## Gravité de l'accident
@@ -98,4 +173,68 @@ ggplot(accidents) +
  theme_minimal()
 ```
 
+## Répartition des accidents par catégorie de route et par gravité
 
+```{r}
+repart_catr <- accidents %>%
+  select(Num_Acc,catr,grav) %>%
+  group_by(Num_Acc,catr,grav) %>%
+  summarise(n_distinct(Num_Acc))
+
+ggplot(repart_catr) +
+ aes(x = catr, fill = grav) +
+ geom_bar() +
+ scale_fill_hue() +
+ labs(x = "Catégorie de route", y = "Nombre d'accidents", title = "Répartition des accidents par catégorie et par gravité") +
+ theme_minimal()
+```
+
+## Lien entre port de la ceinture de sécurité et gravité de l'accident
+
+J'aurais préféré une proportion d'accidents graves selon que l'usager portait une ceinture ou non...
+
+```{r}
+ceint <- accidents %>%
+  select(secu1,Num_Acc,grav) %>%
+  group_by(Num_Acc,secu1,grav) %>%
+  summarise(n_distinct(Num_Acc))
+
+ggplot(ceint) +
+ aes(x = secu1, fill = grav) +
+ geom_bar() +
+ scale_fill_hue() +
+ theme_minimal()
+```
+
+## Répartition des accidents par heure de la journée (sur la base de 2015 à 2019)
+
+```{r}
+regr_heure <- accidents %>%
+  select(Num_Acc,heure) %>%
+  group_by(Num_Acc,heure) %>%
+  summarise(n_distinct(Num_Acc))
+library(ggplot2)
+
+ggplot(regr_heure) +
+ aes(x = heure) +
+ geom_bar(fill = "#0c4c8a") +
+ labs(x = "Heure", y = "Nombre d'accidents", title = "Répartition des accidents par heure de la journée") +
+ theme_minimal()
+```
+
+## Répartition des accidents mortels par heure de la journée (sur la base de 2015 à 2019)
+
+```{r}
+regr_heure_tues <- accidents %>%
+  filter(grav=="Tué") %>%
+  select(Num_Acc,heure) %>%
+  group_by(Num_Acc,heure) %>%
+  summarise(n_distinct(Num_Acc))
+library(ggplot2)
+
+ggplot(regr_heure_tues) +
+ aes(x = heure) +
+ geom_bar(fill = "#0c4c8a") +
+ labs(x = "Heure", y = "Nombre d'accidents", title = "Répartition des accidents mortels par heure de la journée") +
+ theme_minimal()
+```
