@@ -7,29 +7,29 @@
 \format{
 Un data.frame avec avec 1 702 132 lignes et 10 variables
 \itemize{
-\item \strong{Num_Acc} : Identifiant de l accident
-\item \strong{id_vehicule} : Identifiant unique du vehicule
-\item \strong{num_veh} : Identifiant du vehicule repris pour chacun des usagers occupant ce vehicule
+\item \strong{Num_Acc} : Identifiant de l'accident
+\item \strong{id_vehicule} : Identifiant unique du véhicule
+\item \strong{num_veh} : Identifiant du véhicule repris pour chacun des usagers occupant ce véhicule
 \item \strong{catu} : Categorie de l usager
 \itemize{
 \item \code{Conducteur}
 \item \code{Passager}
 \item \code{Piéton}
 }
-\item \strong{grav} : Gravite de blessure de l usager
+\item \strong{grav} : Gravite de blessure de l'usager
 \itemize{
 \item \code{Indemne}
 \item \code{Tué}
 \item \verb{Blessé hospitalisé}
 \item \verb{Blessé léger}
 }
-\item \strong{sexe} : Sexe de l usager
+\item \strong{sexe} : Sexe de l'usager
 \itemize{
 \item \code{Masculin}
 \item \code{Féminin}
 }
-\item \strong{an_nais} : Annee de naissance de l usager
-\item \strong{secu1} : Presence et l utilisation de l equipement de securite
+\item \strong{an_nais} : Année de naissance de l'usager
+\item \strong{secu1} : Présence et l'utilisation de l'équipement de sécurité
 \item \strong{secu2}
 \item \strong{secu3}
 

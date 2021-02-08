@@ -57,9 +57,45 @@ recod_caracteristiques <- function(caracteristiques) {
     # Date de l'accident
     dplyr::mutate(
       annee = ifelse(an < 2000L, an + 2000, an),
-      date_acc = lubridate::ymd(paste(annee, mois, jour, sep = "-"))
+      date_acc = lubridate::ymd(paste(annee, mois, jour, sep = "-")),
+
+      mois_acc =  lubridate::month(date_acc, label=TRUE, abbr = FALSE),
+      jour_acc = lubridate::wday(date_acc, label=TRUE, abbr = FALSE)
     ) %>%
-    dplyr::select(-an, -annee, -jour, -mois)
+    # L'heure est parfois 12, 1230, 12:30, il faut tout mettre en HH:MM
+    dplyr::mutate(
+      hrmn = dplyr::case_when(
+        stringr::str_length(hrmn) == 3L ~ paste0('0',hrmn), #632 en 0632
+        stringr::str_length(hrmn) == 2L ~ paste0(hrmn,'00'), #12 en 1200
+        stringr::str_length(hrmn) == 1L ~ paste0('0',hrmn,'00'), #5 en 0500
+        TRUE ~ hrmn
+      ),
+      hrmn = dplyr::case_when(
+        # On rajoute le : entre les heures et les minutes
+        stringr::str_length(hrmn) <= 4 ~ stringr::str_replace(hrmn,"(\\d{2})(\\d{2})", "\\1:\\2"),
+        TRUE ~ hrmn
+      )
+    ) %>%
+    # Date et heure en secondes depuis le 01/01/2000
+    dplyr::mutate(
+      dtm_num = lubridate::make_datetime(annee, mois, jour, as.integer(substr(hrmn,1,2)), as.integer(substr(hrmn,4,5)), tz="Europe/Paris"),
+      heure = as.factor(lubridate::hour(dtm_num)),
+      dtm_num = as.numeric(lubridate::as.duration(dtm_num - lubridate::ymd_hm("20000101 00:00")))
+    ) %>%
+    dplyr::select(-an, -annee, -jour, -mois) %>%
+    # Jusqu'en 2018 : Département : Code INSEE du département suivi d'un 0
+    # (201 Corse-du-Sud - 202 Haute-Corse)
+    dplyr::mutate(
+      dep = ifelse(date_acc < '2019-01-01',
+                   substr(dep,1L,2L),
+                   dep)
+    ) %>%
+    # Certaines `com` ne sont pas préfixées du code département, on l'ajoute
+    dplyr::mutate(
+      com = ifelse(stringr::str_count(com)<5,
+                   paste0(dep,com),
+                   com)
+    )
 
   coord_gps_code_commune <- BARIS::BARIS_resources("545b55e1c751df52de9b6045") %>%
     dplyr::filter(stringr::str_detect(title, "Base off")) %>%
@@ -259,6 +295,22 @@ recod_usagers <- function(usagers) {
     dplyr::mutate(sexe = dplyr::case_when(
       sexe == 1 ~ "Masculin",
       sexe == 2 ~ "Féminin"
-    ))
+    )) %>%
+    #Ajout libellés relatifs aux équipements de sécurité
+    dplyr::mutate(
+      secu1 = dplyr::case_when(
+        is.na(secu1) ~ 'Non déterminable',
+        secu1 %in% c(0, 12, 22, 32, 42,92) ~ 'Aucun équipement',
+        secu1 %in% c(1,11) ~ 'Ceinture',
+        secu1 %in% c(2,21) ~ 'Casque',
+        secu1 %in% c(3,31) ~ 'Dispositif enfants',
+        secu1 %in% c(4,41) ~ 'Gilet réfléchissant',
+        secu1 == 5 ~ 'Airbag (2RM/3RM)',
+        secu1 == 6 ~ 'Gants (2RM/3RM)',
+        secu1 == 7 ~ 'Gants + Airbag (2RM/3RM)',
+        secu1 %in% c(-1,8,13,23,33,43,93) ~ 'Non déterminable',
+        secu1 %in% c(4,41) ~ 'Autre'
+      )
+    )
   usagers
 }

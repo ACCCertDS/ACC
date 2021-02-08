@@ -18,7 +18,7 @@ Recodage et sélection de la table caracteristiques
 }
 \examples{
 \dontrun{
- caracteristiques <- dl_caracteristiques()
- caracteristiques <- recod_caracteristiques(caracteristiques)
+caracteristiques <- dl_caracteristiques()
+caracteristiques <- recod_caracteristiques(caracteristiques)
 }
 }
