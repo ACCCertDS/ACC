@@ -18,7 +18,7 @@ Recodage et sélection de la table vehicules
 }
 \examples{
 \dontrun{
- vehicules <- dl_vehicules()
- vehicules <- recod_vehicules(vehicules)
+vehicules <- dl_vehicules()
+vehicules <- recod_vehicules(vehicules)
 }
 }

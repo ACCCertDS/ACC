@@ -18,7 +18,7 @@ Recodage et sélection de la table usagers
 }
 \examples{
 \dontrun{
- usagers <- dl_usagers()
- usagers <- recod_usagers(usagers)
+usagers <- dl_usagers()
+usagers <- recod_usagers(usagers)
 }
 }

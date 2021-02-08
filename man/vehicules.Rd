@@ -3,14 +3,14 @@
 \docType{data}
 \name{vehicules}
 \alias{vehicules}
-\title{Vehicules}
+\title{véhicules}
 \format{
 Un data.frame avec avec 504 834 lignes et 8 variables
 \itemize{
 \item \strong{Num_Acc} : Identifiant de l’accident
-\item \strong{id_vehicule} : Identifiant unique du vehicule
-\item \strong{num_veh} : Identifiant du vehicule repris pour chacun des usagers occupant ce vehicule
-\item \strong{catv} : Categorie du vehicule
+\item \strong{id_véhicule} : Identifiant unique du véhicule
+\item \strong{num_veh} : Identifiant du véhicule repris pour chacun des usagers occupant ce véhicule
+\item \strong{catv} : Categorie du véhicule
 \itemize{
 \item \code{Bicyclette}
 \item \verb{2 roues motorisé}
@@ -55,6 +55,6 @@ Un data.frame avec avec 504 834 lignes et 8 variables
 vehicules
 }
 \description{
-Ajouter la description de la table vehicules
+véhicules
 }
 \keyword{datasets}
