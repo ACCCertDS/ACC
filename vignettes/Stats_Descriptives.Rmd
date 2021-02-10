@@ -19,8 +19,6 @@ library(ACC)
 ## Evolution du nombre d'accidents par année depuis 2015
 
 ```{r}
-accidents <- accidents
-
 regr_accidents <- accidents %>%
   mutate(annee = year(date_acc)) %>%
   group_by(annee) %>%
