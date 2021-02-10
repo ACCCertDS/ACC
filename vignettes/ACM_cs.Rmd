@@ -1,0 +1,183 @@
+---
+title: "Analyses des Correspondances Multiples sur la base accidents"
+output: html_notebook
+author : CS
+date : 10/02/2021
+---
+
+Bibliothèques utiles à l’éxécution du programme
+```{r}
+library(tidyverse)
+library(FactoMineR) # pour les ACM
+```
+
+
+Préparation de la base de travail
+```{r}
+# Suppression des variables d'identifiants et les variables quantitatives
+base <- accidents %>%
+  select(-c(Num_Acc, num_veh, lat, long, date_acc, dtm_num, heure, secu1))
+
+# supression des lignes avec NA
+base <- base %>% na.omit()
+
+# création de la variable classe d âge
+base$classe_age <- cut(base$age, c(0, 15, 25, 35, 45, 55, 65, 75, 119))
+table(base$classe_age)
+
+# suppression de la variable quantitative 'age' car plus utile
+base <- base %>% select(-age)
+
+# suppression des NA apparus lors du passage de l'âge en classes
+base <- base %>% na.omit()
+
+# résumé de la base
+summary(base)
+names(base)
+```
+
+## Etude 1 - ACM sur l'ensemble des variables qualitatives de la base de données
+
+# ACM
+```{r}
+res.mca <- MCA(base)
+```
+
+
+# Réprésentation graphique des poids des dimensions
+```{r}
+barplot(res.mca$eig[,2], names = paste("Dim", 1:nrow(res.mca$eig)))
+# on garderait 5 axes
+```
+
+
+# Réprésentation graphique des individus
+```{r}
+plot(res.mca, invisible = "var",
+     title = "Graph des individus")
+# vu le nb d'individus, peu d'intérêt car pas lisible
+```
+
+# Représentation graphique des modalités des variables
+```{r}
+plot(res.mca, invisible = "ind",
+     title = "Graph des modalités")
+# il faudrait peut-être supprimer les modalités "autres/NR"
+```
+
+# Résumé des stats de l'ACM
+```{r}
+summary(res.mca, nbelements=2, # nombre d'individus
+        ncp=5, # nombre de dimensions
+        nb.dec=2) 
+```
+
+
+## Etude 2 - on regarde la gravité des blessures selon le profil des usagers
+
+# ACM
+```{r}
+# rq : on ne garde que les variables démographiques (sexe, age, catégorie d'usagers) et les autres sont passées en illustratives
+res2.mca <- MCA(base, quali.sup = 4:19, level.ventil = 0)
+```
+
+# Réprésentation graphique des poids des dimensions
+```{r}
+barplot(res2.mca$eig[,2], names = paste("Dim", 1:nrow(res2.mca$eig)))
+# on garde 2 axes
+```
+
+# Réprésentation graphique des individus
+```{r}
+plot(res2.mca, invisible = c("var","quali.sup"),
+     title = "Graph des individus")
+# vu le nb d'individus, peu d'intérêt car pas lisible
+```
+
+# Représentation graphique des individus selon les modalités de la variable "grav"
+```{r}
+plot(res2.mca, invisible = c("var","quali.sup"),
+     habillage = "grav",
+     title = "Graph des individus selon les modalités de la variable gravité")
+# il faudrait peut-être supprimer les modalités "autres/NR"
+```
+
+# Représentation graphique des individus selon les modalités de la variable "catégorie d'usager"
+```{r}
+plot(res2.mca, invisible = c("var","quali.sup"),
+     habillage = "catu",
+     title = "Graph des individus selon la catégorie d'usager")
+# il faudrait peut-être supprimer les modalités "autres/NR"
+```
+
+# Représentation graphique des modalités des variables
+```{r}
+plot(res2.mca, invisible = "ind",
+     title = "Graph des modalités actives (rouge) et des modalités illustratives (vert)")
+```
+
+# Représentation graphique des modalités des variables (v2)
+```{r}
+plot(res2.mca, invisible = c("ind","quali.sup"),
+     title = "Graph des modalités actives")
+# 2 groupes ressortent :
+# a) les personnes de plus de 75 ans / piéton / tué 
+# b) les personnes de moins de 25 ans / passager / blessé léger
+```
+
+# Représentation graphique des ellipses de confiance
+```{r}
+plotellipses(res2.mca, keepvar = c("grav", "sexe", "catu", "classe_age"))
+```
+
+
+# Résumé des stats de l'ACM
+```{r}
+summary(res2.mca, nbelements=2, # nombre d'individus
+        ncp=2, # nombre de dimensions
+        nb.dec=2) 
+```
+     
+
+## Etude 3 - on regarde la gravité des blessures selon les caractéristiques de la route/ et du véhicule
+
+# ACM
+```{r}
+res3.mca <- MCA(base, quali.sup = c(1,3,6,11,12,20), 
+                level.ventil = 0.05) # toutes les modalités représentant moins de 5 % sont ventilées aléatoirement
+```
+
+
+# Réprésentation graphique des poids des dimensions
+```{r}
+barplot(res3.mca$eig[,2], names = paste("Dim", 1:nrow(res3.mca$eig)))
+# on garde 3 axes
+```
+
+# Réprésentation graphique des individus
+```{r}
+plot(res3.mca, invisible = c("var","quali.sup"),
+     title = "Graph des individus")
+# vu le nb d'individus, peu d'intérêt car pas lisible
+```
+
+# Représentation graphique des individus selon les modalités de la variable "grav"
+```{r}
+plot(res3.mca, invisible = c("var","quali.sup"),
+     habillage = "grav",
+     title = "Graph des individus selon les modalités de la variable gravité")
+# il faudrait peut-être supprimer les modalités "autres/NR"
+```
+
+# Représentation graphique des modalités des variables
+```{r}
+plot(res3.mca, invisible = "ind",
+     title = "Graph des modalités actives (rouge) et des modalités illustratives (vert)")
+```
+
+# Résumé des stats de l'ACM
+```{r}
+summary(res3.mca, nbelements=2, # nombre d'individus
+        ncp=3, # nombre de dimensions
+        nb.dec=2) 
+```
