@@ -1,6 +1,8 @@
 ---
 title: "Statistiques descriptives avec ggplot2"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ## Chargement des packages nécessaires au traitement
@@ -10,6 +12,8 @@ library(lubridate) #Pour représenter l'évolution des accidents par année
 library(tidyverse)
 library(ggplot2)
 library(esquisse)
+library(sparklyr)
+library(ACC)
 ```
 
 ## Evolution du nombre d'accidents par année depuis 2015
@@ -17,17 +21,19 @@ library(esquisse)
 ```{r}
 regr_accidents <- accidents %>%
   mutate(annee = year(date_acc)) %>%
-  select(Num_Acc,annee) %>%
-  group_by(Num_Acc,annee) %>%
-  summarise(n_distinct(Num_Acc))
+  group_by(annee) %>%
+  summarise(nb_accidents = n_distinct(Num_Acc))
 
 ggplot(regr_accidents) +
- aes(x = annee) +
- geom_histogram(bins = 10L, fill = "#440154") +
+ aes(x = annee, y = nb_accidents) +
+ geom_histogram(stat = "identity", fill = "#440154") +
  labs(x = "Année", y = "Nombre d'accidents",title = "Nombre d'accidents par année") +
  theme_light()
 
+regr_accidents
 ```
+
+Nous pouvons noter que le nombre d'accidents est relativement constant depuis 2015, à un niveau proche des 60 000 par an (entre 57 783 en 2018 et 60 701 en 2017). On a observé une baisse du nombre d'accidents sur les années 2018 et 2019 comparativement à l'année 2017, année pour laquelle le nombre d'accidents est maximal sur la période 2015-2019.
 
 ## Evolution du nombre de tués par année depuis 2015
 
@@ -35,206 +41,313 @@ ggplot(regr_accidents) +
 regr_tues <- accidents %>%
   filter(grav == "Tué") %>%
   mutate(annee = year(date_acc)) %>%
-  select(Num_Acc,annee,grav) %>%
-  group_by(Num_Acc,annee,grav) %>%
-  summarise(n_distinct(Num_Acc))
+  #select(Num_Acc,annee,grav) %>%
+  group_by(annee,grav) %>%
+  summarise(nb_accidents_tues = n_distinct(Num_Acc))
 
 ggplot(regr_tues) +
- aes(x = annee) +
- geom_histogram(bins = 10L, fill = "#440154") +
- labs(x = "Année", y = "Nombre de tués",title = "Nombre de décédés d'un accident de la routé par année") +
+ aes(x = annee, y = nb_accidents_tues) +
+ geom_histogram(stat = "identity", fill = "#440154") +
+ labs(x = "Année", y = "Nombre de tués",title = "Nombre de décédés d'un accident de la route par année") +
  theme_light()
 
+regr_tues
 ```
+
+Tout comme le nombre d'accidents, le nombre de décédés dans un accident de la route est relativement constant au cours du temps (entre 3 186 décédés en 2018 et 3 393 en 2016).
+Nous notons par ailleurs que le nombre de décès évolue concomittament au nombre d'accidents. Le nombre d'accidents étant plus faible sur les années 2018 et 2019 (cf. ci-dessus), nous observons que le nombre de tués l'est également. 
+Nous relevons néanmoins que la proportion de tués sur la route est plus faible en 2017 qu'en 2016 (5,53 % en 2017 versus 5,7 % en 2016), bien que l'année 2017 soit le point haut des 5 années observées.
 
 ## Répartition des accidents par mois et par année
 
 ```{r}
 acc_par_mois <- accidents %>%
   mutate(annee = year(date_acc)) %>%
-  group_by(Num_Acc,annee,mois_acc) %>%
-  summarise(n_distinct(Num_Acc))
+  group_by(annee,mois_acc) %>%
+  summarise(nb_accidents_mois = n_distinct(Num_Acc))
 
 ggplot(acc_par_mois) +
- aes(x = mois_acc) +
- geom_bar(fill = "#0c4c8a") +
+ aes(x = mois_acc, y=nb_accidents_mois) +
+ geom_bar(stat = "identity",fill = "#0c4c8a") +
  labs(x = "Mois", y = "Nombre d'accidents", title = "Répartition des accidents par année et par mois") +
- theme_minimal() +
- facet_wrap(vars(annee))
-```
-
-## Répartition des accidents de la route par sexe lorsque l'usager est conducteur
-
-```{r}
-repart_sexe <- accidents %>%
-  mutate(annee=year(date_acc)) %>%
-  select(Num_Acc,catu,sexe,annee) %>%
-  filter(catu=="Conducteur") %>%
-  group_by(Num_Acc,annee,sexe) %>%
-  summarise(n_distinct(Num_Acc))
-
-ggplot(repart_sexe) +
- aes(x = sexe, fill = sexe) +
- geom_bar() +
- scale_fill_hue() +
- labs(y = "Nombre d'accidents", title = "Répartition des accidents de la route par année et par sexe", subtitle = "L'usager est conducteur") +
  theme_light() +
- facet_wrap(vars(annee))
-
+ facet_wrap(vars(annee)) +
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
-# Quelle que soit l'année, on note que les femmes sont impliquées dans 3 fois moins d'accidents que les hommes. Nous étudions la répartition des accidents selon le sexe et la gravité ci-dessous. 
+Tous les ans, le nombre d'accidents est faible aux mois de février et d'août. Concernant le mois d'août, période de vacances d'été, nous pouvons penser qu'il y a également moins d'usagers. A contrario, les mois de juin et juillet sont tous les ans des mois fortement accidentogènes.
 
-## Usagers et gravité de l'accident entre 2015 et 2019
-
-```{r}
-us_grav <- accidents %>%
-  select(catu,grav,Num_Acc) %>%
-  group_by(Num_Acc,catu,grav) %>%
-  summarise(n_distinct(Num_Acc))
-
-ggplot(us_grav) +
- aes(x = catu, fill = grav) +
- geom_bar() +
- scale_fill_hue() +
-  labs(x = "Catégorie d'usager", y = "Nombre d'accidents", title="Répartition des accidents selon la catégorie d'usager et la gravité") +
- theme_minimal()
-```
-
-## Répartition des accidents par âge
+## Répartition des accidents par date et par année
 
 ```{r}
-acc_par_age <- accidents %>%
-  select(Num_Acc,age,grav) %>%
-  group_by(Num_Acc,age,grav) %>%
-  summarise(n_distinct(Num_Acc))
+regr_accidents_date <- accidents %>%
+  mutate(annee = year(date_acc)) %>%
+  filter(annee == 2019) %>%
+  group_by(date_acc,annee) %>%
+  summarise(nb_accidents_date = n_distinct(Num_Acc))
 
-ggplot(acc_par_age) +
- aes(x = age, fill = grav) +
- geom_histogram(bins = 10L) +
- scale_fill_hue() +
-  labs(x = "Age", y = "Nombre d'accidents", title="Répartition des accidents par âge et par gravité") +
- theme_minimal()
-```
-
-## Répartition des accidents selon le sexe et la gravité (de 2015 à 2019)
-
-```{r}
-acc_sexe_grav <- accidents %>%
-  select(sexe,grav,Num_Acc) %>%
-  group_by(Num_Acc,sexe,grav) %>%
-  summarise(n_distinct(Num_Acc))
-
-ggplot(acc_sexe_grav) +
- aes(x = sexe, fill = grav) +
- geom_bar() +
- scale_fill_hue() +
- labs(x = "Sexe", y = "Nombre d'accidents", title="Répartition des accidents selon le sexe et la gravité de 2015 à 2019") +
+ggplot(regr_accidents_date) +
+ aes(x = date_acc, y = nb_accidents_date) +
+  labs(x = "Date", y = "Nombre d'accidents", title = "Répartition des accidents mortels par heure de la journée") +
+ geom_line(size = 1L, colour = "#0c4c8a") +
  theme_light()
 ```
+
+Nous retrouvons l'effet "vacances d'été" évoqué ci-dessus.
 
 ## Répartition du nombre d'accidents par an et par jour de la semaine
 
 ```{r}
 acc_par_jour <- accidents %>%
   mutate(annee = year(date_acc)) %>%
-  select(Num_Acc,jour_acc,annee) %>%
-  group_by(Num_Acc,jour_acc,annee) %>%
-  summarise(n_distinct(Num_Acc))
+  group_by(jour_acc,annee) %>%
+  summarise(nb_accidents_jour = n_distinct(Num_Acc))
 
 ggplot(acc_par_jour) +
- aes(x = jour_acc) +
- geom_bar(fill = "#0c4c8a") +
+ aes(x = jour_acc, y = nb_accidents_jour) +
+ geom_bar(stat = "identity", fill = "#0c4c8a") +
  labs(x = "Jour de l'accident", y = "Nombre d'accidents", title = "Nombre d'accidents par jour de la semaine et par année") +
- theme_minimal() +
- facet_wrap(vars(annee))
+ theme_light() +
+ facet_wrap(vars(annee)) +
+  theme(axis.text.x = element_text(angle = 90))
 
 ```
 
-## Gravité de l'accident
-
-```{r}
-ggplot(accidents) +
- aes(x = grav, fill = grav) +
- geom_bar() +
- scale_fill_viridis_d(option = "inferno") +
- labs(x = "Gravité", y = "Nombre d'accidents", title = "Gravité des accidents ayant eu lieu de 2015 à 2019") +
- theme_minimal()
-```
-
-## Conditions d'éclairage et gravité de l'accident
-
-```{r}
-ggplot(accidents) +
- aes(x = lum, fill = grav) +
- geom_bar() +
- scale_fill_viridis_d(option = "inferno") +
- labs(x = "Conditions d'éclairage", y = "Nombre d'accidents",title = "Conditions d'éclairage et gravité des accidents") +
- theme_minimal()
-```
-
-## Répartition des accidents par catégorie de route et par gravité
-
-```{r}
-repart_catr <- accidents %>%
-  select(Num_Acc,catr,grav) %>%
-  group_by(Num_Acc,catr,grav) %>%
-  summarise(n_distinct(Num_Acc))
-
-ggplot(repart_catr) +
- aes(x = catr, fill = grav) +
- geom_bar() +
- scale_fill_hue() +
- labs(x = "Catégorie de route", y = "Nombre d'accidents", title = "Répartition des accidents par catégorie et par gravité") +
- theme_minimal()
-```
-
-## Lien entre port de la ceinture de sécurité et gravité de l'accident
-
-J'aurais préféré une proportion d'accidents graves selon que l'usager portait une ceinture ou non...
-
-```{r}
-ceint <- accidents %>%
-  select(secu1,Num_Acc,grav) %>%
-  group_by(Num_Acc,secu1,grav) %>%
-  summarise(n_distinct(Num_Acc))
-
-ggplot(ceint) +
- aes(x = secu1, fill = grav) +
- geom_bar() +
- scale_fill_hue() +
- theme_minimal()
-```
+Quelle que soit l'année, nous notons que le vendredi est le jour où se produisent le plus d'accidents.
 
 ## Répartition des accidents par heure de la journée (sur la base de 2015 à 2019)
 
 ```{r}
 regr_heure <- accidents %>%
-  select(Num_Acc,heure) %>%
-  group_by(Num_Acc,heure) %>%
-  summarise(n_distinct(Num_Acc))
-library(ggplot2)
+  group_by(heure) %>%
+  summarise(nb_accidents_h = n_distinct(Num_Acc))
 
 ggplot(regr_heure) +
- aes(x = heure) +
- geom_bar(fill = "#0c4c8a") +
+ aes(x = heure, y = nb_accidents_h) +
+ geom_bar(stat = "identity", fill = "#0c4c8a") +
  labs(x = "Heure", y = "Nombre d'accidents", title = "Répartition des accidents par heure de la journée") +
- theme_minimal()
+ theme_light()
 ```
+
+La tranche horaire 16h-19h est la plus accidentogène. Néanmoins, nous pouvons penser que c'est aussi la période de la journée où les usagers sont le plus présents sur la route. 
 
 ## Répartition des accidents mortels par heure de la journée (sur la base de 2015 à 2019)
 
 ```{r}
 regr_heure_tues <- accidents %>%
   filter(grav=="Tué") %>%
-  select(Num_Acc,heure) %>%
-  group_by(Num_Acc,heure) %>%
-  summarise(n_distinct(Num_Acc))
-library(ggplot2)
+  group_by(heure) %>%
+  summarise(nb_accidents_h_tues = n_distinct(Num_Acc))
 
 ggplot(regr_heure_tues) +
- aes(x = heure) +
- geom_bar(fill = "#0c4c8a") +
+ aes(x = heure, y = nb_accidents_h_tues) +
+ geom_bar(stat = "identity", fill = "#0c4c8a") +
  labs(x = "Heure", y = "Nombre d'accidents", title = "Répartition des accidents mortels par heure de la journée") +
- theme_minimal()
+ theme_light()
 ```
+
+Les accidents mortels se concentrent quant à eux essentiellement sur la tranche horaire 15h - 18h.
+
+## Répartition des accidents de la route par sexe lorsque l'usager est conducteur
+
+```{r}
+repart_sexe <- accidents %>%
+  mutate(annee = year(date_acc)) %>%
+  filter(catu=="Conducteur") %>%
+  group_by(annee,sexe) %>%
+  summarise(nb_accidents_sexe = n_distinct(Num_Acc))
+
+ggplot(repart_sexe) +
+ aes(x = sexe, y = nb_accidents_sexe, fill = sexe) +
+ geom_bar(stat = "identity") +
+ scale_fill_hue() +
+ labs(x = "Sexe", y = "Nombre d'accidents", fill = "Sexe",title = "Répartition des accidents conducteurs de la route par année et par sexe") +
+ theme_light() +
+ facet_wrap(vars(annee))
+
+repart_sexe
+```
+
+Quelle que soit l'année, on note que les femmes sont impliquées dans 2 à 3 fois moins d'accidents que les hommes. Nous étudions la répartition des accidents selon le sexe et la gravité plus en avant dans la suite du présent R-Markdown.
+
+## Gravité de l'accident
+
+```{r}
+gravite <- accidents %>%
+  group_by(grav) %>%
+  summarise(nb_accidents_gravite = n_distinct(Num_Acc))
+
+ggplot(gravite) +
+ aes(x = grav, y = nb_accidents_gravite, fill = grav) +
+ geom_bar(stat = "identity") +
+ scale_fill_viridis_d(option = "inferno") +
+ labs(x = "Gravité", y = "Nombre d'accidents", fill="Gravité", title = "Gravité des accidents ayant eu lieu de 2015 à 2019") +
+ theme_light()
+
+sum_grav <- gravite %>%
+  mutate(nb_tot = sum(nb_accidents_gravite)) %>%
+  mutate(prop = (nb_accidents_gravite / nb_tot)*100)
+
+sum_grav
+```
+
+Sur les 5 années observées, les proportions sont les suivantes :
+- Blessés hospitalisés 21 % ;
+- Blessés légers 36 % ;
+- Indemnes 39 % ;
+- Tués 3 %.
+Ainsi, on sort indemne d'un accident de la circulation routière 4 fois sur 10.
+
+## Répartition des accidents selon le sexe et la gravité (de 2015 à 2019)
+
+```{r}
+acc_sexe_grav <- accidents %>%
+  group_by(sexe,grav) %>%
+  summarise(nb_accidents_sexe_grav = n_distinct(Num_Acc))
+
+ggplot(acc_sexe_grav) +
+ aes(x = sexe, y = nb_accidents_sexe_grav, fill = grav) +
+ geom_bar(stat = "identity") +
+ scale_fill_hue() +
+ labs(x = "Sexe", y = "Nombre d'accidents", fill = "Gravité", title="Répartition des accidents selon le sexe et la gravité de 2015 à 2019") +
+ theme_light()
+
+sum_sexe_grav <- acc_sexe_grav %>%
+  group_by(sexe) %>%
+  summarise(nb_accidents_sex = sum(nb_accidents_sexe_grav))
+
+acc_sexe_grav_1 <- acc_sexe_grav %>% 
+  left_join(sum_sexe_grav,by="sexe") %>%
+  mutate(prop = (nb_accidents_sexe_grav / nb_accidents_sex)*100)
+
+acc_sexe_grav_1
+```
+
+Nous notons que les femmes ont été 2 fois moins impliquées que les hommes dans un accidents de la route lors des années 2015 à 2019 (180 786 accidents pour les femmes contre 390 791 pour les hommes). Concernant la gravité des accidents, la représentation des classes "Blessé léger" et "Indemne" sont à l'inverse selon le sexe. Les femmes ont une représentation de blessés légers de 42 % (contre 35 % pour les hommes) pour une proportion d'indemnes de 35 % (contre 42 % pour les hommes).
+Les accidents impliquant des femmes sont également moins mortels que ceux impliquant des hommes (2,1 % contre 3,3 %). 
+Enfin, les proportions de blessés hospitalisés sont équivalentes.
+
+## Usagers et gravité de l'accident entre 2015 et 2019
+
+```{r}
+us_grav <- accidents %>%
+  group_by(catu,grav) %>%
+  summarise(nb_accidents_grav = n_distinct(Num_Acc))
+
+ggplot(us_grav) +
+ aes(x = catu, y = nb_accidents_grav, fill = grav) +
+ geom_bar(stat = "identity") +
+ scale_fill_hue() +
+  labs(x = "Catégorie d'usager", y = "Nombre d'accidents", fill = "Gravité", title="Répartition des accidents selon la catégorie d'usager et la gravité") +
+ theme_light()
+
+sum_catu_grav <- us_grav %>%
+  group_by(catu) %>%
+  summarise(nb_accidents_catu = sum(nb_accidents_grav))
+
+us_grav_1 <- us_grav %>% 
+  left_join(sum_catu_grav,by="catu") %>%
+  mutate(prop = (nb_accidents_grav / nb_accidents_catu)*100)
+
+us_grav_1
+```
+
+Les accidents ayant eu lieu sur les 5 années étudiées impliquent très majoritairement des usagers conducteurs. Les passagers sont 5 fois moins représentés et les piétons 8 fois moins. 
+Concernant la gravité, il y a 2 fois plus de piétons tués dans un accident de voiture que de conducteurs et passagers (pour lesquels la proportion de tués est équivalente). 
+Nous notons également que le conducteur sort plus souvent indemne que le passager et le passager plus souvent blessé léger que le conducteur. Les passagers sont plus souvent blessés hospitalisés que les conducteurs (22 % contre 18 %). 
+
+## Répartition des accidents par âge
+
+```{r}
+acc_par_age <- accidents %>%
+  group_by(age,grav) %>%
+  summarise(nb_accidents_age = n_distinct(Num_Acc))
+
+ggplot(acc_par_age) +
+ aes(x = age, y = nb_accidents_age, fill = grav) +
+ geom_histogram(stat = "identity") +
+ scale_fill_hue() +
+  labs(x = "Age", y = "Nombre d'accidents", fill = "Gravité", title="Répartition des accidents par âge et par gravité") +
+ theme_light()
+```
+
+Les accidents de la route impliquent le plus souvent des usagers de la classe d'âge 18 - 35 ans. Néanmoins, nous pouvons penser que c'est aussi la classe d'âge la plus représentée sur la route, ce qui multiplie donc les risques d'accidents.
+
+## Conditions d'éclairage et gravité de l'accident
+
+```{r}
+eclairage <- accidents %>%
+  group_by(grav,lum) %>%
+  summarise(nb_accidents_ecl = n_distinct(Num_Acc))
+
+ggplot(eclairage) +
+ aes(x = lum, y = nb_accidents_ecl, fill = grav) +
+ geom_bar(stat = "identity") +
+ scale_fill_viridis_d(option = "inferno") +
+ labs(x = "Conditions d'éclairage", y = "Nombre d'accidents",fill = "Gravité", title = "Conditions d'éclairage et gravité des accidents") +
+ theme_light() +
+  theme(axis.text.x = element_text(angle = 90))
+
+sum_eclr <- eclairage %>%
+  group_by(lum) %>%
+  summarise(nb_accidents_lum = sum(nb_accidents_ecl))
+
+eclairage_1 <- eclairage %>% 
+  left_join(sum_eclr,by="lum") %>%
+  mutate(prop = (nb_accidents_ecl / nb_accidents_lum)*100)
+
+eclairage_1
+```
+
+La majorité des accidents ont eu lieu en plein jour (362 155 accidents contre 48 565 pour la nuit sans éclairage et 82 022 pour la nuit avec éclairage à titre d'exemple). 
+8,4% des accidents ayant eu lieu la nuit sans éclairage ont été mortels.
+
+## Répartition des accidents par catégorie de route et par gravité
+
+```{r}
+repart_catr <- accidents %>%
+  group_by(catr,grav) %>%
+  summarise(nb_accidents_catr = n_distinct(Num_Acc))
+
+ggplot(repart_catr) +
+ aes(x = catr, y = nb_accidents_catr, fill = grav) +
+ geom_bar(stat = "identity") +
+ scale_fill_hue() +
+ labs(x = "Catégorie de route", y = "Nombre d'accidents", fill = "Gravité", title = "Répartition des accidents par catégorie et par gravité") +
+ theme_light() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+Les accidents ont majoritairement lieu sur les voies communales et routes départementales. 
+La proportion de tués est supérieure lorsque l'accident se produit sur route départementale que lorsqu'il se produit sur voie communale.
+
+## Lien entre port de la ceinture de sécurité et gravité de l'accident
+
+```{r}
+ceint <- accidents %>%
+  group_by(secu1,grav) %>%
+  summarise(nb_accidents_ceint = n_distinct(Num_Acc))
+
+ggplot(ceint) +
+ aes(x = secu1, y = nb_accidents_ceint, fill = grav) +
+ geom_bar(stat = "identity") +
+ scale_fill_hue() +
+ labs(x = "Equipement de sécurité", y = "Nombre d'accidents", fill = "Gravité", title = "Lien entre port de la ceinture de sécurité et la gravité de l'accident") +
+ theme_light() +
+  theme(axis.text.x = element_text(angle = 90))
+
+sum_ceint <- ceint %>%
+  group_by(secu1) %>%
+  summarise(nb_accidents_secu = sum(nb_accidents_ceint))
+
+ceint_1 <- ceint %>% 
+  left_join(sum_ceint,by="secu1") %>%
+  mutate(prop = (nb_accidents_ceint / nb_accidents_secu)*100)
+
+ceint_1
+```
+
+Les usagers accidentés portaient majoritairement un casque, une ceinture de sécurité ou n'avaient aucun équipement. La classe "Non déterminable" est fortement représentée.
+12 % des accidents concernant des usagers sans aucun équipement de sécurité sont mortels contre 2 % lorsque l'usager portait sa ceinture de sécurité.
+58 % des usagers qui portaient leur ceinture de sécurité au moment de l'accident en sortent indemnes.
+
