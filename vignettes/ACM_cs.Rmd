@@ -1,0 +1,222 @@
+---
+title: "Analyses des Correspondances Multiples sur la base accidents"
+output: html_notebook
+author : CS
+date : 14/02/2021
+---
+
+Bibliothèques utiles à l’éxécution du programme
+```{r}
+library(tidyverse)
+library(FactoMineR) # pour les ACM
+```
+
+
+Préparation de la base de travail
+```{r}
+# Suppression des variables d'identifiants et les variables quantitatives
+base <- accidents %>%
+  select(-c(Num_Acc, num_veh, lat, long, dep, date_acc, dtm_num, heure, secu1))
+
+# supression des lignes avec NA
+base <- base %>% na.omit()
+
+# création de la variable classe d âge
+base$classe_age <- cut(base$age, c(0, 15, 25, 35, 45, 55, 65, 75, 119))
+table(base$classe_age)
+
+# suppression de la variable quantitative 'age' car plus utile
+base <- base %>% select(-age)
+
+# suppression des NA apparus lors du passage de l'âge en classes
+base <- base %>% na.omit()
+
+# résumé de la base
+summary(base)
+names(base)
+```
+
+
+## Etude 1 - ACM sur l'ensemble des variables qualitatives de la base de données
+
+Dans cette première ACM, on intègre toutes les variables qualitatives.
+
+# ACM
+```{r}
+res.mca <- MCA(base)
+```
+
+
+# Réprésentation graphique des poids des dimensions
+```{r}
+barplot(res.mca$eig[,2], names = paste("Dim", 1:nrow(res.mca$eig)))
+```
+
+Au vu du coude, on ne garderait que 5 axes. Toutefois, cela représente assez peu (12,5 %).
+
+# Réprésentation graphique des individus
+```{r}
+plot(res.mca, invisible = "var",
+     title = "Représentation des individus selon les 2 premiers axes de l'ACM")
+```
+
+Vu le nb d'individus, peu d'intérêt car pas lisible
+
+# Représentation graphique des modalités des variables
+```{r}
+plot(res.mca, invisible = "ind",
+     title = "Représentation des modalités selon les 2 premiers axes de l'ACM")
+```
+Même constat que pour le graphique précédent, trop de modalités et peu lisible.
+
+# Résumé des stats de l'ACM
+```{r}
+summary(res.mca, nbelements=2, # nombre d'individus
+        ncp=5, # nombre de dimensions
+        nb.dec=2) 
+```
+
+
+## Etude 2 - on regarde la gravité des blessures selon le profil des usagers
+
+Dans cette 2e ACM, on étudie le fait d'être Indemne/Blessé selon les données démographiques des victimes (age, sexe, catégorie d'usagers).
+
+# ACM
+```{r}
+# rq : on ne garde que les variables démographiques (sexe, age, catégorie d'usagers) et les autres sont passées en illustratives
+res2.mca <- MCA(base, quali.sup = 4:18, level.ventil = 0)
+```
+
+# Réprésentation graphique des poids des dimensions
+```{r}
+barplot(res2.mca$eig[,2], names = paste("Dim", 1:nrow(res2.mca$eig)))
+# on garde 2 axes
+```
+
+Au vu du graph, on peut garder 2 axes, qui explique 21.8 %.
+
+# Réprésentation graphique des individus
+```{r}
+plot(res2.mca, invisible = c("var","quali.sup"),
+     title = "Représentation des individus selon les 2 premiers axes de l'ACM")
+```
+
+Vu le nb d'individus, peu d'intérêt car pas lisible
+
+# Représentation graphique des individus selon les modalités de la variable "grav"
+```{r}
+plot(res2.mca, invisible = c("var","quali.sup"),
+     habillage = "grav",
+     title = "Représentation des individus selon les modalités de la variable gravité")
+```
+
+Sur l'axe 2, les personnes idemnes (en bas) se détachent des personnes tuées (en haut)
+
+# Représentation graphique des individus selon les modalités de la variable "catégorie d'usager"
+```{r}
+plot(res2.mca, invisible = c("var","quali.sup"),
+     habillage = "catu",
+     title = "Représentation des individus selon la catégorie d'usager")
+```
+
+Selon l'axe 2, on peut observer qu'un groupe "passager" se détache vers le bas (personnes indemnes), par oppoistion au groupe "piétons" vers le haut (personnes tuées)
+
+# Représentation graphique des modalités des variables
+```{r}
+plot(res2.mca, invisible = "ind",
+     title = "Représentation des modalités actives (rouge) et des modalités illustratives (vert) selon les 2 premiers axes de l'ACM")
+```
+
+# Représentation graphique des modalités des variables (v2)
+```{r}
+plot(res2.mca, invisible = c("ind","quali.sup"),
+     title = "Représentation des modalités actives selon les 2 premiers axes de l'ACM")
+```
+
+2 groupes ressortent :
+a) en haut : les personnes de plus de 75 ans / piéton / tué 
+b) en bas : les personnes de moins de 25 ans / passager / blessé léger
+
+# Représentation graphique des ellipses de confiance
+```{r}
+plotellipses(res2.mca, keepvar = c("grav", "sexe", "catu", "classe_age"))
+```
+L'axe 1 distingue les hommes (à gauche) des femmes (à droite). De même, les conducteurs sont à gauche et les piétons à droite.
+L'axe 2 distingue les jeunes (en bas) des personnes âgées (en haut). Les jeunes sont plutôt des passagers, les classes d'âges intermédiaires des conducteurs et les personnes plus âgées des piétons.
+
+# Résumé des stats de l'ACM
+```{r}
+summary(res2.mca, nbelements=5, # nombre d'individus
+        ncp=2, # nombre de dimensions
+        nb.dec=2) 
+```
+     
+
+## Etude 3 - on regarde la gravité des blessures selon les caractéristiques de la route/ et du véhicule
+
+Dans cette 3e ACM, on s'intéresse aux conditions de la route, météo et du véhicules
+
+# ACM
+```{r}
+res3.mca <- MCA(base, quali.sup = c(1,3,10,11,19), 
+                level.ventil = 0) # toutes les modalités représentant moins de 5 % sont ventilées aléatoirement
+```
+
+
+# Réprésentation graphique des poids des dimensions
+```{r}
+barplot(res3.mca$eig[,2], names = paste("Dim", 1:nrow(res3.mca$eig)))
+```
+
+On garde 3 axes, soit 9.4 %.
+
+# Réprésentation graphique des individus
+```{r}
+plot(res3.mca, invisible = c("var","quali.sup"),
+     title = "Représentation des individus selon les 2 premiers axes de l'ACM")
+```
+
+Vu le nb d'individus, peu d'intérêt car pas lisible
+
+# Représentation graphique des individus selon les modalités de la variable "grav"
+```{r}
+plot(res3.mca, invisible = c("var","quali.sup"),
+     habillage = "grav",
+     title = "Représentation des individus selon les modalités de la variable gravité")
+```
+
+# Représentation graphique des modalités des variables
+```{r}
+plot(res3.mca, invisible = "ind",
+     title = "Réprésentation des modalités actives (rouge) et des modalités illustratives (vert) selon les 2 premiers axes de l'ACM")
+```
+
+# Représentation graphique des modalités des variables (v2)
+```{r}
+plot(res3.mca, invisible = c("ind","quali.sup"),
+     title = "Représentation des modalités actives selon les 2 premiers axes de l'ACM")
+```
+
+Les modalités "non renseignées" expliquent tout... on fait une représentation des ellipses pour voir si des variables se détachent selon les axes.
+
+Commentaire quand les modalités inférieures à 5 % sont reparties aléatoirement dans les autres modalités :
+L'axe 1 est discriminant sur la catégorie de route : voie communale à gauche contre route nationale/autoroute à droite.
+De même, on a les accidents en agglomération à droite et ceux hors agglo à gauche (cohérent avec l'analyse précédente).
+En fait, la luminosité conforte cette analyse : nuit avec éclairage (en agglo) et nuit sans écalirage (hors agglo)
+
+L'axe 2 distingue le profil : accidents en pente en haut et accident sur route "plate" en bas.
+De même, le régime de circulation explique cet axe : sens unique ou chaussées séparées en bas contre bidirectionnelle en haut.
+
+# Représentation graphique des ellipses de confiance
+```{r}
+plotellipses(res3.mca, keepvar = c("grav", "catv", "lum", "agg", "catr", "circ", "plan"))
+```
+
+L'axe 1 et discriminant sur le lieu d'accident : hors agglo à gauche et en agglo à droite.
+
+# Résumé des stats de l'ACM
+```{r}
+summary(res3.mca, nbelements=2, # nombre d'individus
+        ncp=3, # nombre de dimensions
+        nb.dec=2) 
+```
