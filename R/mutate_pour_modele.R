@@ -10,8 +10,8 @@
 #' Ces regroupements ont pu être mis en évidence suite à l'exploration des données,
 #' et nous ont parus intéressants.
 #'
-#' @param accidents
-#' @param population
+#' @param accidents table accidents obtenue via [create_table_accidents()]
+#' @param population table population obtenue via `data("population", package = "ACC")`
 #'
 #' @return
 #' @export
