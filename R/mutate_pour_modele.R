@@ -58,7 +58,8 @@ mutate_pour_modele <- function(accidents, population){
                       55 <= age & age < 64 ~ "55-64 ans",
                       65 <= age & age < 74 ~ "65-74 ans",
                       75 <= age  ~ "75 ans et +"         )
-    )
+    ) %>%
+    dplyr::select(-age)
 
   # passage des heures en classes pour heure de pointe/autre
   accidents <- accidents %>%
@@ -68,7 +69,15 @@ mutate_pour_modele <- function(accidents, population){
                heure %in% c(7,8,9,10) ~ "7h-10h",
                heure %in% c(11,12,13,14,15) ~ "10h-15h",
                heure %in% c(16,17,18,19) ~ "16h-19h"       )
+    )%>%
+    dplyr::select(-heure)
+
+  accidents <- accidents %>%
+    dplyr::mutate(
+      lat = as.numeric(stringr::str_replace(lat,",",".")),
+      long =  as.numeric(stringr::str_replace(long,",","."))
     )
 
-  accidents %>% na.omit()
+  accidents %>%
+    na.omit()
 }
