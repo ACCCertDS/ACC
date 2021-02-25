@@ -79,5 +79,6 @@ mutate_pour_modele <- function(accidents, population){
     )
 
   accidents %>%
-    na.omit()
+    na.omit() %>%
+    dplyr::select(-tidyselect::any_of(c("num_veh","dep","date_acc","dep","age")))
 }
