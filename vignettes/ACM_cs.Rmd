@@ -220,3 +220,27 @@ summary(res3.mca, nbelements=2, # nombre d'individus
         ncp=3, # nombre de dimensions
         nb.dec=2) 
 ```
+
+
+
+## Classification avec Mclust
+
+```{r}
+mod1 <- Mclust(base)
+summary(mod1) # 9 classes
+```
+
+# pour récupérer les classes de chaque ligne
+```{r}
+mod1$classification
+```
+
+
+## K-modes
+```{r}
+kmodes(as.matrix(base), 
+       9) # on prend 9 classes comme ce que la classification a trouvé
+```
+
+
+
