@@ -103,7 +103,7 @@ recod_caracteristiques <- function(caracteristiques) {
                     dep == "9" ~ "09",
                     dep %in% c("971", "972", "973", "974", "975", "976", "977", "978", "986", "987","988")  ~ "97",
                     TRUE ~ dep
-                  ))
+                  )) %>%
     # Certaines `com` ne sont pas préfixées du code département, on l'ajoute
     dplyr::mutate(
       com = ifelse(stringr::str_count(com)<5,
