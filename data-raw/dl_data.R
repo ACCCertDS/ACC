@@ -1,16 +1,16 @@
 ## code to prepare `dl_data` dataset goes here
 library(ACC)
 
-caracteristiques <- dl_caracteristiques(2015:2019) %>%
+caracteristiques <- dl_caracteristiques(2015:2018) %>%
   recod_caracteristiques()
 
-usagers <- dl_usagers(2015:2019) %>%
+usagers <- dl_usagers(2015:2018) %>%
   recod_usagers()
 
-vehicules <- dl_vehicules(2015:2019) %>%
+vehicules <- dl_vehicules(2015:2018) %>%
   recod_vehicules()
 
-lieux <- dl_lieux(2015:2019) %>%
+lieux <- dl_lieux(2015:2018) %>%
   recod_lieux()
 
 accidents <- create_table_accidents(caracteristiques, usagers, lieux, vehicules)
