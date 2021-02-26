@@ -1,35 +1,24 @@
 ---
-title: "Analyses des Correspondances Multiples sur la base accidents"
+title: "Analyses des Correspondances Multiples et Classification sur la base accidents"
 output: html_notebook
 author : CS
-date : 14/02/2021
+date : 26/02/2021
 ---
 
 Bibliothèques utiles à l’éxécution du programme
 ```{r}
 library(tidyverse)
 library(FactoMineR) # pour les ACM
+library(mclust) # pour la classification
+library(klaR) # pour les K-modes
 ```
 
 
 Préparation de la base de travail
 ```{r}
 # Suppression des variables d'identifiants et les variables quantitatives
-base <- accidents %>%
-  select(-c(Num_Acc, num_veh, lat, long, dep, date_acc, dtm_num, heure, secu1))
-
-# supression des lignes avec NA
-base <- base %>% na.omit()
-
-# création de la variable classe d âge
-base$classe_age <- cut(base$age, c(0, 15, 25, 35, 45, 55, 65, 75, 119))
-table(base$classe_age)
-
-# suppression de la variable quantitative 'age' car plus utile
-base <- base %>% select(-age)
-
-# suppression des NA apparus lors du passage de l'âge en classes
-base <- base %>% na.omit()
+base <- accidents2 %>%
+  select(-Num_Acc)
 
 # résumé de la base
 summary(base)
@@ -49,10 +38,14 @@ res.mca <- MCA(base)
 
 # Réprésentation graphique des poids des dimensions
 ```{r}
+# Tableau avec les poids des axes
+res.mca$eig[,2]
+
+# Histogramme
 barplot(res.mca$eig[,2], names = paste("Dim", 1:nrow(res.mca$eig)))
 ```
 
-Au vu du coude, on ne garderait que 5 axes. Toutefois, cela représente assez peu (12,5 %).
+Au vu du coude, on ne garderait que 8 axes. Toutefois, cela représente assez peu (19,7 %).
 
 # Réprésentation graphique des individus
 ```{r}
@@ -84,16 +77,19 @@ Dans cette 2e ACM, on étudie le fait d'être Indemne/Blessé selon les données
 # ACM
 ```{r}
 # rq : on ne garde que les variables démographiques (sexe, age, catégorie d'usagers) et les autres sont passées en illustratives
-res2.mca <- MCA(base, quali.sup = 4:18, level.ventil = 0)
+res2.mca <- MCA(base, quali.sup = c(4:20,22), level.ventil = 0)
 ```
 
 # Réprésentation graphique des poids des dimensions
 ```{r}
+# Tableau avec les poids
+res2.mca$eig[,2]
+
+# Histogramme
 barplot(res2.mca$eig[,2], names = paste("Dim", 1:nrow(res2.mca$eig)))
-# on garde 2 axes
 ```
 
-Au vu du graph, on peut garder 2 axes, qui explique 21.8 %.
+Au vu du graph, on peut garder 2 axes, qui explique 22 %.
 
 # Réprésentation graphique des individus
 ```{r}
@@ -127,13 +123,16 @@ plot(res2.mca, invisible = "ind",
      title = "Représentation des modalités actives (rouge) et des modalités illustratives (vert) selon les 2 premiers axes de l'ACM")
 ```
 
-# Représentation graphique des modalités des variables (v2)
+# Représentation graphique des modalités des variables (sans les variables illustratives)
 ```{r}
 plot(res2.mca, invisible = c("ind","quali.sup"),
      title = "Représentation des modalités actives selon les 2 premiers axes de l'ACM")
 ```
+Sur l'axe 1: 
+a) à gauche, plutôt des hommes, les classes d'âges intermédiaires (25-64 ans), conducteur et indemne
+b) à droite les âges extrèmes (moins de 15 ans ou 75 ans et plus), femmes, passagers ou piétons et blessés
 
-2 groupes ressortent :
+Sur l'axe 2 :
 a) en haut : les personnes de plus de 75 ans / piéton / tué 
 b) en bas : les personnes de moins de 25 ans / passager / blessé léger
 
@@ -143,6 +142,7 @@ plotellipses(res2.mca, keepvar = c("grav", "sexe", "catu", "classe_age"))
 ```
 L'axe 1 distingue les hommes (à gauche) des femmes (à droite). De même, les conducteurs sont à gauche et les piétons à droite.
 L'axe 2 distingue les jeunes (en bas) des personnes âgées (en haut). Les jeunes sont plutôt des passagers, les classes d'âges intermédiaires des conducteurs et les personnes plus âgées des piétons.
+Cette représentation graphique conforte les groupes mis en avant ) l'étape précédente.
 
 # Résumé des stats de l'ACM
 ```{r}
@@ -152,23 +152,28 @@ summary(res2.mca, nbelements=5, # nombre d'individus
 ```
      
 
-## Etude 3 - on regarde la gravité des blessures selon les caractéristiques de la route/ et du véhicule
+## Etude 3 - on regarde la gravité des blessures selon les caractéristiques du lieu et du véhicule
 
 Dans cette 3e ACM, on s'intéresse aux conditions de la route, météo et du véhicules
 
 # ACM
 ```{r}
-res3.mca <- MCA(base, quali.sup = c(1,3,10,11,19), 
-                level.ventil = 0) # toutes les modalités représentant moins de 5 % sont ventilées aléatoirement
+res3.mca <- MCA(base, quali.sup = c(1,3,10,11,21), 
+                level.ventil = 0.025) 
+# toutes les modalités représentant moins de 2.5 % sont ventilées aléatoirement dans les autres modalités (les tués représentent 2,7 % des accidents, d'où le filtre à 2,5 % car on veut garder la modalité "tué")
 ```
 
 
 # Réprésentation graphique des poids des dimensions
 ```{r}
+# Tableau avec les poids
+res3.mca$eig[,2]
+
+# Histogramme
 barplot(res3.mca$eig[,2], names = paste("Dim", 1:nrow(res3.mca$eig)))
 ```
 
-On garde 3 axes, soit 9.4 %.
+On garde 5 axes, soit 22.6 %.
 
 # Réprésentation graphique des individus
 ```{r}
@@ -184,6 +189,7 @@ plot(res3.mca, invisible = c("var","quali.sup"),
      habillage = "grav",
      title = "Représentation des individus selon les modalités de la variable gravité")
 ```
+Sur l'axe 2, les personnes idemnes (en bas) se détachent des personnes tuées (en haut)
 
 # Représentation graphique des modalités des variables
 ```{r}
@@ -191,21 +197,19 @@ plot(res3.mca, invisible = "ind",
      title = "Réprésentation des modalités actives (rouge) et des modalités illustratives (vert) selon les 2 premiers axes de l'ACM")
 ```
 
-# Représentation graphique des modalités des variables (v2)
+# Représentation graphique des modalités des variables (sans les variables illustratives)
 ```{r}
 plot(res3.mca, invisible = c("ind","quali.sup"),
      title = "Représentation des modalités actives selon les 2 premiers axes de l'ACM")
 ```
 
-Les modalités "non renseignées" expliquent tout... on fait une représentation des ellipses pour voir si des variables se détachent selon les axes.
-
-Commentaire quand les modalités inférieures à 5 % sont reparties aléatoirement dans les autres modalités :
 L'axe 1 est discriminant sur la catégorie de route : voie communale à gauche contre route nationale/autoroute à droite.
 De même, on a les accidents en agglomération à droite et ceux hors agglo à gauche (cohérent avec l'analyse précédente).
-En fait, la luminosité conforte cette analyse : nuit avec éclairage (en agglo) et nuit sans écalirage (hors agglo)
+Enfin, la luminosité conforte cette analyse : nuit avec éclairage (en agglo - à gauche) et nuit sans écalirage (hors agglo - à droite)
 
 L'axe 2 distingue le profil : accidents en pente en haut et accident sur route "plate" en bas.
 De même, le régime de circulation explique cet axe : sens unique ou chaussées séparées en bas contre bidirectionnelle en haut.
+Enfin, on a une nette opposition entre les personnes indemnes en bas et les blessés/hospitalisés en haut.
 
 # Représentation graphique des ellipses de confiance
 ```{r}
@@ -216,8 +220,8 @@ L'axe 1 et discriminant sur le lieu d'accident : hors agglo à gauche et en aggl
 
 # Résumé des stats de l'ACM
 ```{r}
-summary(res3.mca, nbelements=2, # nombre d'individus
-        ncp=3, # nombre de dimensions
+summary(res3.mca, nbelements=5, # nombre d'individus
+        ncp=5, # nombre de dimensions
         nb.dec=2) 
 ```
 
@@ -226,21 +230,56 @@ summary(res3.mca, nbelements=2, # nombre d'individus
 ## Classification avec Mclust
 
 ```{r}
-mod1 <- Mclust(base)
-summary(mod1) # 9 classes
+mod_classif <- Mclust(base)
+summary(mod_classif) # 8 classes
+```
+```{r}
+summary(mod_classif)
 ```
 
-# pour récupérer les classes de chaque ligne
+# Analyse des classes
 ```{r}
-mod1$classification
+# ajout des classes dans la base
+base_comp <- cbind.data.frame(base,classe_mclust=as.factor(mod_classif$classification))
+
+res_mclust <- catdes(base_comp, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
 ```
+
+# quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
+```{r}
+res_mclust$category
+```
+3.0 % des hommes ont été tués dans l'accident. Parmi les personnes tuées dans l'accident, 76,5 % sont des hommes. Enfin, les hommes représentent 68.8 % des personnes accidentées.
+43.6 % des hommes sont sortis indemnes de l'accident. Parmi les personnes indemnes, 73.1 % sont des hommes. Enfin, les hommes représentent 68.8 % des personnes accidentées.
+31.0 % des personnes âgées de 75 ans et plus ont blessés hospitalisés dans l'accident. Parmi les personnes blessées hospitalisées dans l'accident, 8.0 % sont des personnes de 75 ans et plus. Enfin, les personnes âgées de 75 ans et plus représentent 5.2 % des personnes accidentées.
 
 
 ## K-modes
+
 ```{r}
-kmodes(as.matrix(base), 
-       9) # on prend 9 classes comme ce que la classification a trouvé
+mod_kmodes <- kmodes(as.matrix(base), 8) # on prend 8 classes comme ce que la classification a trouvé
 ```
 
+```{r}
+summary(mod_kmodes)
+```
 
+# pour avoir la modalité de chaque variables dans les classes
+```{r}
+mod_kmodes$modes
+```
 
+# Analyse des classes
+```{r}
+# ajout des classes dans la base
+base_comp <- cbind.data.frame(base_comp,classe_kmodes=as.factor(mod_kmodes$cluster))
+
+res_kmodes <- catdes(base_comp, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
+```
+
+# quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
+```{r}
+res_kmodes$category
+```
+
+même résultat que la claissification (rassurant)
