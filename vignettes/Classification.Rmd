@@ -1,0 +1,104 @@
+
+---
+title: "K-Means"
+output: html_document
+---
+
+Chargement des bibliothèques utiles
+```{r}
+library(tidyverse)
+library(FactoMineR) 
+library(lubridate)
+```
+
+Préparation de la base de travail
+```{r}
+# Suppression des variables d'identifiants et les variables quantitatives
+base <- accidents #%>%
+  #select(-c(Num_Acc, num_veh, lat, long, dep, date_acc, dtm_num, heure, secu1, vma, id_vehicule, hrmn, com, an_nais, secu2, secu3, mois_acc, jour_acc))
+
+# résumé de la base
+summary(base)
+names(base)
+```
+
+# Création d'un échantillon aléatoire de taille 3000 sur la table accidents
+```{r}
+set.seed(1234)
+ech <- base[sample(nrow(base),3000),]
+names(ech)
+ech <- ech %>% select(-c(Num_Acc))
+```
+
+## Etude 1 - ACM sur l'ensemble des variables qualitatives de la base de données
+
+Dans cette première ACM, on intègre toutes les variables qualitatives.
+
+# ACM
+```{r}
+res.mca <- MCA(ech)
+```
+
+## Etude 2 - on regarde la gravité des blessures selon le profil des usagers
+
+Dans cette 2e ACM, on étudie le fait d'être Indemne/Blessé selon les données démographiques des victimes (age, sexe, catégorie d'usagers).
+
+# ACM
+```{r}
+# rq : on ne garde que les variables démographiques (sexe, age, catégorie d'usagers) et les autres sont passées en illustratives
+res2.mca <- MCA(base, quali.sup = 4:18, level.ventil = 0)
+```
+
+## Etude 3 - on regarde la gravité des blessures selon les caractéristiques de la route/ et du véhicule
+
+Dans cette 3e ACM, on s'intéresse aux conditions de la route, météo et du véhicules
+
+# ACM
+```{r}
+res3.mca <- MCA(base, quali.sup = c(1,3,10,11,19), 
+                level.ventil = 0) # toutes les modalités représentant moins de 5 % sont ventilées aléatoirement
+```
+
+## K-Means sur résultats de l'ACM 1
+
+```{r}
+library(EnsCat)
+library(klaR)
+names(ech)
+#ech <- ech %>% mutate(catu=as.numeric(catu),
+                     ##sexe=as.numeric(sexe),
+                      #catv=as.numeric(catv),
+                     # lum=as.numeric(lum),
+                     # agg=as.numeric(agg),
+                     # atm=as.numeric(atm),
+                     # col=as.numeric(col),
+                     # adr=as.numeric(adr),
+                      #intersection=as.numeric(intersection),
+                      #catr=as.numeric(catr),
+                      #voie=as.numeric(voie),
+                      #circ=as.numeric(circ),
+                      #nbv=as.numeric(nbv),
+                      #prof=as.numeric(prof),
+                      #plan=as.numeric(plan),
+                      #surf=as.numeric(surf),
+                      #infra=as.numeric(infra),
+                      #situ=as.numeric(situ)
+                      #)
+class <- kmodes(ech, 4, iter.max = 10, weighted = FALSE, fast = TRUE)
+```
+
+```{r}
+# NOT RUN {
+### a 5-dimensional toy-example:
+
+## generate data set with two groups of data:
+set.seed(1)
+x <- rbind(matrix(rbinom(250, 2, 0.25), ncol = 5),
+           matrix(rbinom(250, 2, 0.75), ncol = 5))
+colnames(x) <- c("a", "b", "c", "d", "e")
+
+## run algorithm on x:
+(cl <- kmodes(x, 2))
+# }
+```
+
