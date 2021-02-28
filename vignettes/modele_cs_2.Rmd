@@ -2,7 +2,7 @@
 title: "Prévisions des accidents ayant entrainés des blessures/décès"
 output: html_notebook
 author : CS
-date : 21/02/2021
+date : 27/02/2021
 ---
 
 
@@ -22,10 +22,10 @@ library(e1071)     # pour les modèles SVM
 Création de l'indicatrice accident avec blessures (yc décès) oui/non
 ```{r}
 accidents_M <- accidents2 %>%
-    mutate(accidents, blessures = case_when(
+    mutate(accidents2, blessures = case_when(
       grav == "Indemne"~ 0,
       TRUE ~ 1) ) %>%
-    select(-c(Num_Acc, num_veh, dep, lat, long, dtm_num, heure, age, pop_moy, grav)) 
+    select(-c(Num_Acc, grav)) 
 
 skim(accidents_M)
 ```
@@ -40,47 +40,29 @@ prop.table(summary(accidents_M$blessures))
 
 Création de l'échantillon d'apprentissage
 ```{r}
-accidents_A <- accidents_M %>%
-  filter(year(date_acc) %in% c(2015, 2016, 2017,2018)) %>%
-  select(-date_acc)
-
-accidents_A <- accidents_A %>% na.omit()
-
 set.seed(8)
-ind <- sample(nrow(accidents_A), 30000)
-don_A <- accidents_A[ind,]
+ind <- sample(nrow(accidents_M), floor(0.8*nrow(accidents_M)))
+don_A <- accidents_M[ind,]
 
-summary(don_A)
-```
-
-calcul de la proportion indemne/blessé pour l'échantillon d'apprentissage
-```{r}
+# Calcul de la proportion indemne/blessé sur l'échantillon
 don_A$blessures <- as.factor(don_A$blessures)
 levels(don_A$blessures) <- c(0,1)
 prop.table(summary(don_A$blessures))
 # ok proche de la proportion sur la table totale
 ```
 
+
 Création de l'échantillon test
 ```{r}
-accidents_T <- accidents_A[-ind,]
+don_T <- don_A[-ind,]
 
-accidents_T <- accidents_T %>% na.omit()
-
-set.seed(20)
-ind <- sample(nrow(accidents_T), 10000)
-don_T <- accidents_T[ind,]
-
-summary(don_T)
-```
-
-calcul de la proportion indemne/blessé pour l'échantillon test
-```{r}
+# Calcul de la proportion indemne/blessé sur l'échantillon
 don_T$blessures <- as.factor(don_T$blessures)
 levels(don_T$blessures) <- c(0,1)
 prop.table(summary(don_T$blessures))
 # ok proche de la proportion sur la table totale
 ```
+
 
 Evaluation de la qualité de la prévision
 ```{r}
@@ -168,7 +150,7 @@ eval_prev_classif <- function(prev_proba,
 ```
 
 
-Régression logistique - estimation du modèle
+Régression logistique - Estimation du modèle
 ```{r}
 time1 <- Sys.time()
 mod <- glm(blessures ~ .,
@@ -194,22 +176,26 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_reglog_step,
                   methode_abrev = "reglog",
                   methode = "Régression logistique")
 
+# estimation du temps d'éxécution
 time2 <- Sys.time()
 paste("temps execution de la régression logistique : ", Tdiff= difftime(time2, time1))
+
+# on crée la table de comparaison avec les prev de chaque modèle
+base_comp <- don_T %>%
+  select(blessures, bles_prev_proba_reglog_step, bles_prev_reglog_step)
 ```
 
 
 Passage des variables à modalités en varaibles qualitatives - utiles pour les estimateurs lasso / ridge / elastic net
 ```{r}
 # échantillon d'apprentissage
-dummy_A <- dummyVars(" ~ .", data=don_A[,-1])
+dummy_A <- dummyVars(" ~ .", data = don_A[,-1])
 don_X_A <- data.frame(predict(dummy_A, newdata = don_A[,-1])) 
 
 don_Y_A <- don_A$blessures
 
 # échantillon test
 don_T <- don_T[,-grep("bles_",colnames(don_T))]
-
 dummy_T <- dummyVars(" ~ .", data=don_T[,-1])
 don_X_T <- data.frame(predict(dummy_T, newdata = don_T[,-1])) 
 ```
@@ -217,11 +203,11 @@ don_X_T <- data.frame(predict(dummy_T, newdata = don_T[,-1]))
 
 Estimateur Lasso - Estimation du modèle
 ```{r}
+time3 <- Sys.time()
+
 lasso <- cv.glmnet(as.matrix(don_X_A), don_Y_A, alpha=1, family="binomial")
- 
 summary(lasso)
 ```
-
 
 Estimateur lasso - Prédiction & Evaluation du modèle
 ```{r}
@@ -234,7 +220,15 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_lasso,
                   real = don_T$blessures,
                   methode_abrev = "lasso",
                   methode = "Estimateur Lasso")
+
+# estimation du temps d'éxécution
+time4 <- Sys.time()
+paste("temps execution de l'estimateur lasso : ", Tdiff= difftime(time4, time3))
+
+# on ajoute la table de comparaison avec les prev de chaque modèle
+base_comp <- cbind.data.frame(base_comp, don_T$bles_prev_proba_lasso, don_T$bles_prev_lasso)
 ```
+Attention : résultats "étranges" => modèle à revoir
 
 
 Estimateur Ridge - Estimation du modèle
@@ -254,10 +248,10 @@ dummy_T <- dummyVars(" ~ .", data=don_T[,-1])
 don_X_T <- data.frame(predict(dummy_T, newdata = don_T[,-1])) 
 
 don_T$bles_prev_proba_ridge <- predict(ridge, as.matrix(don_X_T), type="response")
-summary(don_T$bles_prev_ridge)
+summary(don_T$bles_prev_proba_ridge)
 
 
-don_T$bles_prev_ridge <- (don_T$bles_prev_proba_ridge > 0.5)*1
+don_T$bles_prev_ridge <- (don_T$bles_prev_proba_ridge > 0.5) * 1
 
 eval_prev_classif(prev_prob = don_T$bles_prev_proba_ridge,
                   real = don_T$blessures,
@@ -265,7 +259,7 @@ eval_prev_classif(prev_prob = don_T$bles_prev_proba_ridge,
                   methode = "Estimateur Ridge")
 
 ```
-
+Attention : résultats "étranges" => modèle à revoir
 
 
 Estimateur Elastic net - Estimation du modèle
@@ -281,8 +275,8 @@ Estimateur Elastic net - Prédiction & Evaluation du modèle
 # échantillon test - on doit relancer le chargement de la table de test pour ne pas avoir la prev lasso dans la table
 don_T <- don_T[,-grep("bles_",colnames(don_T))]
 
-dummy_T <- dummyVars(" ~ .", data=don_T[,-1])
-don_X_T <- data.frame(predict(dummy_T, newdata = don_T[,-1])) 
+#dummy_T <- dummyVars(" ~ .", data=don_T[,-1])
+#don_X_T <- data.frame(predict(dummy_T, newdata = don_T[,-1])) 
 
 don_T$bles_prev_proba_ela_net <- predict(ela_net, as.matrix(don_X_T), type="response")
 summary(don_T$bles_prev_ela_net)
@@ -296,6 +290,7 @@ eval_prev_classif(prev_prob = don_T$bles_prev_proba_ela_net,
                   methode = "Estimateur Elastic net")
 
 ```
+Attention : résultats "étranges" => modèle à revoir
 
 
 On crée la variable controle pour utiliser la fonction train() de caret
@@ -304,7 +299,6 @@ controle <- trainControl(method="cv",
                          number=3,             # 3 blocs ici pour accélérer les calculs => 5 trop long
                          classProbs=FALSE)
 ```
-
 
 
 CART - Estimation du modèle
@@ -340,29 +334,29 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_cart_caret,
 
 Forêt aléatoire - Estimation du modèle
 ```{r}
-rf_caret <- train(blessures ~ .,
-                  data = don_A,
-                  method = "rf",
-                  trControl = controle,
-                  ntree = 50)
-
-varImp(rf_caret)
+#rf_caret <- train(blessures ~ .,
+#                  data = don_A,
+#                  method = "rf",
+#                  trControl = controle,
+#                  ntree = 50)
+#
+#varImp(rf_caret)
 ```
 ### attention pour le moment pas de résultat (temps d'éxécution trop long donc arrêt manuel)...
 
 
 Forêt aléatoire - Prédiction & Evaluation du modèle
 ```{r}
-don_T$bles_prev_proba_rf_caret <- predict(rf_caret,
-                                          newdata = don_T,
-                                          type="prob")[,2]
-
-don_T$bles_prev_rf_caret <- (don_T$bles_prev_proba_rf_caret > 0.5) * 1
-
-eval_prev_classif(prev_proba = don_T$bles_prev_proba_rf_caret,
-                  real = don_T$blessures,
-                  methode_abrev = "rf_caret",
-                  methode = "Random forest (caret)")
+#don_T$bles_prev_proba_rf_caret <- predict(rf_caret,
+#                                          newdata = don_T,
+#                                          type="prob")[,2]
+#
+#don_T$bles_prev_rf_caret <- (don_T$bles_prev_proba_rf_caret > 0.5) * 1
+#
+#eval_prev_classif(prev_proba = don_T$bles_prev_proba_rf_caret,
+#                  real = don_T$blessures,
+#                  methode_abrev = "rf_caret",
+#                  methode = "Random forest (caret)")
 ```
 
 
@@ -416,28 +410,67 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_gbm_logb_caret,
 
 SVM (Noyau linéaire) - Estimation du modèle
 ```{r}
-svm_lin_caret <- train(blessures ~ .,
-                        data = don_A,
-                        method = "svmLinear",
-                        trControl = controle)
+#svm_lin_caret <- train(blessures ~ .,
+#                        data = don_A,
+#                        method = "svmLinear",
+#                        trControl = controle)
 ```
+### attention pour le moment pas de résultat (temps d'éxécution trop long donc arrêt manuel)...
 
 
 SVM (Noyau linéaire) - Prédiction & Evaluation du modèle
 ```{r}
-don_T$bles_prev_proba_svm_lin_caret <- predict(svm_lin_caret,
-                                              newdata = don_T,
-                                                   type="prob")[,2]
-
-don_T$bles_prev_svm_lin_caret <- (don_T$bles_prev_proba_svm_lin_caret > 0.5) * 1
-
-eval_prev_classif(prev_proba = don_T$bles_prev_proba_svm_lin_caret,
-                  real = don_T$blessures,
-                  methode_abrev = "svm_lin_caret",
-                  methode = "SVM : noyau linéaire (caret)")
+#don_T$bles_prev_proba_svm_lin_caret <- predict(svm_lin_caret,
+#                                              newdata = don_T,
+#                                                   type="prob")[,2]
+#
+#don_T$bles_prev_svm_lin_caret <- (don_T$bles_prev_proba_svm_lin_caret > 0.5) * 1
+#
+#eval_prev_classif(prev_proba = don_T$bles_prev_proba_svm_lin_caret,
+#                  real = don_T$blessures,
+#                  methode_abrev = "svm_lin_caret",
+#                  methode = "SVM : noyau linéaire (caret)")
 ```
 
 
+Synthèse
+```{r}
+criteres_erreur_classif_plot <- criteres_erreur_classif[c(grep("logistique", criteres_erreur_classif$Methode),grep("caret", criteres_erreur_classif$Methode)),]
+
+error_min <- min(criteres_erreur_classif_plot$Error)
+error_min
+
+error_max <- max(criteres_erreur_classif_plot$Error)
+error_max
+
+ggplot(data = criteres_erreur_classif_plot, aes(x = Methode, y = 100 * Error)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_hline(yintercept = 100 * error_min, color = "red", size = 1) +
+  scale_y_continuous(breaks = seq(from = 0, to = ceiling(100 * error_max), by=10)) +
+  theme(axis.text.x = element_text(size = 12, angle = 90)) +
+  labs(x = "Méthode", y = "Erreur de classification (%)")
+```
+
+
+Modèle de mélange
+```{r}
+don_T_prev <- don_T[, grep("caret",colnames(don_T))]
+don_T_prev <- don_T_prev[, -grep("prev_proba", colnames(don_T_prev))]
+
+don_T$bles_prev_proba_agreg <- rowMeans(don_T_prev)
+
+don_T$bles_prev_agreg <- (don_T$bles_prev_proba_agreg > 0.5) * 1
+
+eval_prev_classif(prev_proba = don_T$bles_prev_proba_agreg,
+                  real = don_T$blessures,
+                  methode_abrev = "agreg",
+                  methode = "Agrégation")
+```
+
+
+
+
+### code ci-dessous pas encore testé ni exécuté ###
 
 SVM (Noyau polynomial de degré 2) - Estimation du modèle
 ```{r}
@@ -495,38 +528,4 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_svm_radial_caret,
                   methode = "SVM : noyau radial (caret)")
 ```
 
-
-Synthèse
-```{r}
-criteres_erreur_classif_plot <- criteres_erreur_classif[c(grep("logistique", criteres_erreur_classif$Methode),grep("caret", criteres_erreur_classif$Methode)),]
-
-error_min <- min(criteres_erreur_classif_plot$Error)
-error_min
-
-error_max <- max(criteres_erreur_classif_plot$Error)
-error_max
-
-ggplot(data = criteres_erreur_classif_plot, aes(x = Methode, y = 100 * Error)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
-  geom_hline(yintercept = 100 * error_min, color = "red", size = 1) +
-  scale_y_continuous(breaks = seq(from = 0, to = ceiling(100 * error_max), by=10)) +
-  theme(axis.text.x = element_text(size = 12, angle = 90)) +
-  labs(x = "Méthode", y = "Erreur de classification (%)")
-```
-
-
-Modèle de mélange
-```{r}
-don_T_prev <- don_T[, grep("caret",colnames(don_T))]
-don_T_prev <- don_T_prev[, -grep("prev_proba", colnames(don_T_prev))]
-
-don_T$bles_prev_proba_agreg <- rowMeans(don_T_prev)
-
-don_T$bles_prev_agreg <- (don_T$bles_prev_proba_agreg > 0.5) * 1
-
-eval_prev_classif(prev_proba = don_T$bles_prev_proba_agreg,
-                  real = don_T$blessures,
-                  methode_abrev = "agreg",
-                  methode = "Agrégation")
-```
 
