@@ -1,0 +1,66 @@
+---
+title: "Cartographie"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(reshape2)
+library(ggmap) # Pour la cartographie
+library(raster)
+library(cartography)
+```
+
+```{r}
+class(accidents$lat)
+class(accidents$long)
+```
+
+Nous observons que les variables lat et long sont au format caractères. Nous commençons par les recoder afin qu'elles soient au format de degrés décimaux (format classique coordonnées gps).
+
+```{r}
+accidents$lat <- type.convert(accidents$lat, dec=".")
+class(accidents$lat)
+accidents$long <- type.convert(accidents$long, dec=".")
+class(accidents$long)
+```
+
+```{r}
+accidents_gps <- accidents %>%
+ mutate(lat = lat/100000, long = long/100000)
+```
+
+On cherche les coins de la carte avec la fonction make_bbox du package ggmap
+
+```{r}
+bbox <- make_bbox(long, lat, data=accidents_gps)
+bbox
+```
+
+```{r}
+la <- 48.293024
+lo <- 4.079306
+zoom <- 4
+#Carte <- get_map(bbox)
+#ggmap(Carte)
+Carte2 <- get_map(location=c(lon = 1.7, lat = 47), zoom = 6, source="google", maptype="terrain", crop=TRUE, language= "fr-FR")
+ggmap(Carte2)
+```
+
+Création de la carte de France puis conversion au format sf pour utilisation avec le package cartography
+
+```{r}
+library(sf)
+library(sp)
+fr <- getData('GADM', country='FRA', level=1)
+plot(fr)
+is(fr)
+frsf <- st_as_sf(fr, "sf") # Conversion au format sf
+st_bbox(frsf) # Identifier les limites
+```
+
+```{r}
+plot(fr, col = "lightblue4", border = "lightblue3", bg = "lightblue1")
+```
+
