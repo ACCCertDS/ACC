@@ -10,6 +10,7 @@ library(reshape2)
 library(ggmap) # Pour la cartographie
 library(raster)
 library(cartography)
+library(leaflet)
 ```
 
 ```{r}
@@ -62,5 +63,16 @@ st_bbox(frsf) # Identifier les limites
 
 ```{r}
 plot(fr, col = "lightblue4", border = "lightblue3", bg = "lightblue1")
+```
+
+```{r}
+#france <- leaflet(data=accidents_gps) %>%
+  #setView(lng=1.7, lat=47, zoom=5) %>%
+  #addTiles()
+#print(france)
+```
+
+```{r}
+#france %>% addCircles(~long, ~lat)
 ```
 
