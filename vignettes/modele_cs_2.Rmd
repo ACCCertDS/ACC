@@ -150,54 +150,17 @@ eval_prev_classif <- function(prev_proba,
 ```
 
 
-Régression logistique - Estimation du modèle
-```{r}
-time1 <- Sys.time()
-mod <- glm(blessures ~ .,
-           data=don_A,
-           family="binomial")
-summary(mod)
-
-
-mod_step <- step(mod, direction = "backward")
-summary(mod_step)
-```
-
-
-Régression logistique - Prédiction & Evaluation du modèle step
-```{r}
-don_T$bles_prev_proba_reglog_step <- predict(mod_step, don_T, type="response")
-summary(don_T$bles_prev_proba_reglog_step)
-
-don_T$bles_prev_reglog_step <- (don_T$bles_prev_proba_reglog_step > 0.5) * 1
-
-eval_prev_classif(prev_proba = don_T$bles_prev_proba_reglog_step,
-                  real = don_T$blessures,
-                  methode_abrev = "reglog",
-                  methode = "Régression logistique")
-
-# estimation du temps d'éxécution
-time2 <- Sys.time()
-paste("temps execution de la régression logistique : ", Tdiff= difftime(time2, time1))
-
-# on crée la table de comparaison avec les prev de chaque modèle
-base_comp <- don_T %>%
-  select(blessures, bles_prev_proba_reglog_step, bles_prev_reglog_step)
-```
-
-
 Passage des variables à modalités en varaibles qualitatives - utiles pour les estimateurs lasso / ridge / elastic net
 ```{r}
 # échantillon d'apprentissage
-dummy_A <- dummyVars(" ~ .", data = don_A[,-1])
-don_X_A <- data.frame(predict(dummy_A, newdata = don_A[,-1])) 
+dummy_A <- dummyVars(" ~ .", data=don_A %>% select(-blessures))
+don_X_A <- data.frame(predict(dummy_A, newdata = don_A %>% select(-blessures))) 
 
 don_Y_A <- don_A$blessures
 
 # échantillon test
-don_T <- don_T[,-grep("bles_",colnames(don_T))]
-dummy_T <- dummyVars(" ~ .", data=don_T[,-1])
-don_X_T <- data.frame(predict(dummy_T, newdata = don_T[,-1])) 
+dummy_T <- dummyVars(" ~ .", data=don_T %>% select(-blessures))
+don_X_T <- data.frame(predict(dummy_T, newdata = don_T %>% select(-blessures))) 
 ```
 
 
@@ -224,32 +187,22 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_lasso,
 # estimation du temps d'éxécution
 time4 <- Sys.time()
 paste("temps execution de l'estimateur lasso : ", Tdiff= difftime(time4, time3))
-
-# on ajoute la table de comparaison avec les prev de chaque modèle
-base_comp <- cbind.data.frame(base_comp, don_T$bles_prev_proba_lasso, don_T$bles_prev_lasso)
 ```
-Attention : résultats "étranges" => modèle à revoir
 
 
 Estimateur Ridge - Estimation du modèle
 ```{r}
+time5 <- Sys.time()
+
 ridge <- cv.glmnet(as.matrix(don_X_A), don_Y_A, alpha=0, family="binomial")
- 
 summary(ridge)
 ```
 
 
 Estimateur ridge - Prédiction & Evaluation du modèle 
 ```{r}
-# échantillon test - on supprime les sorties de la prev lasso dans la table
-don_T <- don_T[,-grep("bles_",colnames(don_T))]
-
-dummy_T <- dummyVars(" ~ .", data=don_T[,-1])
-don_X_T <- data.frame(predict(dummy_T, newdata = don_T[,-1])) 
-
 don_T$bles_prev_proba_ridge <- predict(ridge, as.matrix(don_X_T), type="response")
 summary(don_T$bles_prev_proba_ridge)
-
 
 don_T$bles_prev_ridge <- (don_T$bles_prev_proba_ridge > 0.5) * 1
 
@@ -258,29 +211,25 @@ eval_prev_classif(prev_prob = don_T$bles_prev_proba_ridge,
                   methode_abrev = "ridge",
                   methode = "Estimateur Ridge")
 
+# estimation du temps d'éxécution
+time6 <- Sys.time()
+paste("temps execution de l'estimateur ridge : ", Tdiff= difftime(time6, time5))
 ```
-Attention : résultats "étranges" => modèle à revoir
 
 
 Estimateur Elastic net - Estimation du modèle
 ```{r}
+time7 <- Sys.time()
+
 ela_net <- cv.glmnet(as.matrix(don_X_A), don_Y_A, alpha=0.5, family="binomial")
- 
 summary(ela_net)
 ```
 
 
 Estimateur Elastic net - Prédiction & Evaluation du modèle 
 ```{r}
-# échantillon test - on doit relancer le chargement de la table de test pour ne pas avoir la prev lasso dans la table
-don_T <- don_T[,-grep("bles_",colnames(don_T))]
-
-#dummy_T <- dummyVars(" ~ .", data=don_T[,-1])
-#don_X_T <- data.frame(predict(dummy_T, newdata = don_T[,-1])) 
-
 don_T$bles_prev_proba_ela_net <- predict(ela_net, as.matrix(don_X_T), type="response")
 summary(don_T$bles_prev_ela_net)
-
 
 don_T$bles_prev_ela_net <- (don_T$bles_prev_proba_ela_net > 0.5)*1
 
@@ -289,11 +238,46 @@ eval_prev_classif(prev_prob = don_T$bles_prev_proba_ela_net,
                   methode_abrev = "ela_net",
                   methode = "Estimateur Elastic net")
 
+# estimation du temps d'éxécution
+time8 <- Sys.time()
+paste("temps execution de l'estimateur elastic net : ", Tdiff= difftime(time8, time7))
 ```
-Attention : résultats "étranges" => modèle à revoir
 
 
-On crée la variable controle pour utiliser la fonction train() de caret
+Régression logistique - Estimation du modèle
+```{r}
+time1 <- Sys.time()
+
+mod <- glm(blessures ~ .,
+           data=don_A,
+           family="binomial")
+summary(mod)
+
+mod_step <- step(mod, direction = "backward")
+summary(mod_step)
+```
+
+
+Régression logistique - Prédiction & Evaluation du modèle step
+```{r}
+don_T$bles_prev_proba_reglog_step <- predict(mod_step, don_T, type="response")
+summary(don_T$bles_prev_proba_reglog_step)
+
+don_T$bles_prev_reglog_step <- (don_T$bles_prev_proba_reglog_step > 0.5) * 1
+
+eval_prev_classif(prev_proba = don_T$bles_prev_proba_reglog_step,
+                  real = don_T$blessures,
+                  methode_abrev = "reglog",
+                  methode = "Régression logistique")
+
+# estimation du temps d'éxécution
+time2 <- Sys.time()
+paste("temps execution de la régression logistique : ", Tdiff= difftime(time2, time1))
+```
+
+
+
+On crée la variable controle pour utiliser la fonction train() de caret dans les prochains modèles
 ```{r}
 controle <- trainControl(method="cv",
                          number=3,             # 3 blocs ici pour accélérer les calculs => 5 trop long
@@ -303,6 +287,8 @@ controle <- trainControl(method="cv",
 
 CART - Estimation du modèle
 ```{r}
+time9 <- Sys.time()
+
 cart_caret <- train(blessures ~ .,
                     data=don_A,
                     method="rpart",
@@ -329,39 +315,17 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_cart_caret,
                   real = don_T$blessures,
                   methode_abrev = "cart_caret",
                   methode= "CART (caret)")
-```
 
-
-Forêt aléatoire - Estimation du modèle
-```{r}
-#rf_caret <- train(blessures ~ .,
-#                  data = don_A,
-#                  method = "rf",
-#                  trControl = controle,
-#                  ntree = 50)
-#
-#varImp(rf_caret)
-```
-### attention pour le moment pas de résultat (temps d'éxécution trop long donc arrêt manuel)...
-
-
-Forêt aléatoire - Prédiction & Evaluation du modèle
-```{r}
-#don_T$bles_prev_proba_rf_caret <- predict(rf_caret,
-#                                          newdata = don_T,
-#                                          type="prob")[,2]
-#
-#don_T$bles_prev_rf_caret <- (don_T$bles_prev_proba_rf_caret > 0.5) * 1
-#
-#eval_prev_classif(prev_proba = don_T$bles_prev_proba_rf_caret,
-#                  real = don_T$blessures,
-#                  methode_abrev = "rf_caret",
-#                  methode = "Random forest (caret)")
+# estimation du temps d'éxécution
+time10 <- Sys.time()
+paste("temps execution de la méthode CART : ", Tdiff= difftime(time10, time9))
 ```
 
 
 AdaBoost - Estimation du modèle
 ```{r}
+time11 <- Sys.time()
+
 gbm_ada_caret <- train(blessures ~ .,
                         data = don_A,
                         method = "gbm",
@@ -381,11 +345,17 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_gbm_ada_caret,
                   real = don_T$blessures,
                   methode_abrev = "gbm_ada_caret",
                   methode = "Gradient boosting : AdaBoost (caret)")
+
+# estimation du temps d'éxécution
+time12 <- Sys.time()
+paste("temps execution de la méthode AdaBoost : ", Tdiff= difftime(time12, time11))
 ```
 
 
 LogitBoost - Estimation du modèle
 ```{r}
+time13 <- Sys.time()
+
 gbm_logb_caret <- train(blessures ~ .,
                         data = don_A,
                         method = "LogitBoost",
@@ -405,6 +375,74 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_gbm_logb_caret,
                   real = don_T$blessures,
                   methode_abrev = "gbm_logb_caret",
                   methode = "Gradient boosting : LogitBoost (caret)")
+
+# estimation du temps d'éxécution
+time14 <- Sys.time()
+paste("temps execution de la méthode LogitBoost : ", Tdiff= difftime(time14, time13))
+```
+
+
+Synthèse
+```{r}
+criteres_erreur_classif_plot <- criteres_erreur_classif[,]
+
+error_min <- min(criteres_erreur_classif_plot$Error)
+paste("erreur minimale : ",error_min)
+
+error_max <- max(criteres_erreur_classif_plot$Error)
+paste("erreur maximale : ",error_max)
+
+ggplot(data = criteres_erreur_classif_plot, aes(x = Methode, y = 100 * Error)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_hline(yintercept = 100 * error_min, color = "red", size = 1) +
+  scale_y_continuous(breaks = seq(from = 0, to = ceiling(100 * error_max), by=10)) +
+  theme(axis.text.x = element_text(size = 12, angle = 90)) +
+  labs(x = "Méthode", y = "Erreur de classification (%)")
+```
+
+
+Modèle de mélange
+```{r}
+don_T_prev <- don_T[, grep("bles_",colnames(don_T))]
+don_T_prev <- don_T_prev[, -grep("prev_proba", colnames(don_T_prev))]
+
+don_T$bles_prev_proba_agreg <- rowMeans(don_T_prev)
+
+don_T$bles_prev_agreg <- (don_T$bles_prev_proba_agreg > 0.5) * 1
+
+eval_prev_classif(prev_proba = don_T$bles_prev_proba_agreg,
+                  real = don_T$blessures,
+                  methode_abrev = "agreg",
+                  methode = "Agrégation")
+```
+
+
+
+### attention pour le moment pas de résultat pour ces modèles (temps d'éxécution trop long donc arrêt manuel)...
+
+Forêt aléatoire - Estimation du modèle
+```{r}
+#rf_caret <- train(blessures ~ .,
+#                  data = don_A,
+#                  method = "rf",
+#                  trControl = controle,
+#                  ntree = 50)
+#
+#varImp(rf_caret)
+```
+
+Forêt aléatoire - Prédiction & Evaluation du modèle
+```{r}
+#don_T$bles_prev_proba_rf_caret <- predict(rf_caret,
+#                                          newdata = don_T,
+#                                          type="prob")[,2]
+#
+#don_T$bles_prev_rf_caret <- (don_T$bles_prev_proba_rf_caret > 0.5) * 1
+#
+#eval_prev_classif(prev_proba = don_T$bles_prev_proba_rf_caret,
+#                  real = don_T$blessures,
+#                  methode_abrev = "rf_caret",
+#                  methode = "Random forest (caret)")
 ```
 
 
@@ -415,8 +453,6 @@ SVM (Noyau linéaire) - Estimation du modèle
 #                        method = "svmLinear",
 #                        trControl = controle)
 ```
-### attention pour le moment pas de résultat (temps d'éxécution trop long donc arrêt manuel)...
-
 
 SVM (Noyau linéaire) - Prédiction & Evaluation du modèle
 ```{r}
@@ -433,42 +469,6 @@ SVM (Noyau linéaire) - Prédiction & Evaluation du modèle
 ```
 
 
-Synthèse
-```{r}
-criteres_erreur_classif_plot <- criteres_erreur_classif[c(grep("logistique", criteres_erreur_classif$Methode),grep("caret", criteres_erreur_classif$Methode)),]
-
-error_min <- min(criteres_erreur_classif_plot$Error)
-error_min
-
-error_max <- max(criteres_erreur_classif_plot$Error)
-error_max
-
-ggplot(data = criteres_erreur_classif_plot, aes(x = Methode, y = 100 * Error)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
-  geom_hline(yintercept = 100 * error_min, color = "red", size = 1) +
-  scale_y_continuous(breaks = seq(from = 0, to = ceiling(100 * error_max), by=10)) +
-  theme(axis.text.x = element_text(size = 12, angle = 90)) +
-  labs(x = "Méthode", y = "Erreur de classification (%)")
-```
-
-
-Modèle de mélange
-```{r}
-don_T_prev <- don_T[, grep("caret",colnames(don_T))]
-don_T_prev <- don_T_prev[, -grep("prev_proba", colnames(don_T_prev))]
-
-don_T$bles_prev_proba_agreg <- rowMeans(don_T_prev)
-
-don_T$bles_prev_agreg <- (don_T$bles_prev_proba_agreg > 0.5) * 1
-
-eval_prev_classif(prev_proba = don_T$bles_prev_proba_agreg,
-                  real = don_T$blessures,
-                  methode_abrev = "agreg",
-                  methode = "Agrégation")
-```
-
-
-
 
 ### code ci-dessous pas encore testé ni exécuté ###
 
@@ -481,17 +481,12 @@ svm_poly2_caret <- train(blessures ~ .,
                         trControl = controle)
 ```
 
-
-SVM (Noyau polynomial de degré 2) - Prédiction
+SVM (Noyau polynomial de degré 2) - Prédiction & Evaluation du modèle
 ```{r}
 don_T$bles_prev_proba_svm_poly2_caret <- predict(svm_poly2_caret,
                                                   newdata = don_T,
                                                   type="prob")[,2]
-```
 
-
-SVM (Noyau polynomial de degré 2) - Evaluation du modèle
-```{r}
 don_T$bles_prev_svm_poly2_caret <- (don_T$bles_prev_proba_svm_poly2_caret > 0.5) * 1
 
 eval_prev_classif(prev_proba = don_T$bles_prev_proba_svm_poly2_caret,
@@ -509,17 +504,12 @@ svm_radial_caret <- train(blessures ~ .,
                         trControl = controle)
 ```
 
-
-SVM (Noyau radial) - Prédiction
+SVM (Noyau radial) - Prédiction & Evaluation du modèle
 ```{r}
 don_T$bles_prev_proba_svm_radial_caret <- predict(svm_radial_caret,
                                                   newdata = don_T,
                                                   type="prob")[,2]
-```
 
-
-SVM (Noyau radial) - Evaluation du modèle
-```{r}
 don_T$bles_prev_svm_radial_caret <- (don_T$bles_prev_proba_svm_radial_caret > 0.5) * 1
 
 eval_prev_classif(prev_proba = don_T$bles_prev_proba_svm_radial_caret,
@@ -527,5 +517,3 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_svm_radial_caret,
                   methode_abrev = "svm_radial_caret",
                   methode = "SVM : noyau radial (caret)")
 ```
-
-
