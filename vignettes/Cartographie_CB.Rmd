@@ -110,23 +110,62 @@ ggmap(Carte2)
 
 L'accès à l'API de Google nécessite un enregistrement avec communication d'une CB. J'abandonne cette piste. 
 
-Création de la carte de France puis conversion au format sf pour utilisation avec le package cartography
+## Intégration des Régions pour représentation par région avec le package cartography
 
 ```{r}
-library(sf)
-library(sp)
-fr <- getData('GADM', country='FRA', level=1)
-plot(fr)
-is(fr)
-frsf <- st_as_sf(fr, "sf") # Conversion au format sf
-st_bbox(frsf) # Identifier les limites
+# Import d'une table de correspondance Département/Région
+regions <- read.csv("departements-region.csv",header=T, sep=",")
 ```
 
+Jointure entre accidents et regions pour ajout de la région de l'accident
+
 ```{r}
-plot(fr, col = "lightblue4", border = "lightblue3", bg = "lightblue1")
+class(accidents$dep)
+accidents$dep <- as.numeric(accidents$dep)
+class(regions$num_dep)
+regions$num_dep <- as.numeric(regions$num_dep)
+accidents_region <- accidents %>%
+  dplyr::left_join(regions, by = c("dep"="num_dep"))
+```
+
+Regroupement des accidents par région
+
+```{r}
+accidents_par_region <- accidents_region %>%
+  dplyr::select(Num_Acc,region_name) %>%
+  group_by(region_name) %>%
+  summarise(n=n())
+```
+
+Regroupement des accidents par département
+
+```{r}
+accidents_par_dept <- accidents_region %>%
+  dplyr::select(Num_Acc,dep,dep_name) %>%
+  group_by(dep, dep_name) %>%
+  summarise(nbre_acc=n())
 ```
 
 On colore les régions les plus accidentogènes.
+
+```{r}
+library(GADMTools)
+library(classInt)
+Fr<-gadm_sf_loadCountries("FRA",level=2)
+listNames(Fr,level=2)
+plotmap(Fr)
+accidents_par_dept <- data.frame(accidents_par_dept)
+ choropleth(Fr, 
+               data = accidents_par_dept, 
+               step=4,
+               value = "nbre_acc", 
+               adm.join = "dep_name",
+               breaks = "quantile", 
+               palette = "Reds",
+               legend="Nombre d'accidents",
+                title="Nombre d'accidents par département en 2018") 
+```
+
 
 ```{r}
 accidents_2018 <- accidents_gps_group %>%
@@ -177,8 +216,6 @@ france_test <- leaflet(data=accidents_2018_bis) %>%
                    fillOpacity = 0.5)
 print(france_test)
 ```
-
-
 
 
 
