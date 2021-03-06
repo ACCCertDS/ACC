@@ -12,6 +12,9 @@ library(shiny)
 library(leaflet)
 library(lubridate)
 
+accidents_gps_group <- accidents_gps_group %>%
+                        mutate(ye=year(date_acc))
+
 ui <- fluidPage(
     titlePanel("Répartition géographique des accidents de la route"),
     sidebarLayout(
@@ -22,26 +25,56 @@ ui <- fluidPage(
                                  "Blessé hospitalisé" = "blessehosp",
                                  "Tué" = "tue")),
             radioButtons("annee", "Année :",
-                           c("2019" = "a2019",
-                             "2018" = "a2018",
-                             "2017" = "a2017",
-                             "2016" = "a2016",
-                             "2015" = "a2015"))
+                           choices = c("2019",
+                                       "2018",
+                                       "2017",
+                                       "2016",
+                                       "2015"))
                     ),
         mainPanel(
-          h1("Notre application Shiny"),
-          leafletOutput("carte")
+          leafletOutput("mymap", height=650, width=605)
                   )
               )
           )
 
 server <- function(input, output) {
-    france = leaflet(data=reactive({accidents_gps_group %>%
-        filter(year(date_acc) == input$annee)})) %>%
-                    addTiles() %>%
-                    setView(lng=1.7, lat=47, zoom=5) %>%
-                    addCircles(~long, ~lat, weight = 0.25)
-    output$mymap = renderLeaflet(france)
+    #accidents_reactive <- reactive(input$annee,{
+    #if(input$annee==a2015){
+        #accidents_annee <- accidents_gps_group %>%
+        #filter(year(date_acc) == 2015)
+    #}
+    #if(input$annee=="a2016"){
+        #accidents_annee <- accidents_gps_group %>%
+        #filter(year(date_acc) == 2016)
+    #}
+    #if(input$annee=="a2017"){
+        #accidents_annee <- accidents_gps_group %>%
+        #filter(year(date_acc) == 2017)
+    #}
+    #if(input$annee=="a2018"){
+        #accidents_annee <- accidents_gps_group %>%
+        #filter(year(date_acc) == 2018)
+    #}
+    #if(input$annee=="a2019"){
+        #accidents_annee <- accidents_gps_group %>%
+        #filter(year(date_acc) == 2019)
+      #}
+  #})
+    reactive_annee <- reactive({accidents_gps_group %>%
+                                 dplyr::filter(ye %in% input$annee)})
+
+    output$mymap = renderLeaflet({
+        leaflet(data = reactive_annee()) %>%
+        setView(lng=1.7, lat=47, zoom=5) %>%
+        addTiles() %>%
+        addCircles(~reactive_annee()$long, ~reactive_annee()$lat, weight = 0.25)
+                            #})
+    #output$mymap <- renderLeaflet({
+      #leaflet(data=accidents_2018) %>%
+      #setView(lng=1.7, lat=47, zoom=5) %>%
+      #addTiles() %>%
+      #addCircles(~long, ~lat, weight = 0.25)
+    })
 }
 
 shinyApp(ui=ui, server=server)

@@ -194,7 +194,8 @@ On compte 4 modalités, on va colorer les points du jaune au rouge, du niveau de
 ```{r}
 accidents_2018_bis <- accidents_gps %>%
   dplyr::filter(year(date_acc)==2018) %>%
-  dplyr::select(Num_Acc, grav, lat, long)
+  dplyr::select(Num_Acc, grav, lat, long, date_acc) %>%
+  mutate(ye = year(date_acc))
 
 accidents_2018_bis <- accidents_2018_bis[1:10000,]
 ```
