@@ -61,7 +61,7 @@ plot(res.mca, invisible = "var",
      title = "Représentation des individus selon les 2 premiers axes de l'ACM")
 ```
 
-Vu le nb d'individus, aucun intérêt car pas lisible
+Vu le nombre d'individus, aucun intérêt car pas lisible.
 
 
 # Représentation graphique des modalités des variables
@@ -108,7 +108,7 @@ plot(res2.mca, invisible = c("var","quali.sup"),
      title = "Représentation des individus selon les 2 premiers axes de l'ACM")
 ```
 
-Vu le nb d'individus, peu d'intérêt car pas lisible
+Vu le nombre d'individus, peu d'intérêt car pas lisible.
 
 
 # Représentation graphique des individus selon les modalités de la variable "grav"
