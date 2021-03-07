@@ -31,11 +31,11 @@ names(base)
 ```
 
 
-## Etude 1 - ACM sur l'ensemble des variables qualitatives de la base de données
+# Etude 1 - ACM sur l'ensemble des variables qualitatives de la base de données
 
 Dans cette première ACM, on intègre toutes les variables qualitatives.
 
-# ACM
+## ACM
 ```{r}
 res.mca <- MCA(base,
                 level.ventil = 0.025)
@@ -43,7 +43,7 @@ res.mca <- MCA(base,
 ```
 
 
-# Réprésentation graphique des poids des dimensions
+## Réprésentation graphique des poids des dimensions
 ```{r}
 # Tableau avec les poids des axes
 res.mca$eig[,2]
@@ -55,7 +55,7 @@ barplot(res.mca$eig[,2], names = paste("Dim", 1:nrow(res.mca$eig)))
 Au vu du coude, on ne garderait que 7 axes. Toutefois, cela représente assez peu (22 %), ce qui est normal en ACM.
 
 
-# Réprésentation graphique des individus
+## Réprésentation graphique des individus
 ```{r}
 plot(res.mca, invisible = "var",
      title = "Représentation des individus selon les 2 premiers axes de l'ACM")
@@ -64,7 +64,7 @@ plot(res.mca, invisible = "var",
 Vu le nombre d'individus, aucun intérêt car pas lisible.
 
 
-# Représentation graphique des modalités des variables
+## Représentation graphique des modalités des variables
 ```{r}
 plot(res.mca, invisible = "ind",
      title = "Représentation des modalités selon les 2 premiers axes de l'ACM")
@@ -72,7 +72,7 @@ plot(res.mca, invisible = "ind",
 Même constat que pour le graphique précédent, trop de modalités et peu lisible.
 
 
-# Résumé des stats de l'ACM
+## Résumé des stats de l'ACM
 ```{r}
 summary(res.mca, nbelements=2, # nombre d'individus
         ncp=5, # nombre de dimensions
@@ -80,18 +80,18 @@ summary(res.mca, nbelements=2, # nombre d'individus
 ```
 
 
-## Etude 2 - on regarde la gravité des blessures selon le profil des usagers
+# Etude 2 - on regarde la gravité des blessures selon le profil des usagers
 
 Dans cette 2e ACM, on étudie le fait d'être Indemne/Blessé selon les données démographiques des victimes (age, sexe, catégorie d'usagers).
 
-# ACM
+## ACM
 ```{r}
 # rq : on ne garde que les variables démographiques (sexe, age, catégorie d'usagers) et les autres sont passées en illustratives
 res2.mca <- MCA(base, quali.sup = c(4:20,22), level.ventil = 0)
 ```
 
 
-# Réprésentation graphique des poids des dimensions
+## Réprésentation graphique des poids des dimensions
 ```{r}
 # Tableau avec les poids
 res2.mca$eig[,2]
@@ -102,7 +102,7 @@ barplot(res2.mca$eig[,2], names = paste("Dim", 1:nrow(res2.mca$eig)))
 
 Au vu du graph, on peut garder 2 axes, qui explique 22 %.
 
-# Réprésentation graphique des individus
+## Réprésentation graphique des individus
 ```{r}
 plot(res2.mca, invisible = c("var","quali.sup"),
      title = "Représentation des individus selon les 2 premiers axes de l'ACM")
@@ -111,7 +111,7 @@ plot(res2.mca, invisible = c("var","quali.sup"),
 Vu le nombre d'individus, peu d'intérêt car pas lisible.
 
 
-# Représentation graphique des individus selon les modalités de la variable "grav"
+## Représentation graphique des individus selon les modalités de la variable "grav"
 ```{r}
 plot(res2.mca, invisible = c("var","quali.sup"),
      habillage = "grav",
@@ -121,7 +121,7 @@ plot(res2.mca, invisible = c("var","quali.sup"),
 Sur l'axe 2, les personnes idemnes (en bas) se détachent des personnes tuées (en haut)
 
 
-# Représentation graphique des individus selon les modalités de la variable "catégorie d'usager"
+## Représentation graphique des individus selon les modalités de la variable "catégorie d'usager"
 ```{r}
 plot(res2.mca, invisible = c("var","quali.sup"),
      habillage = "catu",
@@ -131,13 +131,13 @@ plot(res2.mca, invisible = c("var","quali.sup"),
 Selon l'axe 2, on peut observer qu'un groupe "passager" se détache vers le bas (personnes indemnes), par oppoistion au groupe "piétons" vers le haut (personnes tuées)
 
 
-# Représentation graphique des modalités des variables
+## Représentation graphique des modalités des variables
 ```{r}
 plot(res2.mca, invisible = "ind",
      title = "Représentation des modalités actives (rouge) et des modalités illustratives (vert) selon les 2 premiers axes de l'ACM")
 ```
 
-# Représentation graphique des modalités des variables (sans les variables illustratives)
+## Représentation graphique des modalités des variables (sans les variables illustratives)
 ```{r}
 plot(res2.mca, invisible = c("ind","quali.sup"),
      title = "Représentation des modalités actives selon les 2 premiers axes de l'ACM")
@@ -152,7 +152,7 @@ a) en haut : les personnes de plus de 75 ans / piéton / tué
 b) en bas : les personnes de moins de 25 ans / passager / blessé léger
 
 
-# Représentation graphique des ellipses de confiance
+## Représentation graphique des ellipses de confiance
 ```{r}
 plotellipses(res2.mca, keepvar = c("grav", "sexe", "catu", "classe_age"))
 ```
@@ -162,7 +162,7 @@ L'axe 2 distingue les jeunes (en bas) des personnes âgées (en haut). Les jeune
 Cette représentation graphique conforte les groupes mis en avant à l'étape précédente.
 
 
-# Résumé des stats de l'ACM
+## Résumé des stats de l'ACM
 ```{r}
 summary(res2.mca, nbelements=5, # nombre d'individus
         ncp=2, # nombre de dimensions
@@ -170,11 +170,11 @@ summary(res2.mca, nbelements=5, # nombre d'individus
 ```
      
 
-## Etude 3 - on regarde la gravité des blessures selon les caractéristiques du lieu et du véhicule
+# Etude 3 - on regarde la gravité des blessures selon les caractéristiques du lieu et du véhicule
 
 Dans cette 3e ACM, on s'intéresse aux conditions de la route, météo et du véhicules
 
-# ACM
+## ACM
 ```{r}
 res3.mca <- MCA(base, quali.sup = c(1,3,21), 
                 level.ventil = 0.025) 
@@ -182,7 +182,7 @@ res3.mca <- MCA(base, quali.sup = c(1,3,21),
 ```
 
 
-# Réprésentation graphique des poids des dimensions
+## Réprésentation graphique des poids des dimensions
 ```{r}
 # Tableau avec les poids
 res3.mca$eig[,2]
@@ -194,7 +194,7 @@ barplot(res3.mca$eig[,2], names = paste("Dim", 1:nrow(res3.mca$eig)))
 On garde 5 axes, soit 18.3 %.
 
 
-# Réprésentation graphique des individus
+## Réprésentation graphique des individus
 ```{r}
 plot(res3.mca, invisible = c("var","quali.sup"),
      title = "Représentation des individus selon les 2 premiers axes de l'ACM")
@@ -202,7 +202,7 @@ plot(res3.mca, invisible = c("var","quali.sup"),
 
 Vu le nb d'individus, pas d'intérêt car pas lisible
 
-# Représentation graphique des individus selon les modalités de la variable "grav"
+## Représentation graphique des individus selon les modalités de la variable "grav"
 ```{r}
 plot(res3.mca, invisible = c("var","quali.sup"),
      habillage = "grav",
@@ -212,14 +212,14 @@ plot(res3.mca, invisible = c("var","quali.sup"),
 Sur l'axe 2, les personnes idemnes (en bas) se détachent des personnes tuées (en haut)
 
 
-# Représentation graphique des modalités des variables
+## Représentation graphique des modalités des variables
 ```{r}
 plot(res3.mca, invisible = "ind",
      title = "Réprésentation des modalités actives (rouge) et des modalités illustratives (vert) selon les 2 premiers axes de l'ACM")
 ```
 
 
-# Représentation graphique des modalités des variables (sans les variables illustratives)
+## Représentation graphique des modalités des variables (sans les variables illustratives)
 ```{r}
 plot(res3.mca, invisible = c("ind","quali.sup"),
      title = "Représentation des modalités actives selon les 2 premiers axes de l'ACM")
@@ -235,13 +235,13 @@ De même, le régime de circulation explique cet axe : sens unique ou chaussées
 Enfin, on a une nette opposition entre les personnes indemnes en bas et les blessés/hospitalisés en haut.
 
 
-# Représentation graphique des ellipses de confiance
+## Représentation graphique des ellipses de confiance
 ```{r}
 #plotellipses(res3.mca, keepvar = c("grav", "catr", "agg", "secu1", "catv", "col", "plan"))
 ```
 
 
-# Résumé des stats de l'ACM
+## Résumé des stats de l'ACM
 ```{r}
 summary(res3.mca, nbelements=20, # nombre d'individus (permet aussi de voir la contribution de toutes les variables aux axes)
         ncp=5, # nombre de dimensions
@@ -250,14 +250,14 @@ summary(res3.mca, nbelements=20, # nombre d'individus (permet aussi de voir la c
 
 
 
-## Classification avec Mclust
+# Classification avec Mclust
 
 ```{r}
 mod_classif <- Mclust(base)
 summary(mod_classif) # 8 classes
 ```
 
-# Analyse des classes
+## Analyse des classes
 ```{r}
 # ajout des classes dans la base
 base_comp <- cbind.data.frame(base,classe_mclust=as.factor(mod_classif$classification))
@@ -266,7 +266,7 @@ res_mclust <- catdes(base_comp, num.var = 2)  # on caractérise la variable "gra
 ```
 
 
-# quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
+## Quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
 ```{r}
 res_mclust$category
 ```
@@ -275,7 +275,7 @@ res_mclust$category
 31.0 % des personnes âgées de 75 ans et plus ont blessés hospitalisés dans l'accident. Parmi les personnes blessées hospitalisées dans l'accident, 8.0 % sont des personnes de 75 ans et plus. Enfin, les personnes âgées de 75 ans et plus représentent 5.2 % des personnes accidentées.
 
 
-## K-modes
+# K-modes
 
 ```{r}
 mod_kmodes <- kmodes(as.matrix(base), 8) # on prend 8 classes comme ce que la classification a trouvé
@@ -285,12 +285,12 @@ mod_kmodes <- kmodes(as.matrix(base), 8) # on prend 8 classes comme ce que la cl
 summary(mod_kmodes)
 ```
 
-# pour avoir la modalité de chaque variables dans les classes
+## Pour avoir la modalité de chaque variables dans les classes
 ```{r}
 mod_kmodes$modes
 ```
 
-# Analyse des classes
+## Analyse des classes
 ```{r}
 # ajout des classes dans la base
 base_comp <- cbind.data.frame(base_comp,classe_kmodes=as.factor(mod_kmodes$cluster))
@@ -298,15 +298,15 @@ base_comp <- cbind.data.frame(base_comp,classe_kmodes=as.factor(mod_kmodes$clust
 res_kmodes <- catdes(base_comp, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
 ```
 
-# quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
+## Quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
 ```{r}
 res_kmodes$category
 ```
 
-même résultat que la claissification (rassurant)
+même résultat que la classification (rassurant)
 
 
-# pour récupérer les classes de chaque ligne
+## pour récupérer les classes de chaque ligne
 ```{r}
 mod1$classification
 ```
