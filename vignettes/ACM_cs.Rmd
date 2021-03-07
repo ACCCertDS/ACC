@@ -145,7 +145,7 @@ plot(res2.mca, invisible = c("ind","quali.sup"),
 
 Sur l'axe 1: 
 a) à gauche, plutôt des hommes, les classes d'âges intermédiaires (25-64 ans), conducteur et indemne
-b) à droite les âges extrèmes (moins de 15 ans ou 75 ans et plus), femmes, passagers ou piétons et blessés
+b) à droite les âges extrêmes (moins de 15 ans ou 75 ans et plus), femmes, passagers ou piétons et blessés
 
 Sur l'axe 2 :
 a) en haut : les personnes de plus de 75 ans / piéton / tué 
