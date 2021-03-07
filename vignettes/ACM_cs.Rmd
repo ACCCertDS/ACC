@@ -12,11 +12,15 @@ library(dbplyr)
 library(FactoMineR) # pour les ACM
 library(mclust) # pour la classification
 library(klaR) # pour les K-modes
+library(ACC)
 ```
 
 
 Préparation de la base de travail
 ```{r}
+data("population", package = "ACC")
+accidents2 <-  mutate_pour_modele(accidents, population)
+
 # Suppression des variables d'identifiants et les variables quantitatives
 base <- accidents2 %>%
   dplyr::select(-Num_Acc)
