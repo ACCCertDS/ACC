@@ -2,7 +2,7 @@
 title: "Analyses des Correspondances Multiples et Classification sur la base accidents"
 output: html_notebook
 author : CS
-date : 06/03/2021
+date : 08/03/2021
 ---
 
 Bibliothèques utiles à l’éxécution du programme
