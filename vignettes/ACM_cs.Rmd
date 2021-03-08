@@ -270,15 +270,60 @@ res_mclust <- catdes(base_comp, num.var = 2)  # on caractérise la variable "gra
 ```{r}
 res_mclust$category
 ```
+
+Grille de lecture (exemple pour les hommes et les personnes de 75 ans et plus) :
 3.0 % des hommes ont été tués dans l'accident. Parmi les personnes tuées dans l'accident, 76,5 % sont des hommes. Enfin, les hommes représentent 68.8 % des personnes accidentées.
-43.6 % des hommes sont sortis indemnes de l'accident. Parmi les personnes indemnes, 73.1 % sont des hommes. Enfin, les hommes représentent 68.8 % des personnes accidentées.
+43.6 % des hommes sont sortis indemnes de l'accident. Parmi les personnes indemnes, 73.1 % sont des hommes.
 31.0 % des personnes âgées de 75 ans et plus ont blessés hospitalisés dans l'accident. Parmi les personnes blessées hospitalisées dans l'accident, 8.0 % sont des personnes de 75 ans et plus. Enfin, les personnes âgées de 75 ans et plus représentent 5.2 % des personnes accidentées.
+
+
+## Quelles modalités sont les plus présentes dans chaque classe  ?
+```{r}
+res_mclust2 <- catdes(base_comp, num.var = 23)  # on choisit la variable "classe"
+res_mclust2$category
+```
+Classe 1 (81 193)
+personne indemne - passager
+entre 20h et 6h  + dimanche
+voiture (100 %) + accident hors agglo + route non rectiligne + autoroute + conditions météo normales + nuit/crépuscule
+
+Classe 2 (26 523)
+homme + conducteur 
+2 roues motorisé + présence d'une infrastructure + intersection / giratoire + secu1 2 roues
+
+Classe 3 (28 425)
+conducteur + indemne
+conditions atmospheriques perturbées + hors agglo + secu1 voiture + poids lourd / engin agricole
+
+Classe 4 (77 331)
+conducteur + 15-24 ans + blessés (léger ou hospitalisé)
+2 roues (vélo + moto) + en agglo + conditions météo normales + surf normale
+
+Classe 5 (119 187)
+hiver (entre nov et janv) + conditions météo dégradées + hors agglo + hors intersection + route non rectiligne +surface anormale + nuit sans éclairage + secu1 voiture
+
+Classe 6 (69 035)
+conducteur + indemne + femme + 75 ans et plus
+entre 7h et 15h + plein jour + conditions météo normales + collision plusieurs véhicules + surface normale + route sans inclinaison + présence infrastructure + VU/VL
+
+Classe 7 (13 864)
+femme + passager
+nuit sans éclairage + giratoire + surface anormale + présence d'une infratructure
+
+Classe 8 (26 199)
+indemne
+secu 1 aucun/autre
+VL léger + météo normale + surface normale + sans infrastructure
+
+Classe 9 (38 359)
+âges extrèmes (moins de 15 ou 75 ans et +) + femmes + piéton + blessé
+voie communale + en agglo
 
 
 # K-modes
 
 ```{r}
-mod_kmodes <- kmodes(as.matrix(base), 8) # on prend 8 classes comme ce que la classification a trouvé
+mod_kmodes <- kmodes(as.matrix(base), 9) # on prend 9 classes comme ce que la classification a trouvé
 ```
 
 ```{r}
@@ -294,26 +339,11 @@ mod_kmodes$modes
 ```{r}
 # ajout des classes dans la base
 base_comp <- cbind.data.frame(base_comp,classe_kmodes=as.factor(mod_kmodes$cluster))
-
-res_kmodes <- catdes(base_comp, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
 ```
 
 ## Quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
 ```{r}
+res_kmodes <- catdes(base_comp, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
 res_kmodes$category
 ```
-
 même résultat que la classification (rassurant)
-
-
-## pour récupérer les classes de chaque ligne
-```{r}
-mod1$classification
-```
-
-
-## K-modes
-```{r}
-kmodes(as.matrix(base), 
-       9) # on prend 9 classes comme ce que la classification a trouvé
-```
