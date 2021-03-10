@@ -12,6 +12,20 @@ library(shiny)
 library(leaflet)
 library(lubridate)
 library(ggplot2)
+library(ACC)
+
+accidents$lat <- type.convert(accidents$lat, dec=".")
+accidents$long <- type.convert(accidents$long, dec=".")
+accidents$lat <- as.numeric(accidents$lat)
+accidents$long <- as.numeric(accidents$long)
+
+accidents_gps <- accidents %>%
+    mutate(lat = case_when(
+                abs(lat) > 100 ~ lat/100000,
+                TRUE ~ lat),
+           long = case_when(
+                abs(long) > 100 ~ long/100000,
+                TRUE ~ long))
 
 accidents_bis <- accidents_gps %>%
     dplyr::select(Num_Acc, grav, lat, long, date_acc) %>%
@@ -53,7 +67,143 @@ ui <- fluidPage(
                  tabPanel("France",
                           h3("Répartition géographique des accidents par année en fonction de leur gravité"),
                           leafletOutput("mymap", height=650, width=605)),
-                          tabPanel("Départements")
+                 tabPanel("Application",
+                         h3("Renseigner les données des menus déroulants ci-dessous pour prédiction de la gravité de l'accident"),
+                         dateInput("date",
+                                   label = h3("Date de l'accident"),
+                                   value = Sys.Date()),
+                         selectInput(
+                             inputId = "dep",
+                             label = "Département lieu de l'accident :",
+                             choices = unique(accidents$dep),
+                             selected = "75",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "catus",
+                             label = "Catégorie d'usager :",
+                             choices = c("Conducteur", "Piéton", "Passager"),
+                             selected = "Conducteur",
+                             selectize = FALSE
+                                    ),
+                         selectInput(
+                             inputId = "sex",
+                             label = "Sexe :",
+                             choices = unique(accidents$sexe),
+                             selected = "Masculin",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "secu",
+                             label = "Equipement de sécurité :",
+                             choices = na.omit(unique(accidents$secu1)),
+                             selected = "Ceinture",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "catev",
+                             label = "Catégorie de véhicule :",
+                             choices = unique(accidents$catv),
+                             selected = "VL seul",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "lumi",
+                             label = "Luminosité :",
+                             choices = unique(accidents$lum),
+                             selected = "Plein jour",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "agglo",
+                             label = "En agglomération ou non ?",
+                             choices = unique(accidents$agg),
+                             selected = "En agglomération",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "atmo",
+                             label = "Conditions atmosphériques :",
+                             choices = unique(accidents$atm),
+                             selected = "Normale",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "coli",
+                             label = "Collision :",
+                             choices = unique(accidents$col),
+                             selected = "Sans collision",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "inter",
+                             label = "Intersection ?",
+                             choices = unique(accidents$intersection),
+                             selected = "Hors intersection",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "heure",
+                             label = "Heure de l'accident :",
+                             choices = unique(accidents$heure),
+                             selected = "17",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "catroute",
+                             label = "Catégorie de route :",
+                             choices = unique(accidents$catr),
+                             selected = "Voie communale",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "circu",
+                             label = "Mode de circulation :",
+                             choices = unique(accidents$circ),
+                             selected = "A sens unique",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "profil",
+                             label = "Profil de la route :",
+                             choices = unique(accidents$prof),
+                             selected = "Plat",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "plan",
+                             label = "Profil de la route (bis) :",
+                             choices = unique(accidents$plan),
+                             selected = "Rectiligne",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "surface",
+                             label = "Surface de la route :",
+                             choices = unique(accidents$surf),
+                             selected = "Normale",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "infr",
+                             label = "Infrastructure :",
+                             choices = unique(accidents$infra),
+                             selected = "Non",
+                             selectize = FALSE
+                         ),
+                         selectInput(
+                             inputId = "situation",
+                             label = "Situation de l'accident :",
+                             choices = unique(accidents$situ),
+                             selected = "Sur chaussée",
+                             selectize = FALSE
+                         ),
+                         numericInput(
+                             inputId = "age",
+                             label = "Age de l'accidenté (Entrer un âge entier) :",
+                             value = 20
+                         )
+                             )
                         )
                     )
                 )

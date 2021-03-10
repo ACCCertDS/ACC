@@ -168,6 +168,16 @@ accidents_par_dept <- data.frame(accidents_par_dept)
                 title="Nombre d'accidents par département en 2018") 
 ```
 
+Test avec la méthode leaflet du livre
+
+```{r}
+library(sf)
+dpt <- read_sf("dpt")
+dpt2 <- inner
+```
+
+
+
 ## Carte avec un marqueur par accident
 
 ```{r}
