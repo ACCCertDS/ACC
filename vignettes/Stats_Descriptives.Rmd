@@ -24,6 +24,12 @@ Parmi ces changements, au moins une des modalités de la variable que nous
 souhaitons modéliser par la suite, `grav`, n'est plus qualifiée de la même manière
 que par le passé.
 
+> Avertissement : Les données sur la qualification de blessé hospitalisé depuis
+> l’année 2018 ne peuvent être comparées aux années précédentes suite à des 
+> modifications de process de saisie des forces de l’ordre. L’indicateur « blessé
+> hospitalisé » n’est plus labellisé par l’autorité de la statistique publique 
+> depuis 2019.
+
 Considérant la profondeur d'historique disponible, nous avons préféré écarter
 les données concernant l'année 2019 de l'étude. Néanmoins, à titre informatif,
 ces données sont présentes dans l'analyse des variables qui suit.
@@ -94,9 +100,15 @@ ggplot(regr_tues) +
 regr_tues
 ```
 
-Tout comme le nombre d'accidents, le nombre de décédés dans un accident de la route est relativement constant au cours du temps (entre 3 186 décédés en 2018 et 3 393 en 2016).
-Nous notons par ailleurs que le nombre de décès évolue concomittament au nombre d'accidents. Le nombre d'accidents étant plus faible sur les années 2018 et 2019 (cf. ci-dessus), nous observons que le nombre de tués l'est également. 
-Nous relevons néanmoins que la proportion de tués sur la route est plus faible en 2017 qu'en 2016 (5,53 % en 2017 versus 5,7 % en 2016), bien que l'année 2017 soit le point haut des 5 années observées.
+Tout comme le nombre d'accidents, le nombre de décédés dans un accident de la 
+route est relativement constant au cours du temps (entre 3 186 décédés en 2018
+et 3 393 en 2016).
+Nous notons par ailleurs que le nombre de décès évolue concomittament au nombre
+d'accidents. Le nombre d'accidents étant plus faible sur les années 2018 et 2019 
+(cf. ci-dessus), nous observons que le nombre de tués l'est également. 
+Nous relevons néanmoins que la proportion de tués sur la route est plus faible en
+2017 qu'en 2016 (5,53 % en 2017 versus 5,7 % en 2016), bien que l'année 2017 soit
+le point haut des 5 années observées.
 
 ## Répartition des accidents par mois et par année
 
