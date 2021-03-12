@@ -14,6 +14,42 @@ library(ggplot2)
 library(ACC)
 ```
 
+En introduction, nous souhaitons souligner que la documentation des données
+disponible sur [data.gouv.fr]() indique des changements dans l'enregistrement
+des accidents a eu lieu à partir de 2019.
+Ces changements ont pour effet de changer les modalités de certaines variables,
+créer des variables (avec des valeurs manquantes pour les accidents passés).
+
+Parmi ces changements, au moins une des modalités de la variable que nous 
+souhaitons modéliser par la suite, `grav`, n'est plus qualifiée de la même manière
+que par le passé.
+
+Considérant la profondeur d'historique disponible, nous avons préféré écarter
+les données concernant l'année 2019 de l'étude. Néanmoins, à titre informatif,
+ces données sont présentes dans l'analyse des variables qui suit.
+
+Ces données n'étant pas conservées pour l'étude elles ne sont présentes dans le
+package, ainsi nous les récupérons uniquement pour ce document dans le bloc de 
+code suivant, ce qui permet par ailleurs d'illustrer les fonctions qui ont permis
+la création du reste des données.
+
+```{r}
+carac_2019 <- dl_caracteristiques(2019L) %>% 
+  recod_caracteristiques()
+usagers_2019 <- dl_usagers(2019L) %>% 
+  recod_usagers()
+vehic_2019 <- dl_vehicules(2019L) %>% 
+  recod_vehicules()
+lieux_2019 <- dl_lieux(2019L) %>% 
+  recod_lieux()
+
+accid_2019 <-  create_table_accidents(carac_2019, usagers_2019, lieux_2019, vehic_2019)
+
+accidents <- bind_rows(accid_2019, accidents)
+```
+
+
+
 ## Evolution du nombre d'accidents par année depuis 2015
 
 ```{r}
@@ -25,13 +61,19 @@ regr_accidents <- accidents %>%
 ggplot(regr_accidents) +
  aes(x = annee, y = nb_accidents) +
  geom_histogram(stat = "identity", fill = "#440154") +
- labs(x = "Année", y = "Nombre d'accidents",title = "Nombre d'accidents par année") +
+ labs(x = "Année",
+      y = "Nombre d'accidents",
+      title = "Nombre d'accidents par année") +
  theme_light()
 
 regr_accidents
 ```
 
-Nous pouvons noter que le nombre d'accidents est relativement constant depuis 2015, à un niveau proche des 60 000 par an (entre 57 783 en 2018 et 60 701 en 2017). On a observé une baisse du nombre d'accidents sur les années 2018 et 2019 comparativement à l'année 2017, année pour laquelle le nombre d'accidents est maximal sur la période 2015-2019.
+Nous pouvons noter que le nombre d'accidents est relativement constant depuis 2015,
+à un niveau proche des 60 000 par an (entre 57 783 en 2018 et 60 701 en 2017). 
+On a observé une baisse du nombre d'accidents sur les années 2018 et 2019 
+comparativement à l'année 2017, année pour laquelle le nombre d'accidents est
+maximal sur la période 2015-2019.
 
 ## Evolution du nombre de tués par année depuis 2015
 
