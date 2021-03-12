@@ -281,7 +281,8 @@ ggplot(acc_sexe_grav) +
  aes(x = sexe, y = nb_accidents_sexe_grav, fill = grav) +
  geom_bar(stat = "identity") +
  scale_fill_hue() +
- labs(x = "Sexe", y = "Nombre d'accidents", fill = "Gravité", title="Répartition des accidents selon le sexe et la gravité de 2015 à 2019") +
+ labs(x = "Sexe", y = "Nombre d'accidents", fill = "Gravité",
+      title="Répartition des accidents selon le sexe et la gravité de 2015 à 2019") +
  theme_light()
 
 sum_sexe_grav <- acc_sexe_grav %>%
@@ -295,8 +296,15 @@ acc_sexe_grav_1 <- acc_sexe_grav %>%
 acc_sexe_grav_1
 ```
 
-Nous notons que les femmes ont été 2 fois moins impliquées que les hommes dans un accidents de la route lors des années 2015 à 2019 (180 786 accidents pour les femmes contre 390 791 pour les hommes). Concernant la gravité des accidents, la représentation des classes "Blessé léger" et "Indemne" sont à l'inverse selon le sexe. Les femmes ont une représentation de blessés légers de 42 % (contre 35 % pour les hommes) pour une proportion d'indemnes de 35 % (contre 42 % pour les hommes).
-Les accidents impliquant des femmes sont également moins mortels que ceux impliquant des hommes (2,1 % contre 3,3 %). 
+Nous notons que les femmes ont été 2 fois moins impliquées que les hommes dans 
+un accidents de la route lors des années 2015 à 2019 (180 786 accidents pour les 
+femmes contre 390 791 pour les hommes). Concernant la gravité des accidents, la 
+représentation des classes "Blessé léger" et "Indemne" sont à l'inverse selon 
+le sexe. Les femmes ont une représentation de blessés légers de 42 % (contre 
+35 % pour les hommes) pour une proportion d'indemnes de 35 % (contre 42 % pour
+les hommes).
+Les accidents impliquant des femmes sont également moins mortels que ceux 
+impliquant des hommes (2,1 % contre 3,3 %). 
 Enfin, les proportions de blessés hospitalisés sont équivalentes.
 
 ## Usagers et gravité de l'accident entre 2015 et 2019
@@ -310,7 +318,8 @@ ggplot(us_grav) +
  aes(x = catu, y = nb_accidents_grav, fill = grav) +
  geom_bar(stat = "identity") +
  scale_fill_hue() +
-  labs(x = "Catégorie d'usager", y = "Nombre d'accidents", fill = "Gravité", title="Répartition des accidents selon la catégorie d'usager et la gravité") +
+  labs(x = "Catégorie d'usager", y = "Nombre d'accidents", fill = "Gravité",
+       title="Répartition des accidents selon la catégorie d'usager et la gravité") +
  theme_light()
 
 sum_catu_grav <- us_grav %>%
@@ -324,9 +333,15 @@ us_grav_1 <- us_grav %>%
 us_grav_1
 ```
 
-Les accidents ayant eu lieu sur les 5 années étudiées impliquent très majoritairement des usagers conducteurs. Les passagers sont 5 fois moins représentés et les piétons 8 fois moins. 
-Concernant la gravité, il y a 2 fois plus de piétons tués dans un accident de voiture que de conducteurs et passagers (pour lesquels la proportion de tués est équivalente). 
-Nous notons également que le conducteur sort plus souvent indemne que le passager et le passager plus souvent blessé léger que le conducteur. Les passagers sont plus souvent blessés hospitalisés que les conducteurs (22 % contre 18 %). 
+Les accidents ayant eu lieu sur les 5 années étudiées impliquent très 
+majoritairement des usagers conducteurs. Les passagers sont 5 fois moins 
+représentés et les piétons 8 fois moins. 
+Concernant la gravité, il y a 2 fois plus de piétons tués dans un accident 
+de voiture que de conducteurs et passagers (pour lesquels la proportion de tués
+est équivalente). 
+Nous notons également que le conducteur sort plus souvent indemne que le passager 
+et le passager plus souvent blessé léger que le conducteur. Les passagers sont 
+plus souvent blessés hospitalisés que les conducteurs (22 % contre 18 %). 
 
 ## Répartition des accidents par âge
 
@@ -339,11 +354,30 @@ ggplot(acc_par_age) +
  aes(x = age, y = nb_accidents_age, fill = grav) +
  geom_histogram(stat = "identity") +
  scale_fill_hue() +
-  labs(x = "Age", y = "Nombre d'accidents", fill = "Gravité", title="Répartition des accidents par âge et par gravité") +
+  labs(x = "Age", y = "Nombre d'accidents", fill = "Gravité", 
+       title="Répartition des accidents par âge et par gravité") +
  theme_light()
 ```
 
-Les accidents de la route impliquent le plus souvent des usagers de la classe d'âge 18 - 35 ans. Néanmoins, nous pouvons penser que c'est aussi la classe d'âge la plus représentée sur la route, ce qui multiplie donc les risques d'accidents.
+```{r}
+
+ggplot(acc_par_age) +
+ aes(x = age, y = nb_accidents_age, fill = grav) +
+ geom_histogram(stat = "identity") +
+ scale_fill_hue() +
+  facet_wrap(~ grav, scales = "free_y") + 
+  labs(x = "Age", y = "Nombre d'accidents", fill = "Gravité",
+       caption="Note : Les échelles en ordonnées sont différentes sur ces graphiques.",
+       title="Répartition des accidents par âge et par gravité") +
+ theme_light()
+```
+
+Les accidents de la route impliquent le plus souvent des usagers de la classe 
+d'âge 18 - 35 ans. Néanmoins, nous pouvons penser que c'est aussi la classe 
+d'âge la plus représentée sur la route, ce qui multiplie donc les risques d'accidents.
+
+On remarque également que un effet entre l'âge et la gravité de l'accident, 
+en effet, les personnes âgées semblent plus touchées par les accidents mortels.
 
 ## Conditions d'éclairage et gravité de l'accident
 
