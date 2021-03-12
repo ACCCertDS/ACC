@@ -122,12 +122,18 @@ ggplot(acc_par_mois) +
  aes(x = mois_acc, y=nb_accidents_mois) +
  geom_bar(stat = "identity",fill = "#0c4c8a") +
  labs(x = "Mois", y = "Nombre d'accidents", title = "Répartition des accidents par année et par mois") +
+ labs(x = "Mois", y = "Nombre d'accidents",
+      title = "Répartition des accidents par année et par mois") +
  theme_light() +
  facet_wrap(vars(annee)) +
   theme(axis.text.x = element_text(angle = 90))
 ```
 
 Tous les ans, le nombre d'accidents est faible aux mois de février et d'août. Concernant le mois d'août, période de vacances d'été, nous pouvons penser qu'il y a également moins d'usagers. A contrario, les mois de juin et juillet sont tous les ans des mois fortement accidentogènes.
+Tous les ans, le nombre d'accidents est faible aux mois de février et d'août. 
+Concernant le mois d'août, période de vacances d'été, nous pouvons penser qu'il 
+y a également moins d'usagers. *A contrario*, les mois de juin et juillet sont tous
+les ans des mois fortement accidentogènes.
 
 ## Répartition des accidents par date et par année
 
