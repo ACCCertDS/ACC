@@ -390,7 +390,8 @@ ggplot(eclairage) +
  aes(x = lum, y = nb_accidents_ecl, fill = grav) +
  geom_bar(stat = "identity") +
  scale_fill_viridis_d(option = "inferno") +
- labs(x = "Conditions d'éclairage", y = "Nombre d'accidents",fill = "Gravité", title = "Conditions d'éclairage et gravité des accidents") +
+ labs(x = "Conditions d'éclairage", y = "Nombre d'accidents",
+      fill = "Gravité", title = "Conditions d'éclairage et gravité des accidents") +
  theme_light() +
   theme(axis.text.x = element_text(angle = 90))
 
@@ -405,7 +406,8 @@ eclairage_1 <- eclairage %>%
 eclairage_1
 ```
 
-La majorité des accidents ont eu lieu en plein jour (362 155 accidents contre 48 565 pour la nuit sans éclairage et 82 022 pour la nuit avec éclairage à titre d'exemple). 
+La majorité des accidents ont eu lieu en plein jour (362 155 accidents contre 
+48 565 pour la nuit sans éclairage et 82 022 pour la nuit avec éclairage à titre d'exemple). 
 8,4% des accidents ayant eu lieu la nuit sans éclairage ont été mortels.
 
 ## Répartition des accidents par catégorie de route et par gravité
@@ -419,15 +421,17 @@ ggplot(repart_catr) +
  aes(x = catr, y = nb_accidents_catr, fill = grav) +
  geom_bar(stat = "identity") +
  scale_fill_hue() +
- labs(x = "Catégorie de route", y = "Nombre d'accidents", fill = "Gravité", title = "Répartition des accidents par catégorie et par gravité") +
+ labs(x = "Catégorie de route", y = "Nombre d'accidents",
+      fill = "Gravité", title = "Répartition des accidents par catégorie et par gravité") +
  theme_light() +
   theme(axis.text.x = element_text(angle = 90))
 ```
 
 Les accidents ont majoritairement lieu sur les voies communales et routes départementales. 
-La proportion de tués est supérieure lorsque l'accident se produit sur route départementale que lorsqu'il se produit sur voie communale.
+La proportion de tués est supérieure lorsque l'accident se produit sur route départementale
+que lorsqu'il se produit sur voie communale.
 
-## Lien entre port de la ceinture de sécurité et gravité de l'accident
+## Lien entre port d'un équipement de sécurité et gravité de l'accident
 
 ```{r}
 ceint <- accidents %>%
@@ -438,7 +442,8 @@ ggplot(ceint) +
  aes(x = secu1, y = nb_accidents_ceint, fill = grav) +
  geom_bar(stat = "identity") +
  scale_fill_hue() +
- labs(x = "Equipement de sécurité", y = "Nombre d'accidents", fill = "Gravité", title = "Lien entre port de la ceinture de sécurité et la gravité de l'accident") +
+ labs(x = "Equipement de sécurité", y = "Nombre d'accidents", fill = "Gravité", 
+      title = "Lien entre port de la ceinture de sécurité et la gravité de l'accident") +
  theme_light() +
   theme(axis.text.x = element_text(angle = 90))
 
