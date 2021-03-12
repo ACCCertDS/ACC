@@ -252,23 +252,37 @@ summary(res3.mca, nbelements=20, # nombre d'individus (permet aussi de voir la c
 
 # Classification avec Mclust
 
+Etape 1 : on fait un Mclust avec 6 à 10 classes
+```{r,eval=FALSE}
+mod_classif <- Mclust(base, G = 1:10)
+mod_classif$BIC
+```
+les meilleurs résultats sont pour les modèles EEV
+
+Etape 2 : on relance le mclust sur les modèles EEV uniquement et on teste de 1 à 10 classes
 ```{r}
-mod_classif <- Mclust(base)
-summary(mod_classif) # 8 classes
+mod_classif <- Mclust(base, G = 1:10, modelNames = "EEV")
+plot(1:10, abs(mod_classif$BIC), type='h') # pour afficher des BIC positifs
+```
+on retient 6 classes plutôt que 4 parce que ça minimise le BIC, et 6 plutôt que 10 car mdoèle plus parcimonieux
+
+```{r}
+mod_classif <- Mclust(base, G = 6L, modelNames = "EEV")
+summary(mod_classif) 
 ```
 
 ## Analyse des classes
 ```{r}
 # ajout des classes dans la base
 base_comp <- cbind.data.frame(base,classe_mclust=as.factor(mod_classif$classification))
-
-res_mclust <- catdes(base_comp, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
+names(base_comp)
 ```
 
 
 ## Quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
 ```{r}
-res_mclust$category
+res_mclust <- catdes(base_comp, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
+lapply(res_mclust$category, function(.x) head(as.data.frame(.x)))
 ```
 
 Grille de lecture (exemple pour les hommes et les personnes de 75 ans et plus) :
@@ -280,7 +294,7 @@ Grille de lecture (exemple pour les hommes et les personnes de 75 ans et plus) :
 ## Quelles modalités sont les plus présentes dans chaque classe  ?
 ```{r}
 res_mclust2 <- catdes(base_comp, num.var = 23)  # on choisit la variable "classe"
-res_mclust2$category
+lapply(res_mclust2$category, function(.x) head(as.data.frame(.x)))
 ```
 Classe 1 (81 193)
 personne indemne - passager
@@ -323,7 +337,7 @@ voie communale + en agglo
 # K-modes
 
 ```{r}
-mod_kmodes <- kmodes(as.matrix(base), 9) # on prend 9 classes comme ce que la classification a trouvé
+mod_kmodes <- kmodes(as.matrix(base), 6) # on prend 9 classes comme ce que la classification a trouvé
 ```
 
 ```{r}
@@ -338,12 +352,13 @@ mod_kmodes$modes
 ## Analyse des classes
 ```{r}
 # ajout des classes dans la base
-base_comp <- cbind.data.frame(base_comp,classe_kmodes=as.factor(mod_kmodes$cluster))
+base_comp2 <- cbind.data.frame(base,classe_kmodes=as.factor(mod_kmodes$cluster))
 ```
 
 ## Quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
 ```{r}
-res_kmodes <- catdes(base_comp, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
-res_kmodes$category
+res_kmodes <- catdes(base_comp2, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
+#res_kmodes$category
+lapply(res_kmodes$category, function(.x) head(as.data.frame(.x),n=10))
 ```
 même résultat que la classification (rassurant)
