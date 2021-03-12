@@ -14,7 +14,7 @@
 #' }
 recod_caracteristiques <- function(caracteristiques) {
   caracteristiques <- caracteristiques %>%
-    dplyr::select(-gps) %>%
+    dplyr::select(-tidyselect::any_of("gps")) %>%
     dplyr::mutate(lum = dplyr::case_when(
       lum == 1 ~ "Plein jour",
       lum == 2 ~ "Crépuscule ou aube",
@@ -31,7 +31,7 @@ recod_caracteristiques <- function(caracteristiques) {
       int == 7 ~ "Place",
       TRUE ~ "Passage à niveau"
     )) %>%
-    dplyr::select(-`int`) %>%
+    dplyr::select(-tidyselect::any_of("int")) %>%
     # Ajout des libellés relatifs aux conditions atmosphériques
     dplyr::mutate(atm = dplyr::case_when(
       atm == 1 ~ "Normale",
@@ -82,7 +82,7 @@ recod_caracteristiques <- function(caracteristiques) {
       heure = as.factor(lubridate::hour(dtm_num)),
       dtm_num = as.numeric(lubridate::as.duration(dtm_num - lubridate::ymd_hm("20000101 00:00")))
     ) %>%
-    dplyr::select(-an, -annee, -jour, -mois) %>%
+    dplyr::select(tidyselect::any_of(c("an", "annee", "jour", "mois"))) %>%
     # Jusqu'en 2018 : Département : Code INSEE du département suivi d'un 0
     # (201 Corse-du-Sud - 202 Haute-Corse)
     dplyr::mutate(
