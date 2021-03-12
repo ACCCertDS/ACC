@@ -151,7 +151,8 @@ ggplot(regr_accidents_date) +
   theme_light()
 ```
 
-Nous retrouvons l'effet "vacances d'été" évoqué ci-dessus.
+Nous retrouvons l'effet "vacances d'été" évoqué ci-dessus, signe d'une saisonalité.
+Nous n'observons pas d'effet *année*.
 
 ## Répartition du nombre d'accidents par an et par jour de la semaine
 
