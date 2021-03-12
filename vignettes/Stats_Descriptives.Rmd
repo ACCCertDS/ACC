@@ -121,7 +121,6 @@ acc_par_mois <- accidents %>%
 ggplot(acc_par_mois) +
  aes(x = mois_acc, y=nb_accidents_mois) +
  geom_bar(stat = "identity",fill = "#0c4c8a") +
- labs(x = "Mois", y = "Nombre d'accidents", title = "Répartition des accidents par année et par mois") +
  labs(x = "Mois", y = "Nombre d'accidents",
       title = "Répartition des accidents par année et par mois") +
  theme_light() +
@@ -129,7 +128,6 @@ ggplot(acc_par_mois) +
   theme(axis.text.x = element_text(angle = 90))
 ```
 
-Tous les ans, le nombre d'accidents est faible aux mois de février et d'août. Concernant le mois d'août, période de vacances d'été, nous pouvons penser qu'il y a également moins d'usagers. A contrario, les mois de juin et juillet sont tous les ans des mois fortement accidentogènes.
 Tous les ans, le nombre d'accidents est faible aux mois de février et d'août. 
 Concernant le mois d'août, période de vacances d'été, nous pouvons penser qu'il 
 y a également moins d'usagers. *A contrario*, les mois de juin et juillet sont tous
@@ -140,15 +138,17 @@ les ans des mois fortement accidentogènes.
 ```{r}
 regr_accidents_date <- accidents %>%
   mutate(annee = year(date_acc)) %>%
-  filter(annee == 2019) %>%
+  # filter(annee == 2019) %>%
   group_by(date_acc,annee) %>%
   summarise(nb_accidents_date = n_distinct(Num_Acc))
 
 ggplot(regr_accidents_date) +
- aes(x = date_acc, y = nb_accidents_date) +
-  labs(x = "Date", y = "Nombre d'accidents", title = "Répartition des accidents mortels par heure de la journée") +
- geom_line(size = 1L, colour = "#0c4c8a") +
- theme_light()
+  aes(x = date_acc, y = nb_accidents_date) +
+  geom_line(size = 1L, colour = "#0c4c8a") +
+  facet_wrap(~ annee, scales = "free_x") + 
+  labs(x = "Date", y = "Nombre d'accidents",
+       title = "Répartition des accidents mortels par heure de la journée") +
+  theme_light()
 ```
 
 Nous retrouvons l'effet "vacances d'été" évoqué ci-dessus.
