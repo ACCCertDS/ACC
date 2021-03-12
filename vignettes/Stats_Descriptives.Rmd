@@ -165,7 +165,8 @@ acc_par_jour <- accidents %>%
 ggplot(acc_par_jour) +
  aes(x = jour_acc, y = nb_accidents_jour) +
  geom_bar(stat = "identity", fill = "#0c4c8a") +
- labs(x = "Jour de l'accident", y = "Nombre d'accidents", title = "Nombre d'accidents par jour de la semaine et par année") +
+ labs(x = "Jour de l'accident", y = "Nombre d'accidents",
+      title = "Nombre d'accidents par jour de la semaine et par année") +
  theme_light() +
  facet_wrap(vars(annee)) +
   theme(axis.text.x = element_text(angle = 90))
@@ -188,7 +189,8 @@ ggplot(regr_heure) +
  theme_light()
 ```
 
-La tranche horaire 16h-19h est la plus accidentogène. Néanmoins, nous pouvons penser que c'est aussi la période de la journée où les usagers sont le plus présents sur la route. 
+La tranche horaire 16h-19h est la plus accidentogène. Néanmoins, nous pouvons 
+penser que c'est aussi la période de la journée où les usagers sont le plus présents sur la route. 
 
 ## Répartition des accidents mortels par heure de la journée (sur la base de 2015 à 2019)
 
@@ -220,27 +222,38 @@ ggplot(repart_sexe) +
  aes(x = sexe, y = nb_accidents_sexe, fill = sexe) +
  geom_bar(stat = "identity") +
  scale_fill_hue() +
- labs(x = "Sexe", y = "Nombre d'accidents", fill = "Sexe",title = "Répartition des accidents conducteurs de la route par année et par sexe") +
+ labs(x = "Sexe", y = "Nombre d'accidents", fill = "Sexe",
+      title = "Répartition des accidents conducteurs de la route par année et par sexe") +
  theme_light() +
  facet_wrap(vars(annee))
 
-repart_sexe
+repart_sexe %>% 
+  spread(sexe, nb_accidents_sexe)
 ```
 
-Quelle que soit l'année, on note que les femmes sont impliquées dans 2 à 3 fois moins d'accidents que les hommes. Nous étudions la répartition des accidents selon le sexe et la gravité plus en avant dans la suite du présent R-Markdown.
+Quelle que soit l'année, on note que les femmes sont impliquées dans 2 à 3 fois 
+moins d'accidents que les hommes. 
+
+Nous étudions la répartition des accidents selon le sexe et la gravité plus en 
+avant dans la suite du présent document.
 
 ## Gravité de l'accident
 
 ```{r}
 gravite <- accidents %>%
   group_by(grav) %>%
-  summarise(nb_accidents_gravite = n_distinct(Num_Acc))
+  summarise(nb_accidents_gravite = n_distinct(Num_Acc)) %>% 
+  #Pour l'ordre des modalités dans le graphique :  
+  mutate(grav = fct_relevel(grav, "Indemne","Blessé léger","Blessé hospitalisé","Tué"))
 
 ggplot(gravite) +
  aes(x = grav, y = nb_accidents_gravite, fill = grav) +
  geom_bar(stat = "identity") +
- scale_fill_viridis_d(option = "inferno") +
- labs(x = "Gravité", y = "Nombre d'accidents", fill="Gravité", title = "Gravité des accidents ayant eu lieu de 2015 à 2019") +
+ scale_fill_viridis_d(option = "inferno", direction = -1) +
+ labs(x = "Gravité",
+      y = "Nombre d'accidents",
+      fill="Gravité",
+      title = "Gravité des accidents ayant eu lieu de 2015 à 2019") +
  theme_light()
 
 sum_grav <- gravite %>%
