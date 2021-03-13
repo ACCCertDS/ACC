@@ -1,0 +1,393 @@
+---
+title: "Analyses des Correspondances Multiples et Classification sur la base accidents"
+output: 
+  html_document: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Analyses des Correspondances Multiples et Classification sur la base accidents}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Bibliothèques utiles à l’éxécution du programme
+```{r}
+library(tidyverse)
+library(dbplyr)
+library(FactoMineR) # pour les ACM
+library(mclust) # pour la classification
+library(klaR) # pour les K-modes
+library(ACC)
+```
+
+
+Préparation de la base de travail
+```{r}
+data("population", package = "ACC")
+accidents2 <-  mutate_pour_modele(accidents, population)
+
+# Suppression des variables d'identifiants et les variables quantitatives
+base <- accidents2 %>%
+  dplyr::select(-Num_Acc)
+
+# résumé de la base
+summary(base)
+names(base)
+```
+
+
+# Etude 1 - ACM sur l'ensemble des variables qualitatives de la base de données
+
+Dans cette première ACM, on intègre toutes les variables qualitatives.
+
+## ACM
+```{r}
+res.mca <- MCA(base,
+                level.ventil = 0.025)
+# toutes les modalités représentant moins de 2.5 % sont ventilées aléatoirement dans les autres modalités (les tués représentent 2,7 % des accidents, d'où le filtre à 2,5 % car on veut garder la modalité "tué")
+```
+
+
+## Réprésentation graphique des poids des dimensions
+```{r}
+# Tableau avec les poids des axes
+res.mca$eig[,2]
+
+# Histogramme
+barplot(res.mca$eig[,2], names = paste("Dim", 1:nrow(res.mca$eig)))
+```
+
+Au vu du coude, on ne garderait que 7 axes. Toutefois, cela représente assez peu (22 %), ce qui est normal en ACM.
+
+
+## Réprésentation graphique des individus
+```{r}
+plot(res.mca, invisible = "var",
+     title = "Représentation des individus selon les 2 premiers axes de l'ACM")
+```
+
+Vu le nombre d'individus, aucun intérêt car pas lisible.
+
+
+## Représentation graphique des modalités des variables
+```{r}
+plot(res.mca, invisible = "ind",
+     title = "Représentation des modalités selon les 2 premiers axes de l'ACM")
+```
+Même constat que pour le graphique précédent, trop de modalités et peu lisible.
+
+
+## Résumé des stats de l'ACM
+```{r}
+summary(res.mca, nbelements=2, # nombre d'individus
+        ncp=5, # nombre de dimensions
+        nb.dec=2) 
+```
+
+
+# Etude 2 - on regarde la gravité des blessures selon le profil des usagers
+
+Dans cette 2e ACM, on étudie le fait d'être Indemne/Blessé selon les données démographiques des victimes (age, sexe, catégorie d'usagers).
+
+## ACM
+```{r}
+# rq : on ne garde que les variables démographiques (sexe, age, catégorie d'usagers) et les autres sont passées en illustratives
+res2.mca <- MCA(base, quali.sup = c(4:20,22), level.ventil = 0)
+```
+
+
+## Réprésentation graphique des poids des dimensions
+```{r}
+# Tableau avec les poids
+res2.mca$eig[,2]
+
+# Histogramme
+barplot(res2.mca$eig[,2], names = paste("Dim", 1:nrow(res2.mca$eig)))
+```
+
+Au vu du graph, on peut garder 2 axes, qui explique 22 %.
+
+## Réprésentation graphique des individus
+```{r}
+plot(res2.mca, invisible = c("var","quali.sup"),
+     title = "Représentation des individus selon les 2 premiers axes de l'ACM")
+```
+
+Vu le nombre d'individus, peu d'intérêt car pas lisible.
+
+
+## Représentation graphique des individus selon les modalités de la variable "grav"
+```{r}
+plot(res2.mca, invisible = c("var","quali.sup"),
+     habillage = "grav",
+     title = "Représentation des individus selon les modalités de la variable gravité")
+```
+
+Sur l'axe 2, les personnes idemnes (en bas) se détachent des personnes tuées (en haut)
+
+
+## Représentation graphique des individus selon les modalités de la variable "catégorie d'usager"
+```{r}
+plot(res2.mca, invisible = c("var","quali.sup"),
+     habillage = "catu",
+     title = "Représentation des individus selon la catégorie d'usager")
+```
+
+Selon l'axe 2, on peut observer qu'un groupe "passager" se détache vers le bas (personnes indemnes), par oppoistion au groupe "piétons" vers le haut (personnes tuées)
+
+
+## Représentation graphique des modalités des variables
+```{r}
+plot(res2.mca, invisible = "ind",
+     title = "Représentation des modalités actives (rouge) et des modalités illustratives (vert) selon les 2 premiers axes de l'ACM")
+```
+
+## Représentation graphique des modalités des variables (sans les variables illustratives)
+```{r}
+plot(res2.mca, invisible = c("ind","quali.sup"),
+     title = "Représentation des modalités actives selon les 2 premiers axes de l'ACM")
+```
+
+Sur l'axe 1: 
+a) à gauche, plutôt des hommes, les classes d'âges intermédiaires (25-64 ans), conducteur et indemne
+b) à droite les âges extrêmes (moins de 15 ans ou 75 ans et plus), femmes, passagers ou piétons et blessés
+
+Sur l'axe 2 :
+a) en haut : les personnes de plus de 75 ans / piéton / tué 
+b) en bas : les personnes de moins de 25 ans / passager / blessé léger
+
+
+## Représentation graphique des ellipses de confiance
+```{r}
+plotellipses(res2.mca, keepvar = c("grav", "sexe", "catu", "classe_age"))
+```
+L'axe 1 distingue les hommes (à gauche) des femmes (à droite). De même, les conducteurs sont à gauche et les piétons à droite.
+L'axe 2 distingue les jeunes (en bas) des personnes âgées (en haut). Les jeunes sont plutôt des passagers, les classes d'âges intermédiaires des conducteurs et les personnes plus âgées des piétons.
+
+Cette représentation graphique conforte les groupes mis en avant à l'étape précédente.
+
+
+## Résumé des stats de l'ACM
+```{r}
+summary(res2.mca, nbelements=5, # nombre d'individus
+        ncp=2, # nombre de dimensions
+        nb.dec=2) 
+```
+     
+
+# Etude 3 - on regarde la gravité des blessures selon les caractéristiques du lieu et du véhicule
+
+Dans cette 3e ACM, on s'intéresse aux conditions de la route, météo et du véhicules
+
+## ACM
+```{r}
+res3.mca <- MCA(base, quali.sup = c(1,3,21), 
+                level.ventil = 0.025) 
+# toutes les modalités représentant moins de 2.5 % sont ventilées aléatoirement dans les autres modalités (les tués représentent 2,7 % des accidents, d'où le filtre à 2,5 % car on veut garder la modalité "tué")
+```
+
+
+## Réprésentation graphique des poids des dimensions
+```{r}
+# Tableau avec les poids
+res3.mca$eig[,2]
+
+# Histogramme
+barplot(res3.mca$eig[,2], names = paste("Dim", 1:nrow(res3.mca$eig)))
+```
+
+On garde 5 axes, soit 18.3 %.
+
+
+## Réprésentation graphique des individus
+```{r}
+plot(res3.mca, invisible = c("var","quali.sup"),
+     title = "Représentation des individus selon les 2 premiers axes de l'ACM")
+```
+
+Vu le nb d'individus, pas d'intérêt car pas lisible
+
+## Représentation graphique des individus selon les modalités de la variable "grav"
+```{r}
+plot(res3.mca, invisible = c("var","quali.sup"),
+     habillage = "grav",
+     title = "Représentation des individus selon les modalités de la variable gravité")
+```
+
+Sur l'axe 2, les personnes indemnes (en bas) se détachent des personnes tuées (en haut)
+
+
+## Représentation graphique des modalités des variables
+```{r}
+plot(res3.mca, invisible = "ind",
+     title = "Réprésentation des modalités actives (rouge) et des modalités illustratives (vert) selon les 2 premiers axes de l'ACM")
+```
+
+
+## Représentation graphique des modalités des variables (sans les variables illustratives)
+```{r}
+plot(res3.mca, invisible = c("ind","quali.sup"),
+     title = "Représentation des modalités actives selon les 2 premiers axes de l'ACM")
+```
+
+
+L'axe 1 est discriminant sur la catégorie de route : voie communale à gauche contre route nationale/autoroute à droite.
+De même, on a les accidents en agglomération à droite et ceux hors agglo à gauche (cohérent avec l'analyse précédente).
+Enfin, la luminosité conforte cette analyse : nuit avec éclairage (en agglo - à gauche) et nuit sans écalirage (hors agglo - à droite)
+
+L'axe 2 distingue le profil : accidents en pente en haut et accident sur route "plate" en bas.
+De même, le régime de circulation explique cet axe : sens unique ou chaussées séparées en bas contre bidirectionnelle en haut.
+Enfin, on a une nette opposition entre les personnes indemnes en bas et les blessés/hospitalisés en haut.
+
+
+## Représentation graphique des ellipses de confiance
+```{r}
+#plotellipses(res3.mca, keepvar = c("grav", "catr", "agg", "secu1", "catv", "col", "plan"))
+```
+
+
+## Résumé des stats de l'ACM
+```{r}
+summary(res3.mca, nbelements=20, # nombre d'individus (permet aussi de voir la contribution de toutes les variables aux axes)
+        ncp=5, # nombre de dimensions
+        nb.dec=2) 
+```
+
+
+
+# Classification avec Mclust
+
+Etape 1 : on fait un Mclust avec 1 à 10 classes
+```{r,eval=FALSE}
+mod_classif <- Mclust(base, G = 1:10)
+mod_classif$BIC
+```
+On constate que les meilleurs résultats sont pour les modèles EEV.
+
+
+Etape 2 : on relance le mclust sur les modèles EEV uniquement et on teste de 1 à 10 classes
+```{r}
+mod_classif <- Mclust(base, G = 1:10, modelNames = "EEV")
+plot(1:10, abs(mod_classif$BIC), type='h') # pour afficher des BIC positifs
+```
+On retient 6 classes plutôt que 4 parce que ça minimise le BIC, et 6 plutôt que 
+10 car cela permet modèle plus parcimonieux et un nombre de classes plus facilement
+analysable.
+
+```{r}
+mod_classif <- Mclust(base, G = 6, modelNames = "EEV")
+summary(mod_classif) 
+```
+
+## Analyse des classes
+```{r}
+# ajout des classes dans la base
+base_comp <- cbind.data.frame(base,classe_mclust=as.factor(mod_classif$classification))
+names(base_comp)
+```
+
+
+## Quelles modalités sont le plus liées aux modalité de la gravité des blessures ?
+```{r}
+res_mclust <- catdes(base_comp, num.var = 2)  # on caractérise la variable "grav" (2e colonne dans la base)
+lapply(res_mclust$category, function(.x) head(as.data.frame(.x), n=8))
+```
+
+### Classe "Blessés hospitalisés"
+Il y a une sur-représentation des personnes âgées de 75 ans et + : 31.0 % d'entre eux ont été blessés hospitalisés dans l'accident. Parmi les personnes blessées hospitalisées dans l'accident, 8.0 % sont des personnes de 75 ans et plus. Enfin, les personnes âgées de 75 ans et plus représentent 5.2 % des personnes accidentées.
+De même, il y a une sur-représentation des départements moins peuplés (29.7 % pour les moins de 500 000 hab contre 14.7% dans la base totale)
+Le lieu était plutôt une route départementale, non rectiligne avec une circulation bidirectionnelle.
+
+### Classe "Blessés léger"
+Il y a une sur-représentation des personnes de moins de 15 ans : 50.0 % d'entre eux ont été blessés légers dans l'accident. Parmi les personnes blessées légers dans l'accident, 8.0 % sont des personnes de moins de 15 ans. Enfin, les personnes âgées de moins de 15 ans représentent 5.8 % des personnes accidentées.
+De même, il y a une sur-représentation des départements de plus de 2 millions d'habitants.
+Le lieu de l'accident était plus souvent une voie communale, en agglomération, sur une route à sens unique et le véhicule était un vélo.
+
+### Classe "Indemne"
+Aucune catégorie d'usagers ne ressort.
+Ce sont plutôt des accidents avec plusieurs véhicules (2 ou plus), avec des véhicules utilitaires et en agglomération.
+
+### Classe "Tué"
+Comme pour les blessés hospitalisés, il y a une sur-reprsentation des personnes âgées de 75 ans et plus, dans des départements de moins de 500 000 habitants. 
+Le lieu est caractérisé par une route départementale bidirectionnelle, non rectiligne, hors agglomération.
+Les accidents ont eu lieu la nuit sans éclairage.
+
+
+## Quelles modalités sont les plus présentes dans chaque classe  ?
+
+```{r}
+res_mclust2 <- catdes(base_comp, num.var = 23)  # on choisit la variable "classe"
+lapply(res_mclust2$category, function(.x) head(as.data.frame(.x), n=10))
+```
+
+### Classe 1 (177 478)
+accident en plein jour avec des conditions météo normales, sur une route "plate", rectiligne sans pb sur la surface
+sur-représentation des autoroutes, hors intersection avec une collisions de 3 véhicules ou plus
+
+### Classe 2 (70 517)
+très peu d'info sur le lieu et les conditions (modalités à autres ou non renseigné)
+route départementale
+
+### Classe 3 (48 762)
+voiture + collision de 2 véhicules
+route à sens unique avec une infrastructure à une intersection/giratoire
+
+### Classe 4 (88 249)
+durant l'hiver (nov, dec ou janv)
+conditions météo dégradées (vent/tempête, couvert ou pluie) + surface de la route anormale + absence d'infrastructure
+
+### Classe 5 (25 154)
+âges extrèmes (avant 15 ans ou 75 ans et +)
+accident sur une voie communale, en agglo + autre collision + pluie légère
+
+### Classe 6 (69 956)
+usagers âgés entre 15 et 24 ans + département de plus de 2 millions d'habitants
+voie communale + en agglo + sans infrastructure + surface de la route normale
+
+
+# K-modes
+
+```{r}
+mod_kmodes <- kmodes(as.matrix(base), 6) # on prend 6 classes comme ce que la classification a trouvé
+summary(mod_kmodes)
+```
+
+## Pour voir la modalité de chaque variables la plus présente dans chaque classe
+
+```{r}
+mod_kmodes$modes
+```
+
+### Classe 1
+
+blessé léger + conducteur + hommes + 15-24 ans + depmt entre 1 et 2 millions d'hab
+mardi + mars + 16h-19h
+2 roues + nuit avec éclairage + en agglo + hors intersection + voie communale birectionnelle
+
+### Classe 2
+
+blessé léger + conducteur + hommes + 35-44 ans + depmt entre 1 et 2 millions d'hab
+jeudi + septembre + 10h-15h
+voiture + plein jour + en agglo + hors intersection + voie communale birectionnelle
+
+### Classe 3
+
+indemne + conducteur + femme + 45-54 ans + depmt entre 1 et 2 millions d'hab
+mardi + juillet + 16h-19h
+voiture + plein jour + en agglo + hors intersection + voie communale birectionnelle
+
+### Classe 4
+
+blessé hospitalisé + conducteur + hommes + 25-34 ans + depmt de moins de 500 000 hab
+samedi + juillet + 20h-06h
+voiture + nuit sans éclairage + hors agglo + hors intersection + route départementale birectionnelle
+
+### Classe 5
+
+blessé léger + conducteur + hommes + 35-44 ans + depmt de 2 millions et plus d'hab
+samedi + juin + 16h-19h
+2 roues +  plein jour + en agglo + à une intersection + voie communale à sens unique
+
+### Classe 6
+blessé hospitalisé + conducteur + hommes + 15-24 ans + depmt de 2 millions et plus d'hab
+mardi + août + 16h-19h
+2 roues + plein jour  + en agglo + à une intersection + voie communale birectionnelle
+
