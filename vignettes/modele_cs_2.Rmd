@@ -2,7 +2,7 @@
 title: "Prévisions des accidents ayant entrainés des blessures/décès"
 output: html_notebook
 author : CS
-date : 27/02/2021
+date : 13/03/2021
 ---
 
 
@@ -26,6 +26,12 @@ accidents_M <- accidents2 %>%
       grav == "Indemne"~ 0,
       TRUE ~ 1) ) %>%
     select(-c(Num_Acc, grav)) 
+
+accidents_M <- accidents_M %>%
+    mutate(blessures = case_when(
+      grav == "Indemne"~ 0,
+      TRUE ~ 1) ) %>%
+    select(-Num_Acc,-grav) 
 
 skim(accidents_M)
 ```
@@ -277,10 +283,11 @@ paste("temps execution de la régression logistique : ", Tdiff= difftime(time2, 
 
 
 
+
 On crée la variable controle pour utiliser la fonction train() de caret dans les prochains modèles
 ```{r}
 controle <- trainControl(method="cv",
-                         number=3,             # 3 blocs ici pour accélérer les calculs => 5 trop long
+                         number=5,             # 5 blocs 
                          classProbs=FALSE)
 ```
 
@@ -400,8 +407,7 @@ ggplot(data = criteres_erreur_classif_plot, aes(x = Methode, y = 100 * Error)) +
   labs(x = "Méthode", y = "Erreur de classification (%)")
 ```
 
-
-Modèle de mélange
+Modèle de mélange I (erreur moyenne sur tous les modèles )
 ```{r}
 don_T_prev <- don_T[, grep("bles_",colnames(don_T))]
 don_T_prev <- don_T_prev[, -grep("prev_proba", colnames(don_T_prev))]
@@ -417,18 +423,64 @@ eval_prev_classif(prev_proba = don_T$bles_prev_proba_agreg,
 ```
 
 
+Modèle de mélange II (max)
+```{r}
+don_T_prev <- don_T[, grep("bles_",colnames(don_T))]
+don_T_prev <- don_T_prev[, -grep("prev_proba", colnames(don_T_prev))]
+
+don_T$bles_prev_proba_agreg <- apply(don_T_prev,1,max)
+
+don_T$bles_prev_agreg <- (don_T$bles_prev_proba_agreg > 0.5) * 1
+
+eval_prev_classif(prev_proba = don_T$bles_prev_proba_agreg,
+                  real = don_T$blessures,
+                  methode_abrev = "agreg",
+                  methode = "Agrégation")
+```
+
+Modèle de mélange III (min)
+```{r}
+don_T_prev <- don_T[, grep("bles_",colnames(don_T))]
+don_T_prev <- don_T_prev[, -grep("prev_proba", colnames(don_T_prev))]
+
+don_T$bles_prev_proba_agreg <- apply(don_T_prev,1,min)
+
+don_T$bles_prev_agreg <- (don_T$bles_prev_proba_agreg > 0.5) * 1
+
+eval_prev_classif(prev_proba = don_T$bles_prev_proba_agreg,
+                  real = don_T$blessures,
+                  methode_abrev = "agreg",
+                  methode = "Agrégation")
+```
 
 ### attention pour le moment pas de résultat pour ces modèles (temps d'éxécution trop long donc arrêt manuel)...
+ne pas exécuter le code ci-dessous
+
+
+On crée la variable controle pour utiliser la fonction train() de caret dans les prochains modèles
+```{r}
+controle2 <- trainControl(method="cv",
+                         number=5,             # 5 blocs 
+                         classProbs=FALSE,
+                         allowParallel=TRUE)
+```
 
 Forêt aléatoire - Estimation du modèle
 ```{r}
-#rf_caret <- train(blessures ~ .,
-#                  data = don_A,
-#                  method = "rf",
-#                  trControl = controle,
-#                  ntree = 50)
-#
-#varImp(rf_caret)
+no_cores <- detectCores() - 1
+cl <- makePSOCKcluster(no_cores)
+registerDoParallel(cl)
+
+rf_caret <- train(blessures ~ .,
+                  data = don_A,
+                  method = "rf",
+                  trControl = controle2,
+                  ntree = 50)
+
+varImp(rf_caret)
+
+stopCluster(cl)
+registerDoSEQ()
 ```
 
 Forêt aléatoire - Prédiction & Evaluation du modèle
