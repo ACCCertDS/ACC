@@ -50,7 +50,7 @@ DataExplorer::plot_str(
 + Une analyse uni et bi-variée des données dans `vignette("Stats_Descriptives")` à la
   suite de laquelle nous avons recodé des modalités de certaines variables, et
   sélectionné d'autres
-+ Une classification
++ Une classification par ACM, mélanges de modèles et K-modes dans `vignette("ACM_classif")`
 + Une modélisation de la gravité des accidents
 + Une visusalisation shiny
 
