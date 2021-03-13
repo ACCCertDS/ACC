@@ -1,0 +1,52 @@
+
+template:
+  params:
+    bootswatch: flatly
+
+reference:
+  - title: "Récupération des données"
+    desc: >
+      Fonctions qui utilisent `BARIS::BARIS_resources()` pour récupérer les données depuis le site
+      data.gouv.fr
+    contents:
+      - ACC_ressources
+      - starts_with("dl_")
+  - title: "Recodage des modalités et sélection des variables"
+    desc: >
+      À l'issue de l'analyse des données, des choix de sélections de variables
+      et de regroupement de modalités ont été effectués.
+    contents:
+      - starts_with("recod_")
+  - title: "Table accidents"
+    desc: >
+      Pour la modélisation, une table unique a été créée, ces fonctions ont
+      permis de créer cette table.
+    contents:
+      - create_table_accidents
+      - mutate_pour_modele
+  - title: "Données incluses"
+    desc: >
+      Par soucis de facilité et pour permettre de reproduire les résultats, des
+      données ont été sauvegardées dans ce package.
+    contents:
+      - caracteristiques
+      - lieux
+      - vehicules
+      - usagers
+
+articles:
+- title: Description des données
+  navbar: Description des données
+  contents:
+  - exploration-donnees-brutes
+  - Stats_Descriptives
+
+
+- title: Classification
+  navbar: Classification
+  contents:
+  - ACM_classif
+
+- title: Modélisation
+  navbar: Modélisation
+  contents:
