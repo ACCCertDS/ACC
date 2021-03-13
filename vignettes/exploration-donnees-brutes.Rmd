@@ -1,6 +1,11 @@
 ---
 title: "Exploration des données brutes"
 output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Exploration des données brutes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+
 ---
 
 ```{r, include = FALSE}

@@ -2,6 +2,10 @@
 title: "Statistiques descriptives avec ggplot2"
 output:
   html_document: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Statistiques descriptives avec ggplot2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 
