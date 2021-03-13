@@ -1,5 +1,7 @@
 ---
-output: github_document
+output: 
+  github_document:
+  always_allow_html: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -9,7 +11,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  fig.width = 7,
+  fig.height = 5
 )
 ```
 
@@ -18,26 +22,65 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of ACC is to ...
+Ce package permet de récupérer des données d'accidents de la circulation  routière
+disponibles sur le site [data.gouv.fr](https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2019/).
+
+Les vignettes qui l'accompagnent sont le reflet de l'étude qui a été menée dans 
+le cadre de ce projet.
+
+## Description des données incluses dans le package
+
+```{r, eval=FALSE}
+library(ACC)
+data_list <-  list(caracteristiques = caracteristiques,
+       usagers = usagers,
+       lieux = lieux,
+       vehicules = vehicules)
+DataExplorer::plot_str(
+ data_list
+    )
+```
+
+![alt text](man/figures/README-intro.png)
+
+## Résultats de notre étude
+
++ Une première visualisation des données dans la `vignette("exploration-donnees-brutes")` 
+  qui a permis une compréhension des données
++ Une analyse uni et bi-variée des données dans `vignette("Stats_Descriptives")` à la
+  suite de laquelle nous avons recodé des modalités de certaines variables, et
+  sélectionné d'autres
++ Une classification
++ Une modélisation de la gravité des accidents
++ Une visusalisation shiny
 
 ## Installation
 
-You can install the development version from [GitHub](https://github.com/) with:
+Vous pouvez installer la dernière version du package sur [GitHub](https://github.com/) :
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("ACCCertDS/ACC")
 ```
-## Example
 
-This is a basic example which shows you how to solve a common problem:
+## Exemple d'utilisation
 
-```{r example, eval=FALSE, include=FALSE}
+Un exemple d'utilisation est la récupération des données (à l'aide du package
+[BARIS](https://cran.r-project.org/web/packages/BARIS/index.html)):
+
+
+```{r example, eval=FALSE, include=T}
 library(ACC)
-## basic example code
+
+# Jeux de données disponibles :
+ACC_ressources()
+
+# Caracteristiques des accidents pour une année donnée
+carac <- dl_caracteristiques(2015L)
+
+# Recodage des modalités
+carac <- recod_caracteristiques(carac)
+
+head(carac)
 ```
 
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/master/examples>.
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.

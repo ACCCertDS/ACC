@@ -7,27 +7,67 @@
 
 <!-- badges: end -->
 
-The goal of ACC is to …
+Ce package permet de récupérer des données d’accidents de la circulation
+routière disponibles sur le site
+[data.gouv.fr](https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2019/).
+
+Les vignettes qui l’accompagnent sont le reflet de l’étude qui a été
+menée dans le cadre de ce projet.
+
+## Description des données incluses dans le package
+
+``` r
+library(ACC)
+data_list <-  list(caracteristiques = caracteristiques,
+       usagers = usagers,
+       lieux = lieux,
+       vehicules = vehicules)
+DataExplorer::plot_str(
+ data_list
+    )
+```
+
+![alt text](man/figures/README-intro.png)
+
+## Résultats de notre étude
+
+  - Une première visualisation des données dans la
+    `vignette("exploration-donnees-brutes")` qui a permis une
+    compréhension des données
+  - Une analyse uni et bi-variée des données dans
+    `vignette("Stats_Descriptives")` à la suite de laquelle nous avons
+    recodé des modalités de certaines variables, et sélectionné d’autres
+  - Une classification
+  - Une modélisation de la gravité des accidents
+  - Une visusalisation shiny
 
 ## Installation
 
-You can install the development version from
-[GitHub](https://github.com/) with:
+Vous pouvez installer la dernière version du package sur
+[GitHub](https://github.com/) :
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("ACCCertDS/ACC")
 ```
 
-## Example
+## Exemple d’utilisation
 
-This is a basic example which shows you how to solve a common problem:
+Un exemple d’utilisation est la récupération des données (à l’aide du
+package
+[BARIS](https://cran.r-project.org/web/packages/BARIS/index.html)):
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/master/examples>.
+``` r
+library(ACC)
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+# Jeux de données disponibles :
+ACC_ressources()
+
+# Caracteristiques des accidents pour une année donnée
+carac <- dl_caracteristiques(2015L)
+
+# Recodage des modalités
+carac <- recod_caracteristiques(carac)
+
+head(carac)
+```
