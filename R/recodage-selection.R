@@ -82,7 +82,7 @@ recod_caracteristiques <- function(caracteristiques) {
       heure = as.factor(lubridate::hour(dtm_num)),
       dtm_num = as.numeric(lubridate::as.duration(dtm_num - lubridate::ymd_hm("20000101 00:00")))
     ) %>%
-    dplyr::select(tidyselect::any_of(c("an", "annee", "jour", "mois"))) %>%
+    dplyr::select(-tidyselect::any_of(c("an", "annee", "jour", "mois"))) %>%
     # Jusqu'en 2018 : Département : Code INSEE du département suivi d'un 0
     # (201 Corse-du-Sud - 202 Haute-Corse)
     dplyr::mutate(
@@ -149,7 +149,7 @@ recod_caracteristiques <- function(caracteristiques) {
 recod_lieux <- function(lieux) {
   lieux <- lieux %>%
     # On retire la variable larrout, lartpc, env1 (non ducmentée)
-    dplyr::select(-larrout, -lartpc, -env1, -v1, -v2, -vosp, -pr, -pr1) %>%
+    dplyr::select(-tidyselect::any_of(c("larrout", "lartpc", "env1", "v1", "v2", "vosp", "pr", "pr1"))) %>%
     dplyr::mutate(catr = dplyr::case_when(
       catr == 1 ~ "Autoroute",
       catr == 2 ~ "Route Nationale",
