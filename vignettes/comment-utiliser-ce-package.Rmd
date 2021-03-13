@@ -1,16 +1,13 @@
 ---
-title: "Comment utiliser ce package"
+title: "Exploration des données brutes"
 output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Comment utiliser ce package}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  chunk_output_type: console
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  fig.dpi = 96,
+  fig.height = 3.5,
+  fig.width = 7,
   collapse = TRUE,
   comment = "#>"
 )
@@ -151,7 +148,7 @@ hist(caracteristiques$col, main = "Répartition de la variable Type de collision
 
 ## Insertion des libellés dans la table CARACTERISTIQUES
 
-```{r}
+```{r, eval = FALSE}
 # carac <- read.csv(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header=T)
 # carac <- caracteristiques
 # Ajout des libellés relatifs à la luminosité avec regroupement des modalités 3 et 4
@@ -345,7 +342,7 @@ hist(lieux$situ, main = "Répartition de la variable Situation de l accident", c
 
 ## Insertion des libellés dans la table LIEUX
 
-```{r}
+```{r, eval = FALSE}
 # Ajout des libellés relatifs à la catégorie de route avec regroupement les madalités 5 à 9 en "Autre"
 # data("lieux",package = "ACC")
 lieux <- lieux %>% 
@@ -514,9 +511,9 @@ summary(vehicules$occutc)
 # 99 818 valeurs manquantes => donnée inexploitable
 ```
 
-# Insertion des libellés dans la table VEHICULES
+## Insertion des libellés dans la table VEHICULES
 
-```{r}
+```{r, eval=FALSE}
 # Ajout des libellés relatifs à la catégorie de véhicules 
  vehicules <- vehicules %>% 
   select(-c(senc,manv,occutc)) %>% # On retire les variables inexploitables
@@ -679,9 +676,9 @@ hist(usagers$etatp, main = "Répartition de la variable Accompagnants du piéton
 # idem variable locp
 ```
 
-# Insertion des libellés dans la table USAGERS
+## Insertion des libellés dans la table USAGERS
 
-```{r}
+```{r, eval=FALSE}
 # Ajout des libellés relatifs à la catégorie d'usager
 usagers <- usagers %>% 
   select(-c(place,trajet,locp,actp,etatp)) %>% # On retire les variables inexploitables
@@ -705,7 +702,7 @@ usagers <- usagers %>%
 usagers
 ```
 
-## Jointure des tables
+# Jointure des tables
 
 
 ```{r, eval=FALSE}

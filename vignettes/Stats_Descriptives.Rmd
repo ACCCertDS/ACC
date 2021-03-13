@@ -1,9 +1,20 @@
 ---
 title: "Statistiques descriptives avec ggplot2"
 output:
-  html_document: default
-  pdf_document: default
+  html_document: rmarkdown::html_vignette
 ---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  fig.dpi = 96,
+  fig.height = 3.5,
+  fig.width = 7,
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
 
 ## Chargement des packages nécessaires au traitement
 
