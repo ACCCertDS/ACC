@@ -17,8 +17,8 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-devtools::load_all()
-# library(ACC) 
+# devtools::load_all()
+library(ACC)
 library(tidyverse)
 library(BARIS)
 ```
@@ -62,8 +62,8 @@ ressources <- BARIS_resources(id_donnees) #Tibble avec les URL
 data_2019 <- ressources %>% 
   filter(str_detect(title,"2019"),format=="csv") #On garde les fichiers csv de 2019
 
-if(!dir.exists("data-raw"))
-  dir.create("data-raw")
+# if(!dir.exists("data-raw"))
+  # dir.create("data-raw")
 # Commenté pour ne pas re-télécharger les données systématiquement
 # for(i in 1:nrow(data_2019)){
 #   tmp_df <- data_2019[i,]
@@ -77,8 +77,9 @@ if(!dir.exists("data-raw"))
 
 ```{r}
 # caractéristiques générales de la table
+caracteristiques <- dl_caracteristiques(2019L)
 # caracteristiques <- read.table(here::here("data-raw","caracteristiques-2019.csv"),sep=";",header = T)
-data("caracteristiques", package = "ACC")
+# data("caracteristiques", package = "ACC")
 summary(caracteristiques)
 names(caracteristiques)
 nrow(caracteristiques) #58 840
@@ -221,7 +222,8 @@ caracteristiques
 
 ```{r}
 #lieux <- read.table(here::here("data-raw","lieux-2019.csv"),sep=";",header = T)
-data(lieux)
+lieux <- dl_lieux(2019L)
+# data(lieux)
 summary(lieux)
 names(lieux)
 nrow(lieux) #58 840
@@ -414,7 +416,8 @@ lieux
 ```{r}
 # data("vehicules",package = "ACC")
 # vehicules <- read.table(here::here("data-raw","vehicules-2019.csv"),sep=";",header = T)
-data(vehicules)
+vehicules <- dl_vehicules(2019L)
+# data(vehicules)
 summary(vehicules)
 names(vehicules)
 nrow(vehicules) #100710
@@ -561,7 +564,8 @@ vehicules
 ```{r}
 # usagers <- read.table(here::here("data-raw","usagers-2019.csv"),sep=";",header = T)
 # usagers <- data("usagers",package = "ACC")
-data(usagers)
+usagers <- dl_usagers(2019L)
+# data(usagers)
 summary(usagers)
 names(usagers)
 nrow(usagers) #132977
@@ -704,7 +708,7 @@ usagers
 ## Jointure des tables
 
 
-```{r}
+```{r, eval=FALSE}
 accidents <- usagers %>% 
   left_join(vehicules %>% distinct(Num_Acc, num_veh, catv),
             by = c("Num_Acc", "num_veh")) %>% 
