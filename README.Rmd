@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ACC : Accidents Corporels de la Circulation routière
+# ACC : Accidents Corporels de la Circulation routière  <img src='man/figures/logo.png' align="right" height="138" />
 
 <!-- badges: start -->
 [![R build status](https://github.com/ACCCertDS/ACC/workflows/R-CMD-check/badge.svg)](https://github.com/ACCCertDS/ACC/actions)
