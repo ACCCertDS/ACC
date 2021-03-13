@@ -400,7 +400,8 @@ ggplot(eclairage) +
  labs(x = "Conditions d'éclairage", y = "Nombre d'accidents",
       fill = "Gravité", title = "Conditions d'éclairage et gravité des accidents") +
  theme_light() +
-  theme(axis.text.x = element_text(angle = 90))
+  coord_flip()
+  # theme(axis.text.x = element_text(angle = 90))
 
 sum_eclr <- eclairage %>%
   group_by(lum) %>%
