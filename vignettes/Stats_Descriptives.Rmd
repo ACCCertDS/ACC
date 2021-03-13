@@ -118,14 +118,18 @@ acc_par_mois <- accidents %>%
   group_by(annee,mois_acc) %>%
   summarise(nb_accidents_mois = n_distinct(Num_Acc))
 
-ggplot(acc_par_mois) +
- aes(x = mois_acc, y=nb_accidents_mois) +
- geom_bar(stat = "identity",fill = "#0c4c8a") +
- labs(x = "Mois", y = "Nombre d'accidents",
-      title = "Répartition des accidents par année et par mois") +
- theme_light() +
- facet_wrap(vars(annee)) +
-  theme(axis.text.x = element_text(angle = 90))
+acc_par_mois %>% 
+  mutate(mois_acc = fct_relevel(mois_acc, rev(as.character(levels(mois_acc))))) %>%
+  
+  ggplot() +
+  aes(x = mois_acc, y=nb_accidents_mois) +
+  geom_bar(stat = "identity",fill = "#0c4c8a") +
+  labs(x = "", y = "Nombre d'accidents",
+       title = "Répartition des accidents par année et par mois") +
+  theme_light() +
+  facet_wrap(vars(annee)) +
+  coord_flip() # Pour lire les libellés
+# theme(axis.text.x = element_text(angle = 90))
 ```
 
 Tous les ans, le nombre d'accidents est faible aux mois de février et d'août. 
@@ -162,14 +166,17 @@ acc_par_jour <- accidents %>%
   group_by(jour_acc,annee) %>%
   summarise(nb_accidents_jour = n_distinct(Num_Acc))
 
-ggplot(acc_par_jour) +
- aes(x = jour_acc, y = nb_accidents_jour) +
- geom_bar(stat = "identity", fill = "#0c4c8a") +
- labs(x = "Jour de l'accident", y = "Nombre d'accidents",
+acc_par_jour %>% 
+  mutate(jour_acc = fct_relevel(jour_acc, rev(as.character(levels(jour_acc))))) %>%
+  ggplot() +
+  aes(x = jour_acc, y = nb_accidents_jour) +
+  geom_bar(stat = "identity", fill = "#0c4c8a") +
+  labs(x = "Jour de l'accident", y = "Nombre d'accidents",
       title = "Nombre d'accidents par jour de la semaine et par année") +
  theme_light() +
  facet_wrap(vars(annee)) +
-  theme(axis.text.x = element_text(angle = 90))
+  coord_flip()
+  # theme(axis.text.x = element_text(angle = 90))
 
 ```
 
