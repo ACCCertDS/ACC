@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![R build
+status](https://github.com/ACCCertDS/ACC/workflows/R-CMD-check/badge.svg)](https://github.com/ACCCertDS/ACC/actions)
 <!-- badges: end -->
 
 Ce package permet de récupérer des données d’accidents de la circulation
@@ -31,16 +33,16 @@ DataExplorer::plot_str(
 
 ## Résultats de notre étude
 
-  - Une première visualisation des données dans la
+-   Une première visualisation des données dans la
     `vignette("exploration-donnees-brutes")` qui a permis une
     compréhension des données
-  - Une analyse uni et bi-variée des données dans
+-   Une analyse uni et bi-variée des données dans
     `vignette("Stats_Descriptives")` à la suite de laquelle nous avons
     recodé des modalités de certaines variables, et sélectionné d’autres
-  - Une classification par ACM, mélanges de modèles et K-modes dans
+-   Une classification par ACM, mélanges de modèles et K-modes dans
     `vignette("ACM_classif")`
-  - Une modélisation de la gravité des accidents
-  - Une visusalisation shiny
+-   Une modélisation de la gravité des accidents
+-   Une visusalisation shiny
 
 ## Installation
 
