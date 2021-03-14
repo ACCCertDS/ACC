@@ -360,19 +360,19 @@ mod_kmodes$modes
 
 blessé léger + conducteur + hommes + 15-24 ans + depmt entre 1 et 2 millions d'hab
 mardi + mars + 16h-19h
-2 roues + nuit avec éclairage + en agglo + hors intersection + voie communale birectionnelle
+2 roues + nuit avec éclairage + en agglo + hors intersection + voie communale bidirectionnelle
 
 ### Classe 2
 
 blessé léger + conducteur + hommes + 35-44 ans + depmt entre 1 et 2 millions d'hab
 jeudi + septembre + 10h-15h
-voiture + plein jour + en agglo + hors intersection + voie communale birectionnelle
+voiture + plein jour + en agglo + hors intersection + voie communale bidirectionnelle
 
 ### Classe 3
 
 indemne + conducteur + femme + 45-54 ans + depmt entre 1 et 2 millions d'hab
 mardi + juillet + 16h-19h
-voiture + plein jour + en agglo + hors intersection + voie communale birectionnelle
+voiture + plein jour + en agglo + hors intersection + voie communale bidirectionnelle
 
 ### Classe 4
 
@@ -389,5 +389,5 @@ samedi + juin + 16h-19h
 ### Classe 6
 blessé hospitalisé + conducteur + hommes + 15-24 ans + depmt de 2 millions et plus d'hab
 mardi + août + 16h-19h
-2 roues + plein jour  + en agglo + à une intersection + voie communale birectionnelle
+2 roues + plein jour  + en agglo + à une intersection + voie communale bidirectionnelle
 
