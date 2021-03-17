@@ -4,6 +4,7 @@ pkgdown_sha: ~
 articles:
   ACM_classif: ACM_classif.html
   exploration-donnees-brutes: exploration-donnees-brutes.html
+  modeles: modeles.html
   Stats_Descriptives: Stats_Descriptives.html
-last_built: 2021-03-13T19:44Z
+last_built: 2021-03-17T13:42Z
 
