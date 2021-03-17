@@ -13,8 +13,7 @@ knitr::opts_chunk$set(
   fig.height = 3.5,
   fig.width = 7,
   collapse = TRUE,
-  comment = "#>",
-  cache = TRUE
+  comment = "#>"
 )
 ```
 
@@ -72,7 +71,7 @@ prop.table(summary(accidents$Y))
 prop.table(summary(data$Y))
 ```
 
-On introduit les fonctions suivantes pour mesurer l'erreur de précision de nos
+On introduit les fonctions suivantes pour mesurer l'erreur de prévision de nos
 modèles ultérieurement.
 
 ```{r}
@@ -195,7 +194,6 @@ predict_cv <- function(bloc_ecart) {
   
   set.seed(123)
   ## Modèles
-  ## Pour l'avancement
   mod_lin <- train(fml , data=train, method="glm", trControl=controle, family = "binomial")
   mod_ridge <- cv.glmnet(x= train_matx, y = train_y, alpha = 0, parallel = T, family = "binomial")
   mod_lasso <- cv.glmnet(x= train_matx, y = train_y, alpha = 1, parallel = T, family = "binomial")
@@ -253,11 +251,12 @@ donY <- don_apprentissage$Y
 Les résultats de la validation croisée en 4 blocs sont les suivants :
 
 ```{r, eval=FALSE}
+
 resultats = map_dfr(1:nb,predict_cv)
 ```
 
 ```{r, include=FALSE}
-load("~/envir_modeles_2021-03-16.rda")
+data("envir_modeles_2021-03-16", package="ACC")
 ```
 
 ```{r}
@@ -304,9 +303,20 @@ error_max <- max(criteres_erreur_classif_plot$Error)
 error_max
 ```
 
-On peut également représenter graphiquement ces résultats
+On peut également représenter graphiquement ces résultats en regroupant toutes
+les courbes ROC sur un même graphique :
+
+```{r}
+resultats %>% 
+  gather(methode, prev_proba, -Y) %>%
+  ggplot(aes(d=Y, m=prev_proba, color = methode)) + 
+  geom_roc(labels = FALSE) +
+  style_roc(theme = theme_grey)+
+  labs(title="Courbes ROC")
+```
 
 
+Ou bien en mesurant l'erreur :
 
 ```{r}
 ggplot(data=criteres_erreur_classif_plot,aes(x=Methode,y=Error))+
@@ -328,7 +338,107 @@ ggplot(data=criteres_erreur_classif_plot,aes(x=Methode,y=100*Error))+
   coord_flip()
 ```
 
-On retient la méthode de gradient boosting comme la meilleure méthode pour ce
-jeu de données.
+## Modèle de mélange I (erreur moyenne sur tous les modèles )
 
-On se propose donc d'ajuster 
+```{r}
+moyenne_mod <- resultats %>%
+  rowwise() %>%
+  mutate(moyenne = mean(c_across(!matches("Y"))))
+
+eval_prev_classif(prev_proba = moyenne_mod$moyenne,
+                  real = moyenne_mod$Y,
+                  methode_abrev = "agreg_moy",
+                  methode = "Agrégation moyenne")
+```
+
+## Modèle de mélange II (max)
+
+```{r}
+max_mod <- resultats %>%
+  rowwise() %>%
+  mutate(max = max(c_across(!matches("Y"))))
+
+eval_prev_classif(prev_proba = max_mod$max,
+                  real = max_mod$Y,
+                  methode_abrev = "agreg_max",
+                  methode = "Agrégation moyenne")
+```
+
+## Modèle de mélange III (min)
+```{r}
+min_mod <- resultats %>%
+  rowwise() %>%
+  mutate(min = min(c_across(!matches("Y"))))
+
+eval_prev_classif(prev_proba = min_mod$min,
+                  real = min_mod$Y,
+                  methode_abrev = "agreg_min",
+                  methode = "Agrégation moyenne")
+```
+
+```{r}
+criteres_erreur_classif %>% 
+  arrange(Error)
+```
+On remarque que l'aggrégation des différents modèles par la moyenne, donne de 
+bons résultats néanmoins, dans un souci de sélectionner un modèle parcimonieux,
+nous ne retiendrons pas cette solution.
+
+## Synthèse
+Ainsi pour cette étude, les méthodes de gradient boosting, plus précisément,
+la méthode Adaboost, donnent de meilleures prédictions au sens du taux de mal
+classés que les autres méthodes.
+
+En optimisant les paramètres de l'algorithme de gradient boosting sur l'échantillon
+d'apprentissage nous avons trouvé une erreur d'environ 23,2%.
+La méthode étant choisie, il nous faut maintenant définir un modèle final.
+
+Pour ce faire nous appliquons de nouveau la méthodologie de validation croisée
+pour optimiser ces paramètres.
+
+```{r, eval=FALSE}
+
+cl <- makePSOCKcluster(detectCores()-1L)
+  registerDoParallel(cl) 
+modele_fin <- train(fml,
+                    data = don_apprentissage,
+                    method="gbm",
+                    distribution="adaboost",
+                    tuneGrid = boosting_grille,
+                    trControl=controle,
+                    verbose=FALSE)
+stopCluster(cl)
+```
+
+```{r, include=FALSE}
+data("modele_fin", package="ACC")
+```
+
+
+
+```{r}
+modele_fin
+```
+
+Les meilleurs paramètres trouvés sont 
+
+```{r}
+modele_fin$bestTune
+```
+
+On peut s'intéresser aux variables les plus influentes dans le modèle :
+```{r}
+summary(modele_fin)
+```
+
+
+On peut alors appliquer ce modèle à de nouvelles données.
+
+```{r}
+pred_fin <-  tibble( Y = don_test$Y,
+                     pred = predict(modele_fin, don_test, type ="prob")[,2]
+)
+
+eval_prev_classif(prev=pred_fin$pred, real=pred_fin$Y, methode="Gradient boosting : adaboost",     methode_abrev="gbm_ada")
+```
+
