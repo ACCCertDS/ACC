@@ -9,6 +9,21 @@ library(caret)
 library(GADMTools)
 library(classInt)
 
+data("modele_fin", package="ACC")
+
+data(population, package = "ACC")
+data(accidents, package = "ACC")
+accidents = mutate_pour_modele(accidents, population)
+#> Joining, by = "dep"
+
+accidents2 <- accidents %>%
+  mutate(Y = factor(ifelse(
+    grav == "Indemne","Indemne",
+    "Blessures"))) %>%
+  select(-Num_Acc,-grav) %>%
+  select(Y, everything()) %>%
+  mutate_if(is.character, factor)
+
 accidents$lat <- type.convert(accidents$lat, dec=".")
 accidents$long <- type.convert(accidents$long, dec=".")
 accidents$lat <- as.numeric(accidents$lat)
@@ -34,11 +49,6 @@ listNames(Fr,level=2)
 # Import d'une table de correspondance Département/Région
 regions <- read.csv("departements-region.csv",header=T, sep=",")
 
-# Création de l'indicatrice accident avec blessures (yc décès) oui/non
-#data(population, package="ACC")
-#accidents_M <- accidents %>%
-    #mutate_pour_modele(population)
-
 # Jointure entre table accidents et regions pour ajouter les départements
 accidents$dep <- as.numeric(accidents$dep)
 regions$num_dep <- as.numeric(regions$num_dep)
@@ -50,30 +60,6 @@ accidents_par_dept <- accidents_region %>%
   dplyr::select(Num_Acc,dep,dep_name) %>%
   group_by(dep, dep_name) %>%
   summarise(nbre_acc=n())
-
-
-# Création de l'échantillon d'apprentissage
-#don_A <- accidents_M %>%
-  #filter(year(date_acc) %in% c(2015, 2016, 2017)) %>%
-  #dplyr::select(blessures, lum, agg, atm, col, intersection, catr, prof, surf, catv, sexe)
-# Création de l'échantillon test
-#don_T <- accidents_M %>%
-    #filter(year((date_acc)) == 2018) %>%
-    #dplyr::select(blessures, lum, agg, atm, col, intersection, catr, prof, surf, catv, sexe)
-
-######################################################
-#### Régression logistique - Estimation du modèle ####
-######################################################
-#mod <- glm(blessures ~ sexe + catu,
-           #data = don_A,
-           #family = "binomial")
-
-#####################################################
-######## Régression logistique - Prédiction #########
-#####################################################
-#don_T$bles_prev_proba_reglog_step <- predict(mod, don_T, type="response")
-
-modele = glm( grav ~ catu + sexe, data = accidents_M %>% mutate(grav = ifelse(grav=="Indemne", 0, 1)), family = "binomial")
 
 #####################################################
 ################ Application Shiny ##################
@@ -103,13 +89,15 @@ ui <- fluidPage(
                          fluidRow(
                              column(8,plotlyOutput("graph1", height = 400)),
                              fluidRow(
-                                 column(4,tableOutput("chiffresacc")),
+                                 #column(4,tableOutput("chiffresacc")),
                                  column(4,tableOutput("chiffrestues"))
                              )
-                         ),
-                         fluidRow(
-                             column(8,plotOutput("gravacc")),
-                             column(4,tableOutput("chiffresgrav")))),
+                         #),
+                         #fluidRow(
+                            # column(8,plotOutput("gravacc")),
+                             #column(4,tableOutput("chiffresgrav")))),
+                                )
+                        ),
                 tabPanel("France",
                          h3("Répartition géographique des accidents par année en fonction de leur gravité"),
                          leafletOutput("mymap", height=650, width=605),
@@ -124,7 +112,7 @@ ui <- fluidPage(
                                  selectInput(
                                      inputId = "dep",
                                      label = "Département lieu de l'accident :",
-                                     choices = unique(accidents$dep),
+                                     choices = unique(accidents2$dep),
                                      selected = "75",
                                      selectize = FALSE
                                  ),
@@ -138,112 +126,112 @@ ui <- fluidPage(
                                  selectInput(
                                      inputId = "sex",
                                      label = "Sexe :",
-                                     choices = unique(accidents$sexe),
+                                     choices = unique(accidents2$sexe),
                                      selected = "Masculin",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "secu",
                                      label = "Equipement de sécurité :",
-                                     choices = na.omit(unique(accidents$secu1)),
+                                     choices = na.omit(unique(accidents2$secu1)),
                                      selected = "Ceinture",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "catev",
                                      label = "Catégorie de véhicule :",
-                                     choices = unique(accidents$catv),
+                                     choices = unique(accidents2$catv),
                                      selected = "VL seul",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "lumi",
                                      label = "Luminosité :",
-                                     choices = unique(accidents$lum),
+                                     choices = unique(accidents2$lum),
                                      selected = "Plein jour",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "agglo",
                                      label = "En agglomération ou non ?",
-                                     choices = unique(accidents$agg),
+                                     choices = unique(accidents2$agg),
                                      selected = "En agglomération",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "atmo",
                                      label = "Conditions atmosphériques :",
-                                     choices = unique(accidents$atm),
+                                     choices = unique(accidents2$atm),
                                      selected = "Normale",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "coli",
                                      label = "Collision :",
-                                     choices = unique(accidents$col),
+                                     choices = unique(accidents2$col),
                                      selected = "Sans collision",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "inter",
                                      label = "Intersection ?",
-                                     choices = unique(accidents$intersection),
+                                     choices = unique(accidents2$intersection),
                                      selected = "Hors intersection",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "heure",
                                      label = "Heure de l'accident :",
-                                     choices = unique(accidents$heure),
+                                     choices = unique(accidents2$heure),
                                      selected = "17",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "catroute",
                                      label = "Catégorie de route :",
-                                     choices = unique(accidents$catr),
+                                     choices = unique(accidents2$catr),
                                      selected = "Voie communale",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "circu",
                                      label = "Mode de circulation :",
-                                     choices = unique(accidents$circ),
+                                     choices = unique(accidents2$circ),
                                      selected = "A sens unique",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "profil",
                                      label = "Profil de la route :",
-                                     choices = unique(accidents$prof),
+                                     choices = unique(accidents2$prof),
                                      selected = "Plat",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "plan",
                                      label = "Profil de la route (bis) :",
-                                     choices = unique(accidents$plan),
+                                     choices = unique(accidents2$plan),
                                      selected = "Rectiligne",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "surface",
                                      label = "Surface de la route :",
-                                     choices = unique(accidents$surf),
+                                     choices = unique(accidents2$surf),
                                      selected = "Normale",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "infr",
                                      label = "Infrastructure :",
-                                     choices = unique(accidents$infra),
+                                     choices = unique(accidents2$infra),
                                      selected = "Non",
                                      selectize = FALSE
                                  ),
                                  selectInput(
                                      inputId = "situation",
                                      label = "Situation de l'accident :",
-                                     choices = unique(accidents$situ),
+                                     choices = unique(accidents2$situ),
                                      selected = "Sur chaussée",
                                      selectize = FALSE
                                  ),
@@ -280,13 +268,13 @@ server <- function(input, output) {
                                       "col" = input$coli,
                                       "intersection" = input$inter,
                                       "catr" = input$catroute,
-                                      "circ" = NA,
-                                      "prof" = NA,
-                                      "plan" = NA,
-                                      "surf" = NA,
-                                      "infra" = NA,
-                                      "situ" = NA,
-                                      "age" = NA,
+                                      "circ" = input$circu,
+                                      "prof" = input$profil,
+                                      "plan" = input$plan,
+                                      "surf" = input$surface,
+                                      "infra" = input$infr,
+                                      "situ" = input$situ,
+                                      "age" = input$age,
                                       "blessures" = NA
                                     )
     })
@@ -325,19 +313,19 @@ server <- function(input, output) {
             aes(x = annee, y = nb_accidents, fill = grav) +
             geom_bar(position="stack", stat="identity") +
             # geom_text(nudge_y = 1, label = "") +
-            labs(x = "Année", y = "Nombre d'accidents",title = "Nombre de personnes accidentées par année") +
+            labs(x = "Année", y = "Nombre d'accidents", fill="Gravité", title = "Nombre de personnes accidentées par année") +
             theme_light()
 
             ggplotly(monggplot)
     })
 
-    output$chiffresacc = renderTable({
-        accidents %>%
-            mutate(annee = year(date_acc)) %>%
-            group_by(annee) %>%
-            summarise(nb_accidents = n_distinct(Num_Acc)) %>%
-            rename("Année" = annee, "Nombre d'accidents" = nb_accidents)
-    })
+    #output$chiffresacc = renderTable({
+        #accidents %>%
+            #mutate(annee = year(date_acc)) %>%
+            #group_by(annee) %>%
+            #summarise(nb_accidents = n_distinct(Num_Acc)) %>%
+            #rename("Année" = annee, "Nombre d'accidents" = nb_accidents)
+    #})
 
     output$chiffrestues = renderTable({
         accidents %>%
@@ -349,31 +337,31 @@ server <- function(input, output) {
             rename("Année" = annee, "Nombre de décès"=nb_accidents_tues)
     })
 
-    output$gravacc = renderPlot({
-        ggplot(accidents %>%
-                   mutate(annee=year(date_acc)) %>%
-                   group_by(annee,grav) %>%
-                   summarise(nb_accidents_gravite = n_distinct(Num_Acc))) +
-            aes(x = grav, y = nb_accidents_gravite, fill = grav) +
-            geom_bar(stat = "identity") +
-            scale_fill_viridis_d(option = "inferno") +
-            labs(x = "Gravité", y = "Nombre d'accidents", fill="Gravité", title = "Gravité des accidents ayant eu lieu de 2015 à 2019") +
-            theme_light() +
-            facet_wrap(vars(annee)) +
-            theme(axis.text.x = element_text(angle = 90))
-    })
+    #output$gravacc = renderPlot({
+        #ggplot(accidents %>%
+                   #mutate(annee=year(date_acc)) %>%
+                   #group_by(annee,grav) %>%
+                   #summarise(nb_accidents_gravite = n_distinct(Num_Acc))) +
+            #aes(x = grav, y = nb_accidents_gravite, fill = grav) +
+            #geom_bar(stat = "identity") +
+            #scale_fill_viridis_d(option = "inferno") +
+            #labs(x = "Gravité", y = "Nombre d'accidents", fill="Gravité", title = "Gravité des accidents ayant eu lieu de 2015 à 2019") +
+            #theme_light() +
+            #facet_wrap(vars(annee)) +
+            #theme(axis.text.x = element_text(angle = 90))
+    #})
 
-    output$chiffresgrav = renderTable({
-        accidents %>%
-            mutate(annee=year(date_acc)) %>%
-            group_by(annee,grav) %>%
-            summarise(nb_accidents_gravite = n_distinct(Num_Acc)) %>%
-            mutate(nb_tot = sum(nb_accidents_gravite)) %>%
-            mutate(prop = (nb_accidents_gravite / nb_tot)*100)
-    })
+    #output$chiffresgrav = renderTable({
+        #accidents %>%
+            #mutate(annee=year(date_acc)) %>%
+            #group_by(annee,grav) %>%
+            #summarise(nb_accidents_gravite = n_distinct(Num_Acc)) %>%
+            #mutate(nb_tot = sum(nb_accidents_gravite)) %>%
+            #mutate(prop = (nb_accidents_gravite / nb_tot)*100)
+    #})
 
     output$prediction = renderTable({
-        predict(modele, newdata = reactive_donnees_ajoutees(), type="response")
+        predict(modele_fin, newdata = reactive_donnees_ajoutees())
     })
 }
 
