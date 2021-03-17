@@ -52,7 +52,7 @@ accidents <- accidents %>%
 skim(accidents)
 ```
 
-Compte tenu de la taille (`nrow(accidents)` observations) de nos données et des
+Compte tenu de la taille (`r `nrow(accidents)` observations) de nos données et des
 capacités limitées de nos machines, nous sommes contraints de faire cette 
 modélisation sur un échantillon de nos données.
 
@@ -426,10 +426,6 @@ Les meilleurs paramètres trouvés sont
 modele_fin$bestTune
 ```
 
-On peut s'intéresser aux variables les plus influentes dans le modèle :
-```{r}
-summary(modele_fin)
-```
 
 
 On peut alors appliquer ce modèle à de nouvelles données.
