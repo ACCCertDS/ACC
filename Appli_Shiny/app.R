@@ -106,6 +106,9 @@ ui <- fluidPage(
                          fluidRow(
                              column(6,
                                  h3("Renseigner les données des menus déroulants ci-dessous pour prédiction de la gravité de l'accident"),
+                         h3("Renseigner les données des menus déroulants ci-dessous pour prédiction de la gravité de l'accident"),
+                         fluidRow(
+                             column(8,
                                  dateInput("date",
                                            label = h3("Date de l'accident"),
                                            value = Sys.Date()),
@@ -113,6 +116,7 @@ ui <- fluidPage(
                                      inputId = "dep",
                                      label = "Département lieu de l'accident :",
                                      choices = unique(accidents2$dep),
+                                     choices = unique(accidents$dep),
                                      selected = "75",
                                      selectize = FALSE
                                  ),
@@ -127,6 +131,7 @@ ui <- fluidPage(
                                      inputId = "sex",
                                      label = "Sexe :",
                                      choices = unique(accidents2$sexe),
+                                     choices = unique(accidents$sexe),
                                      selected = "Masculin",
                                      selectize = FALSE
                                  ),
@@ -134,6 +139,7 @@ ui <- fluidPage(
                                      inputId = "secu",
                                      label = "Equipement de sécurité :",
                                      choices = na.omit(unique(accidents2$secu1)),
+                                     choices = na.omit(unique(accidents$secu1)),
                                      selected = "Ceinture",
                                      selectize = FALSE
                                  ),
@@ -141,6 +147,7 @@ ui <- fluidPage(
                                      inputId = "catev",
                                      label = "Catégorie de véhicule :",
                                      choices = unique(accidents2$catv),
+                                     choices = unique(accidents$catv),
                                      selected = "VL seul",
                                      selectize = FALSE
                                  ),
@@ -148,6 +155,7 @@ ui <- fluidPage(
                                      inputId = "lumi",
                                      label = "Luminosité :",
                                      choices = unique(accidents2$lum),
+                                     choices = unique(accidents$lum),
                                      selected = "Plein jour",
                                      selectize = FALSE
                                  ),
@@ -155,6 +163,7 @@ ui <- fluidPage(
                                      inputId = "agglo",
                                      label = "En agglomération ou non ?",
                                      choices = unique(accidents2$agg),
+                                     choices = unique(accidents$agg),
                                      selected = "En agglomération",
                                      selectize = FALSE
                                  ),
@@ -162,6 +171,7 @@ ui <- fluidPage(
                                      inputId = "atmo",
                                      label = "Conditions atmosphériques :",
                                      choices = unique(accidents2$atm),
+                                     choices = unique(accidents$atm),
                                      selected = "Normale",
                                      selectize = FALSE
                                  ),
@@ -169,6 +179,7 @@ ui <- fluidPage(
                                      inputId = "coli",
                                      label = "Collision :",
                                      choices = unique(accidents2$col),
+                                     choices = unique(accidents$col),
                                      selected = "Sans collision",
                                      selectize = FALSE
                                  ),
@@ -176,6 +187,7 @@ ui <- fluidPage(
                                      inputId = "inter",
                                      label = "Intersection ?",
                                      choices = unique(accidents2$intersection),
+                                     choices = unique(accidents$intersection),
                                      selected = "Hors intersection",
                                      selectize = FALSE
                                  ),
@@ -183,6 +195,7 @@ ui <- fluidPage(
                                      inputId = "heure",
                                      label = "Heure de l'accident :",
                                      choices = unique(accidents2$heure),
+                                     choices = unique(accidents$heure),
                                      selected = "17",
                                      selectize = FALSE
                                  ),
@@ -190,6 +203,7 @@ ui <- fluidPage(
                                      inputId = "catroute",
                                      label = "Catégorie de route :",
                                      choices = unique(accidents2$catr),
+                                     choices = unique(accidents$catr),
                                      selected = "Voie communale",
                                      selectize = FALSE
                                  ),
@@ -197,6 +211,7 @@ ui <- fluidPage(
                                      inputId = "circu",
                                      label = "Mode de circulation :",
                                      choices = unique(accidents2$circ),
+                                     choices = unique(accidents$circ),
                                      selected = "A sens unique",
                                      selectize = FALSE
                                  ),
@@ -204,6 +219,7 @@ ui <- fluidPage(
                                      inputId = "profil",
                                      label = "Profil de la route :",
                                      choices = unique(accidents2$prof),
+                                     choices = unique(accidents$prof),
                                      selected = "Plat",
                                      selectize = FALSE
                                  ),
@@ -211,6 +227,7 @@ ui <- fluidPage(
                                      inputId = "plan",
                                      label = "Profil de la route (bis) :",
                                      choices = unique(accidents2$plan),
+                                     choices = unique(accidents$plan),
                                      selected = "Rectiligne",
                                      selectize = FALSE
                                  ),
@@ -218,6 +235,7 @@ ui <- fluidPage(
                                      inputId = "surface",
                                      label = "Surface de la route :",
                                      choices = unique(accidents2$surf),
+                                     choices = unique(accidents$surf),
                                      selected = "Normale",
                                      selectize = FALSE
                                  ),
@@ -225,6 +243,7 @@ ui <- fluidPage(
                                      inputId = "infr",
                                      label = "Infrastructure :",
                                      choices = unique(accidents2$infra),
+                                     choices = unique(accidents$infra),
                                      selected = "Non",
                                      selectize = FALSE
                                  ),
@@ -232,6 +251,7 @@ ui <- fluidPage(
                                      inputId = "situation",
                                      label = "Situation de l'accident :",
                                      choices = unique(accidents2$situ),
+                                     choices = unique(accidents$situ),
                                      selected = "Sur chaussée",
                                      selectize = FALSE
                                  ),
@@ -250,6 +270,8 @@ ui <- fluidPage(
             )
         )
     )
+  )
+)
 
 server <- function(input, output) {
     reactive_anneegrav <- reactive({
@@ -275,6 +297,13 @@ server <- function(input, output) {
                                       "infra" = input$infr,
                                       "situ" = input$situ,
                                       "age" = input$age,
+                                      "circ" = NA,
+                                      "prof" = NA,
+                                      "plan" = NA,
+                                      "surf" = NA,
+                                      "infra" = NA,
+                                      "situ" = NA,
+                                      "age" = NA,
                                       "blessures" = NA
                                     )
     })
@@ -361,7 +390,7 @@ server <- function(input, output) {
     #})
 
     output$prediction = renderTable({
-        predict(modele_fin, newdata = reactive_donnees_ajoutees())
+        predict(modele_fin, newdata = reactive_donnees_ajoutees(), type="response")
     })
 }
 
