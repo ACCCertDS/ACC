@@ -81,7 +81,14 @@
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/ACCCertDS/ACC/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -98,7 +105,7 @@
       <h1 data-toc-skip>Statistiques descriptives avec ggplot2</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/ACCCertDS/ACC/blob/master/vignettes/Stats_Descriptives.Rmd"><code>vignettes/Stats_Descriptives.Rmd</code></a></small>
       <div class="hidden name"><code>Stats_Descriptives.Rmd</code></div>
 
     </div>
@@ -130,7 +137,7 @@
 <span class="co">#&gt; x lubridate::setdiff()     masks base::setdiff()</span>
 <span class="co">#&gt; x lubridate::union()       masks base::union()</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">ACC</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://acccertds.github.io/ACC/">ACC</a></span><span class="op">)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Attachement du package : 'ACC'</span>
 <span class="co">#&gt; The following object is masked from 'package:tidyr':</span>
@@ -160,16 +167,16 @@
 
 <span class="va">accid_2019</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/create_table_accidents.html">create_table_accidents</a></span><span class="op">(</span><span class="va">carac_2019</span>, <span class="va">usagers_2019</span>, <span class="va">lieux_2019</span>, <span class="va">vehic_2019</span><span class="op">)</span>
 
-<span class="va">accidents</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span><span class="va">accid_2019</span>, <span class="va">accidents</span><span class="op">)</span></code></pre></div>
+<span class="va">accidents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="va">accid_2019</span>, <span class="va">accidents</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="evolution-du-nombre-daccidents-par-année-depuis-2015" class="section level2">
 <h2 class="hasAnchor">
 <a href="#evolution-du-nombre-daccidents-par-ann%C3%A9e-depuis-2015" class="anchor"></a>Evolution du nombre d’accidents par année depuis 2015</h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">regr_accidents</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">annee</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">annee</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">regr_accidents</span><span class="op">)</span> <span class="op">+</span>
@@ -199,11 +206,11 @@
 <a href="#evolution-du-nombre-de-tu%C3%A9s-par-ann%C3%A9e-depuis-2015" class="anchor"></a>Evolution du nombre de tués par année depuis 2015</h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">regr_tues</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">grav</span> <span class="op">==</span> <span class="st">"Tué"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">grav</span> <span class="op">==</span> <span class="st">"Tué"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="co">#select(Num_Acc,annee,grav) %&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">annee</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_tues <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">annee</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_tues <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'annee' (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">regr_tues</span><span class="op">)</span> <span class="op">+</span>
@@ -232,13 +239,13 @@
 <a href="#r%C3%A9partition-des-accidents-par-mois-et-par-ann%C3%A9e" class="anchor"></a>Répartition des accidents par mois et par année</h2>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">acc_par_mois</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">annee</span>,<span class="va">mois_acc</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_mois <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">annee</span>,<span class="va">mois_acc</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_mois <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'annee' (override with `.groups` argument)</span>
 
 <span class="va">acc_par_mois</span> <span class="op">%&gt;%</span> 
-  <span class="fu">mutate</span><span class="op">(</span>mois_acc <span class="op">=</span> <span class="fu">fct_relevel</span><span class="op">(</span><span class="va">mois_acc</span>, <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">mois_acc</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>mois_acc <span class="op">=</span> <span class="fu">fct_relevel</span><span class="op">(</span><span class="va">mois_acc</span>, <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/as.character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/factor.html">levels</a></span><span class="op">(</span><span class="va">mois_acc</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mois_acc</span>, y<span class="op">=</span><span class="va">nb_accidents_mois</span><span class="op">)</span> <span class="op">+</span>
@@ -258,10 +265,10 @@
 <a href="#r%C3%A9partition-des-accidents-par-date-et-par-ann%C3%A9e" class="anchor"></a>Répartition des accidents par date et par année</h2>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">regr_accidents_date</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="co"># filter(annee == 2019) %&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">date_acc</span>,<span class="va">annee</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_date <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">date_acc</span>,<span class="va">annee</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_date <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'date_acc' (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">regr_accidents_date</span><span class="op">)</span> <span class="op">+</span>
@@ -279,13 +286,13 @@
 <a href="#r%C3%A9partition-du-nombre-daccidents-par-an-et-par-jour-de-la-semaine" class="anchor"></a>Répartition du nombre d’accidents par an et par jour de la semaine</h2>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">acc_par_jour</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">jour_acc</span>,<span class="va">annee</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_jour <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">jour_acc</span>,<span class="va">annee</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_jour <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'jour_acc' (override with `.groups` argument)</span>
 
 <span class="va">acc_par_jour</span> <span class="op">%&gt;%</span> 
-  <span class="fu">mutate</span><span class="op">(</span>jour_acc <span class="op">=</span> <span class="fu">fct_relevel</span><span class="op">(</span><span class="va">jour_acc</span>, <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">jour_acc</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>jour_acc <span class="op">=</span> <span class="fu">fct_relevel</span><span class="op">(</span><span class="va">jour_acc</span>, <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/as.character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/factor.html">levels</a></span><span class="op">(</span><span class="va">jour_acc</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">jour_acc</span>, y <span class="op">=</span> <span class="va">nb_accidents_jour</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span>, fill <span class="op">=</span> <span class="st">"#0c4c8a"</span><span class="op">)</span> <span class="op">+</span>
@@ -304,8 +311,8 @@
 <a href="#r%C3%A9partition-des-accidents-par-heure-de-la-journ%C3%A9e-sur-la-base-de-2015-%C3%A0-2019" class="anchor"></a>Répartition des accidents par heure de la journée (sur la base de 2015 à 2019)</h2>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">regr_heure</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">heure</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_h <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">heure</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_h <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">regr_heure</span><span class="op">)</span> <span class="op">+</span>
@@ -321,9 +328,9 @@
 <a href="#r%C3%A9partition-des-accidents-mortels-par-heure-de-la-journ%C3%A9e-sur-la-base-de-2015-%C3%A0-2019" class="anchor"></a>Répartition des accidents mortels par heure de la journée (sur la base de 2015 à 2019)</h2>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">regr_heure_tues</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">grav</span><span class="op">==</span><span class="st">"Tué"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">heure</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_h_tues <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">grav</span><span class="op">==</span><span class="st">"Tué"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">heure</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_h_tues <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">regr_heure_tues</span><span class="op">)</span> <span class="op">+</span>
@@ -339,10 +346,10 @@
 <a href="#r%C3%A9partition-des-accidents-de-la-route-par-sexe-lorsque-lusager-est-conducteur" class="anchor"></a>Répartition des accidents de la route par sexe lorsque l’usager est conducteur</h2>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">repart_sexe</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">catu</span><span class="op">==</span><span class="st">"Conducteur"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">annee</span>,<span class="va">sexe</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_sexe <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>annee <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">date_acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">catu</span><span class="op">==</span><span class="st">"Conducteur"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">annee</span>,<span class="va">sexe</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_sexe <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'annee' (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">repart_sexe</span><span class="op">)</span> <span class="op">+</span>
@@ -375,10 +382,10 @@
 <a href="#gravit%C3%A9-de-laccident" class="anchor"></a>Gravité de l’accident</h2>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gravite</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_gravite <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_gravite <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="co">#Pour l'ordre des modalités dans le graphique :  </span>
-  <span class="fu">mutate</span><span class="op">(</span>grav <span class="op">=</span> <span class="fu">fct_relevel</span><span class="op">(</span><span class="va">grav</span>, <span class="st">"Indemne"</span>,<span class="st">"Blessé léger"</span>,<span class="st">"Blessé hospitalisé"</span>,<span class="st">"Tué"</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>grav <span class="op">=</span> <span class="fu">fct_relevel</span><span class="op">(</span><span class="va">grav</span>, <span class="st">"Indemne"</span>,<span class="st">"Blessé léger"</span>,<span class="st">"Blessé hospitalisé"</span>,<span class="st">"Tué"</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">gravite</span><span class="op">)</span> <span class="op">+</span>
@@ -394,8 +401,8 @@
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">sum_grav</span> <span class="op">&lt;-</span> <span class="va">gravite</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>nb_tot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_gravite</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_gravite</span> <span class="op">/</span> <span class="va">nb_tot</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>nb_tot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_gravite</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_gravite</span> <span class="op">/</span> <span class="va">nb_tot</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
 
 <span class="va">sum_grav</span>
 <span class="co">#&gt; # A tibble: 4 x 4</span>
@@ -412,8 +419,8 @@
 <a href="#r%C3%A9partition-des-accidents-selon-le-sexe-et-la-gravit%C3%A9-de-2015-%C3%A0-2019" class="anchor"></a>Répartition des accidents selon le sexe et la gravité (de 2015 à 2019)</h2>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">acc_sexe_grav</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">sexe</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_sexe_grav <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">sexe</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_sexe_grav <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'sexe' (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">acc_sexe_grav</span><span class="op">)</span> <span class="op">+</span>
@@ -427,13 +434,13 @@
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">sum_sexe_grav</span> <span class="op">&lt;-</span> <span class="va">acc_sexe_grav</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">sexe</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_sexe_grav</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">sexe</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_sexe_grav</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
 
 <span class="va">acc_sexe_grav_1</span> <span class="op">&lt;-</span> <span class="va">acc_sexe_grav</span> <span class="op">%&gt;%</span> 
-  <span class="fu">left_join</span><span class="op">(</span><span class="va">sum_sexe_grav</span>,by<span class="op">=</span><span class="st">"sexe"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_sexe_grav</span> <span class="op">/</span> <span class="va">nb_accidents_sex</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">sum_sexe_grav</span>,by<span class="op">=</span><span class="st">"sexe"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_sexe_grav</span> <span class="op">/</span> <span class="va">nb_accidents_sex</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
 
 <span class="va">acc_sexe_grav_1</span>
 <span class="co">#&gt; # A tibble: 8 x 5</span>
@@ -455,8 +462,8 @@
 <a href="#usagers-et-gravit%C3%A9-de-laccident-entre-2015-et-2019" class="anchor"></a>Usagers et gravité de l’accident entre 2015 et 2019</h2>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">us_grav</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">catu</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_grav <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">catu</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_grav <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'catu' (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">us_grav</span><span class="op">)</span> <span class="op">+</span>
@@ -470,13 +477,13 @@
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">sum_catu_grav</span> <span class="op">&lt;-</span> <span class="va">us_grav</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">catu</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_catu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_grav</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">catu</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_catu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_grav</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
 
 <span class="va">us_grav_1</span> <span class="op">&lt;-</span> <span class="va">us_grav</span> <span class="op">%&gt;%</span> 
-  <span class="fu">left_join</span><span class="op">(</span><span class="va">sum_catu_grav</span>,by<span class="op">=</span><span class="st">"catu"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_grav</span> <span class="op">/</span> <span class="va">nb_accidents_catu</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">sum_catu_grav</span>,by<span class="op">=</span><span class="st">"catu"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_grav</span> <span class="op">/</span> <span class="va">nb_accidents_catu</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
 
 <span class="va">us_grav_1</span>
 <span class="co">#&gt; # A tibble: 16 x 5</span>
@@ -506,8 +513,8 @@
 <a href="#r%C3%A9partition-des-accidents-par-%C3%A2ge" class="anchor"></a>Répartition des accidents par âge</h2>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">acc_par_age</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">age</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_age <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">age</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_age <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'age' (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">acc_par_age</span><span class="op">)</span> <span class="op">+</span>
@@ -542,8 +549,8 @@
 <a href="#conditions-d%C3%A9clairage-et-gravit%C3%A9-de-laccident" class="anchor"></a>Conditions d’éclairage et gravité de l’accident</h2>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">eclairage</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">grav</span>,<span class="va">lum</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_ecl <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">grav</span>,<span class="va">lum</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_ecl <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'grav' (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">eclairage</span><span class="op">)</span> <span class="op">+</span>
@@ -559,13 +566,13 @@
 <code class="sourceCode R">  <span class="co"># theme(axis.text.x = element_text(angle = 90))</span>
 
 <span class="va">sum_eclr</span> <span class="op">&lt;-</span> <span class="va">eclairage</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">lum</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_lum <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_ecl</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">lum</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_lum <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_ecl</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
 
 <span class="va">eclairage_1</span> <span class="op">&lt;-</span> <span class="va">eclairage</span> <span class="op">%&gt;%</span> 
-  <span class="fu">left_join</span><span class="op">(</span><span class="va">sum_eclr</span>,by<span class="op">=</span><span class="st">"lum"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_ecl</span> <span class="op">/</span> <span class="va">nb_accidents_lum</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">sum_eclr</span>,by<span class="op">=</span><span class="st">"lum"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_ecl</span> <span class="op">/</span> <span class="va">nb_accidents_lum</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
 
 <span class="va">eclairage_1</span>
 <span class="co">#&gt; # A tibble: 16 x 5</span>
@@ -595,8 +602,8 @@
 <a href="#r%C3%A9partition-des-accidents-par-cat%C3%A9gorie-de-route-et-par-gravit%C3%A9" class="anchor"></a>Répartition des accidents par catégorie de route et par gravité</h2>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">repart_catr</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">catr</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_catr <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">catr</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_catr <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'catr' (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">repart_catr</span><span class="op">)</span> <span class="op">+</span>
@@ -615,8 +622,8 @@
 <a href="#lien-entre-port-dun-%C3%A9quipement-de-s%C3%A9curit%C3%A9-et-gravit%C3%A9-de-laccident" class="anchor"></a>Lien entre port d’un équipement de sécurité et gravité de l’accident</h2>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ceint</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">secu1</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_ceint <span class="op">=</span> <span class="fu">n_distinct</span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">secu1</span>,<span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_ceint <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">Num_Acc</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` regrouping output by 'secu1' (override with `.groups` argument)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">ceint</span><span class="op">)</span> <span class="op">+</span>
@@ -631,13 +638,13 @@
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">sum_ceint</span> <span class="op">&lt;-</span> <span class="va">ceint</span> <span class="op">%&gt;%</span>
-  <span class="fu">group_by</span><span class="op">(</span><span class="va">secu1</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">summarise</span><span class="op">(</span>nb_accidents_secu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_ceint</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">secu1</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_accidents_secu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">nb_accidents_ceint</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span>
 
 <span class="va">ceint_1</span> <span class="op">&lt;-</span> <span class="va">ceint</span> <span class="op">%&gt;%</span> 
-  <span class="fu">left_join</span><span class="op">(</span><span class="va">sum_ceint</span>,by<span class="op">=</span><span class="st">"secu1"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">mutate</span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_ceint</span> <span class="op">/</span> <span class="va">nb_accidents_secu</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">sum_ceint</span>,by<span class="op">=</span><span class="st">"secu1"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prop <span class="op">=</span> <span class="op">(</span><span class="va">nb_accidents_ceint</span> <span class="op">/</span> <span class="va">nb_accidents_secu</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span>
 
 <span class="va">ceint_1</span>
 <span class="co">#&gt; # A tibble: 38 x 5</span>

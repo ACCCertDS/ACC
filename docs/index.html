@@ -68,6 +68,9 @@
     <li>
       <a href="articles/Stats_Descriptives.html">Statistiques descriptives avec ggplot2</a>
     </li>
+    <li>
+      <a href="articles/Carto.html">Cartographie</a>
+    </li>
     <li class="divider">
     <li class="dropdown-header">Classification</li>
     <li>
@@ -81,7 +84,14 @@
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/ACCCertDS/ACC/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -105,7 +115,7 @@
 <h2 class="hasAnchor">
 <a href="#description-des-donn%C3%A9es-incluses-dans-le-package" class="anchor"></a>Description des données incluses dans le package</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">ACC</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://acccertds.github.io/ACC/">ACC</a></span><span class="op">)</span>
 <span class="va">data_list</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>caracteristiques <span class="op">=</span> <span class="va">caracteristiques</span>,
        usagers <span class="op">=</span> <span class="va">usagers</span>,
        lieux <span class="op">=</span> <span class="va">lieux</span>,
@@ -123,7 +133,10 @@
 <li>Une analyse uni et bi-variée des données dans <code><a href="articles/Stats_Descriptives.html">vignette("Stats_Descriptives")</a></code> à la suite de laquelle nous avons recodé des modalités de certaines variables, et sélectionné d’autres</li>
 <li>Une classification par ACM, mélanges de modèles et K-modes dans <code><a href="articles/ACM_classif.html">vignette("ACM_classif")</a></code>
 </li>
-<li>Une modélisation de la gravité des accidents</li>
+<li>Une modélisation de la gravité des accidents : <code><a href="articles/modeles.html">vignette("modeles")</a></code>
+</li>
+<li>L’utilisation des coordonnées des accidents pour de la visualisation : <code><a href="articles/Carto.html">vignette("Carto")</a></code>
+</li>
 <li>Une visusalisation shiny</li>
 </ul>
 </div>
@@ -140,7 +153,7 @@
 <a href="#exemple-dutilisation" class="anchor"></a>Exemple d’utilisation</h2>
 <p>Un exemple d’utilisation est la récupération des données (à l’aide du package <a href="https://cran.r-project.org/web/packages/BARIS/index.html">BARIS</a>):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">ACC</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://acccertds.github.io/ACC/">ACC</a></span><span class="op">)</span>
 
 <span class="co"># Jeux de données disponibles :</span>
 <span class="fu"><a href="reference/ACC_ressources.html">ACC_ressources</a></span><span class="op">(</span><span class="op">)</span>
@@ -157,7 +170,14 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="license">
+    <div class="links">
+<h2>Links</h2>
+<ul class="list-unstyled">
+<li>Browse source code at <br><a href="https://github.com/ACCCertDS/ACC/">https://​github.com/​ACCCertDS/​ACC/​</a>
+</li>
+</ul>
+</div>
+<div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>

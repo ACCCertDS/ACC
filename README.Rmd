@@ -52,7 +52,8 @@ DataExplorer::plot_str(
   suite de laquelle nous avons recodé des modalités de certaines variables, et
   sélectionné d'autres
 + Une classification par ACM, mélanges de modèles et K-modes dans `vignette("ACM_classif")`
-+ Une modélisation de la gravité des accidents
++ Une modélisation de la gravité des accidents : `vignette("modeles")`
++ L'utilisation des coordonnées des accidents pour de la visualisation : `vignette("Carto")`
 + Une visusalisation shiny
 
 ## Installation

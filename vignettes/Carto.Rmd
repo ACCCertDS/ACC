@@ -1,0 +1,242 @@
+---
+title: "Cartographie"
+output:
+  html_document: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Cartographie}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  fig.dpi = 96,
+  fig.height = 3.5,
+  fig.width = 7,
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Chargement des packages
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(reshape2)
+library(ggmap) # Pour la cartographie
+library(raster)
+library(cartography)
+library(leaflet)
+library(lubridate)
+library(ACC)
+```
+
+## Exploration des données de coordonnées gps et recodages nécessaires
+
+```{r}
+summary(accidents[,c(12,13)])
+```
+
+2622 lignes n'ont pas de coordonnées gps renseignées.
+
+```{r}
+class(accidents$lat)
+class(accidents$long)
+```
+
+Nous observons que les variables lat et long sont au format caractères. Nous commençons par les recoder afin qu'elles soient au format de degrés décimaux (format classique coordonnées gps).
+
+```{r}
+accidents$lat <- type.convert(accidents$lat, dec=".")
+class(accidents$lat)
+accidents$long <- type.convert(accidents$long, dec=".")
+class(accidents$long)
+accidents$lat <- as.numeric(accidents$lat)
+accidents$long <- as.numeric(accidents$long)
+```
+
+```{r}
+accidents_gps <- accidents %>%
+ mutate(lat = case_when(
+              abs(lat) > 100 ~ lat/100000,
+              TRUE ~ lat),
+        long = case_when(
+              abs(long) > 100 ~ long/100000,
+              TRUE ~ long)
+        )
+```
+
+```{r}
+summary(accidents_gps[,c(12,13)])
+```
+
+On crée un dataframe contenant le nombre d'accidents par coordonnées gps
+
+```{r}
+accidents_gps_group <- accidents_gps %>%
+  dplyr::select(Num_Acc, dep, date_acc, lat, long) %>%
+  dplyr::group_by(Num_Acc, lat, long, date_acc) %>%
+  summarise(n = n()) %>%
+  dplyr::select(Num_Acc, lat, long, date_acc)
+```
+
+Combien d'accidents avec des coordonnées gps renseignées nulles ? 
+
+```{r}
+accidents_gps_group %>% filter(lat==0, long==0) 
+```
+
+On obtient 13 043 accidents sans coordonnées gps renseignées sur 236 570 soit 5,5 %. On les retire de la base accidents_gps_group.
+
+```{r}
+accidents_gps_group <- accidents_gps_group %>%
+  filter(lat != 0, long != 0)
+```
+
+```{r}
+summary(accidents_gps_group[,c(2,3)])
+```
+
+## Cartographie
+
+On cherche les coins de la carte avec la fonction make_bbox du package ggmap
+
+```{r}
+bbox <- make_bbox(long, lat, data=accidents_gps_group)
+bbox
+```
+
+```{r}
+Carte <- get_map(bbox)
+ggmap(Carte)
+```
+
+La carte n'est pas centrée sur la France comme nous le souhaiterions.
+
+```{r, eval = FALSE}
+la <- 48.293024
+lo <- 4.079306
+zoom <- 4
+#Carte <- get_map(bbox)
+#ggmap(Carte)
+Carte2 <- get_map(location=c(lon = 1.7, lat = 47), zoom = 6, source="google", maptype="terrain", crop=TRUE, language= "fr-FR")
+ggmap(Carte2)
+```
+
+L'accès à l'API de Google nécessite un enregistrement avec communication d'une CB. J'abandonne cette piste. 
+
+## Intégration des Régions pour représentation par région avec le package cartography
+
+Création de la carte de France puis conversion au format sf pour utilisation avec le package cartography
+
+```{r}
+# Import d'une table de correspondance Département/Région
+# regions <- read.csv("departements-region.csv",header=T, sep=",")
+data("regions", package="ACC")
+head(regions)
+```
+
+Jointure entre accidents et regions pour ajout de la région de l'accident
+
+```{r}
+class(accidents$dep)
+accidents$dep <- as.numeric(accidents$dep)
+class(regions$num_dep)
+regions$num_dep <- as.numeric(regions$num_dep)
+accidents_region <- accidents %>%
+  dplyr::left_join(regions, by = c("dep"="num_dep"))
+```
+
+Regroupement des accidents par région
+
+```{r}
+accidents_par_region <- accidents_region %>%
+  dplyr::select(Num_Acc,region_name) %>%
+  group_by(region_name) %>%
+  summarise(n=n())
+```
+
+Regroupement des accidents par département
+
+```{r}
+accidents_par_dept <- accidents_region %>%
+  dplyr::select(Num_Acc,dep,dep_name) %>%
+  group_by(dep, dep_name) %>%
+  summarise(nbre_acc=n())
+```
+
+On colore les régions les plus accidentogènes.
+
+```{r}
+library(GADMTools)
+library(classInt)
+Fr<-gadm_sf_loadCountries("FRA",level=2)
+listNames(Fr,level=2)
+plotmap(Fr)
+accidents_par_dept <- data.frame(accidents_par_dept)
+ choropleth(Fr, 
+               data = accidents_par_dept, 
+               step=4,
+               value = "nbre_acc", 
+               adm.join = "dep_name",
+               breaks = "quantile", 
+               palette = "Reds",
+               legend="Nombre d'accidents",
+                title="Nombre d'accidents par département en 2018") 
+```
+
+
+## Carte avec un marqueur par accident
+
+```{r}
+accidents_2018 <- accidents_gps_group %>%
+  filter(year(date_acc) == 2018)
+
+france <- leaflet(data=accidents_2018) %>%
+  setView(lng=1.7, lat=47, zoom=5) %>%
+  addTiles()
+#print(france)
+france %>% addCircles(~long, ~lat, weight = 0.25)
+```
+
+Les modalités de la variable grav dans la table accidents : 
+
+```{r}
+accidents %>% dplyr::select(grav) %>% 
+  group_by(grav) %>%
+  summarise(n=n())
+```
+
+On compte 4 modalités, on va colorer les points du jaune au rouge, du niveau de gravité le plus faible (Indemne) au niveau le plus grave (Tué).
+
+```{r}
+accidents_2018_bis <- accidents_gps %>%
+  dplyr::filter(year(date_acc)==2018) %>%
+  dplyr::select(Num_Acc, grav, lat, long, date_acc) %>%
+  mutate(ye = year(date_acc))
+
+accidents_2018_bis <- accidents_2018_bis[1:10000,]
+```
+
+
+```{r}
+#accidents_2018_bis$grav <- factor(sample.int(4L, nrow(accidents_2018_bis), TRUE))
+
+#factpal <- colorFactor(topo.colors(4), accidents_2018_bis$grav)
+factpal <- colorFactor(c("firebrick","orange","gold","forestgreen"), accidents_2018_bis$grav)
+
+factpal(accidents_2018_bis$grav[1:10])
+
+france_test <- leaflet(data=accidents_2018_bis) %>%
+  setView(lng=1.7, lat=47, zoom=5) %>%
+  addTiles() %>%
+  addCircleMarkers(~long, 
+                   ~lat, 
+                   radius = 0.1, 
+                   color = ~factpal(grav),
+                   stroke = FALSE,
+                   fillOpacity = 0.5)
+print(france_test)
+```
+

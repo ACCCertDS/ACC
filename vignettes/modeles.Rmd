@@ -52,7 +52,7 @@ accidents <- accidents %>%
 skim(accidents)
 ```
 
-Compte tenu de la taille (`r `nrow(accidents)` observations) de nos données et des
+Compte tenu de la taille (`r nrow(accidents)` observations) de nos données et des
 capacités limitées de nos machines, nous sommes contraints de faire cette 
 modélisation sur un échantillon de nos données.
 
