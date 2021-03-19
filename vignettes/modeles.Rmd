@@ -280,13 +280,13 @@ Comparons les résultats de ces différentes méthodes
 ```{r}
 
 
-eval_prev_classif(prev=resultats$elnet,       real=resultats$Y, methode="Régression linéaire",                methode_abrev="lm")
-eval_prev_classif(prev=resultats$elnet,       real=resultats$Y, methode="Régression pénalisée : Ridge",       methode_abrev="ridge")
-eval_prev_classif(prev=resultats$elnet,       real=resultats$Y, methode="Régression pénalisée : Lasso",       methode_abrev="lasso")
+eval_prev_classif(prev=resultats$reg_lin,     real=resultats$Y, methode="Régression linéaire",                methode_abrev="lm")
+eval_prev_classif(prev=resultats$ridge,       real=resultats$Y, methode="Régression pénalisée : Ridge",       methode_abrev="ridge")
+eval_prev_classif(prev=resultats$lasso,       real=resultats$Y, methode="Régression pénalisée : Lasso",       methode_abrev="lasso")
 eval_prev_classif(prev=resultats$elnet,       real=resultats$Y, methode="Régression pénalisée : Elastic-net", methode_abrev="elnet")
 eval_prev_classif(prev=resultats$rf,          real=resultats$Y, methode="Random Forest",                      methode_abrev="RF")
-eval_prev_classif(prev=resultats$adaboost,      real=resultats$Y, methode="Gradient boosting : adaboost",     methode_abrev="gbm_ada")
-eval_prev_classif(prev=resultats$logitboost,      real=resultats$Y, methode="Gradient boosting : logitboost", methode_abrev="gbm_logit")
+eval_prev_classif(prev=resultats$adaboost,    real=resultats$Y, methode="Gradient boosting : adaboost",       methode_abrev="gbm_ada")
+eval_prev_classif(prev=resultats$logitboost,  real=resultats$Y, methode="Gradient boosting : logitboost",     methode_abrev="gbm_logit")
 eval_prev_classif(prev=resultats$neuralnet,   real=resultats$Y, methode="Réseau de neurones : nnet",          methode_abrev="nnet")
 
 criteres_erreur_classif

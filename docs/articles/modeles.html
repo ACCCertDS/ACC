@@ -68,6 +68,9 @@
     <li>
       <a href="../articles/Stats_Descriptives.html">Statistiques descriptives avec ggplot2</a>
     </li>
+    <li>
+      <a href="../articles/Carto.html">Cartographie</a>
+    </li>
     <li class="divider">
     <li class="dropdown-header">Classification</li>
     <li>
@@ -168,12 +171,12 @@
 <span class="co">#&gt; Joining, by = "dep"</span>
 
 <span class="va">accidents</span> <span class="op">&lt;-</span> <span class="va">accidents</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span>
+    <span class="fu">mutate</span><span class="op">(</span>Y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span>
       <span class="va">grav</span> <span class="op">==</span> <span class="st">"Indemne"</span>,<span class="st">"Indemne"</span>,
       <span class="st">"Blessures"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Num_Acc</span>,<span class="op">-</span><span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">Y</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_if</a></span><span class="op">(</span><span class="va">is.character</span>, <span class="va">factor</span><span class="op">)</span>
+    <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">Num_Acc</span>,<span class="op">-</span><span class="va">grav</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">select</span><span class="op">(</span><span class="va">Y</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">mutate_if</span><span class="op">(</span><span class="va">is.character</span>, <span class="va">factor</span><span class="op">)</span>
 
 <span class="fu"><a href="https://docs.ropensci.org/skimr/reference/skim.html">skim</a></span><span class="op">(</span><span class="va">accidents</span><span class="op">)</span></code></pre></div>
 <table class="table">
@@ -405,7 +408,7 @@
 <p>Compte tenu de la taille (480116 observations) de nos données et des capacités limitées de nos machines, nous sommes contraints de faire cette modélisation sur un échantillon de nos données.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
-<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html">sample_frac</a></span><span class="op">(</span><span class="va">accidents</span>, size <span class="op">=</span> <span class="fl">.20</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">sample_frac</span><span class="op">(</span><span class="va">accidents</span>, size <span class="op">=</span> <span class="fl">.20</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p>Afin de s’assurer qu’on n’a pas introduit un trop grand biais dans les données, on vérifie que les proportions de la variable d’intérêt <span class="math inline">\(Y\)</span> n’est pas très différent entre l’échantillon ci-dessus et les données initiales.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/proportions.html">prop.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">accidents</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>
@@ -463,7 +466,7 @@
   <span class="va">F1</span> <span class="op">&lt;-</span> <span class="fl">2</span><span class="op">*</span><span class="va">precision</span><span class="op">*</span><span class="va">sensitivity</span><span class="op">/</span><span class="op">(</span><span class="va">precision</span><span class="op">+</span><span class="va">sensitivity</span><span class="op">)</span>
   <span class="fu"><a href="https://docs.ropensci.org/skimr/reference/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"F1 : "</span>,<span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">F1</span>,digits<span class="op">=</span><span class="fl">3</span><span class="op">)</span>,sep<span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">)</span>
   
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/factor.html">is.factor</a></span><span class="op">(</span><span class="va">real</span><span class="op">)</span><span class="op">==</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">is.factor</a></span><span class="op">(</span><span class="va">real</span><span class="op">)</span><span class="op">==</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">{</span>
     <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>prev_proba<span class="op">=</span><span class="va">prev_proba</span>,
                      real<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">real</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>
   <span class="op">}</span>
@@ -504,7 +507,7 @@
 <span class="va">don_test</span> <span class="op">&lt;-</span> <span class="fu">rsample</span><span class="fu">::</span><span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html">testing</a></span><span class="op">(</span><span class="va">split</span><span class="op">)</span>
 
 <span class="va">nb</span> <span class="op">=</span> <span class="fl">4</span>
-<span class="va">blocs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">nb</span>, length<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/ncell.html">nrow</a></span><span class="op">(</span><span class="va">don_apprentissage</span><span class="op">)</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<span class="va">blocs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">nb</span>, length<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">don_apprentissage</span><span class="op">)</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p>La fonction ci-après sera exécutée pour chacun des 4 blocs et permet d’ajuster plusieurs modèles aux données.</p>
 <p>Pour des raisons de temps de calcul nous sommes contraints de ne pas exécuter les modèles SVM.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -538,17 +541,17 @@
   <span class="fu">stopCluster</span><span class="op">(</span><span class="va">cl</span><span class="op">)</span>
   
   <span class="co">## Previsions</span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span> Y <span class="op">=</span> <span class="va">test</span><span class="op">$</span><span class="va">Y</span>,
-          reg_lin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_lin</span>, <span class="va">test</span>, type <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,
-          ridge <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_ridge</span>, <span class="va">test_matx</span>, type <span class="op">=</span><span class="st">"response"</span>, s<span class="op">=</span><span class="st">"lambda.1se"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,
-          lasso <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_lasso</span>, <span class="va">test_matx</span>, type <span class="op">=</span><span class="st">"response"</span>, s<span class="op">=</span><span class="st">"lambda.1se"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,
-          elnet <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_elnet</span>, <span class="va">test_matx</span>, type <span class="op">=</span><span class="st">"response"</span>, s<span class="op">=</span><span class="st">"lambda.1se"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,
-          rf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_rf</span>, <span class="va">test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,
-          adaboost <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_Adaboost</span>, <span class="va">test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,
-          logitboost <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_Logitboost</span>, <span class="va">test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,
+  <span class="fu">tibble</span><span class="op">(</span> Y <span class="op">=</span> <span class="va">test</span><span class="op">$</span><span class="va">Y</span>,
+          reg_lin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_lin</span>, <span class="va">test</span>, type <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,
+          ridge <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_ridge</span>, <span class="va">test_matx</span>, type <span class="op">=</span><span class="st">"response"</span>, s<span class="op">=</span><span class="st">"lambda.1se"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,
+          lasso <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_lasso</span>, <span class="va">test_matx</span>, type <span class="op">=</span><span class="st">"response"</span>, s<span class="op">=</span><span class="st">"lambda.1se"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,
+          elnet <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_elnet</span>, <span class="va">test_matx</span>, type <span class="op">=</span><span class="st">"response"</span>, s<span class="op">=</span><span class="st">"lambda.1se"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,
+          rf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_rf</span>, <span class="va">test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,
+          adaboost <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_Adaboost</span>, <span class="va">test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,
+          logitboost <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_Logitboost</span>, <span class="va">test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,
           <span class="co"># svm = predict(mod_svm, test, type ="prob")[,2],</span>
           <span class="co"># svm_poly_d2 = predict(mod_svm_poly_d2, test, type ="prob")[,2],</span>
-          neuralnet <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_nnet</span>, <span class="va">test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>
+          neuralnet <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">mod_nnet</span>, <span class="va">test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>
   <span class="op">)</span> 
 
 <span class="op">}</span>
@@ -558,7 +561,7 @@
 <span class="va">controle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/caret/man/trainControl.html">trainControl</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"cv"</span>,number<span class="op">=</span><span class="fl">4</span>, allowParallel <span class="op">=</span> <span class="cn">TRUE</span>, classProbs<span class="op">=</span><span class="cn">TRUE</span>, verboseIter <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
 
 <span class="co">## Grilles de recherches d'hyper paramètres</span>
-<span class="va">rf_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span><span class="op">(</span>mtry<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq.int</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/pkg/raster/man/ncell.html">ncol</a></span><span class="op">(</span><span class="va">don_apprentissage</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span>, length.out <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>, splitrule <span class="op">=</span> <span class="st">"gini"</span>, min.node.size<span class="op">=</span><span class="fl">1L</span><span class="op">)</span> 
+<span class="va">rf_grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span><span class="op">(</span>mtry<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq.int</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">don_apprentissage</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span>, length.out <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>, splitrule <span class="op">=</span> <span class="st">"gini"</span>, min.node.size<span class="op">=</span><span class="fl">1L</span><span class="op">)</span> 
 <span class="co"># svr_C_Grid &lt;-  expand.grid(C = seq(0.001, 2, length = 10))</span>
 <span class="co"># svr_poly_grid &lt;- expand.grid(C = seq(0.001, 2, length = 10), degree =2, scale = 1)</span>
 <span class="va">boosting_grille</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span><span class="op">(</span>n.trees <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">25</span>,<span class="fl">5</span><span class="op">)</span><span class="op">*</span><span class="fl">50</span>, shrinkage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.0001</span>,<span class="fl">0.001</span>,<span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">1</span><span class="op">)</span>, n.minobsinnode <span class="op">=</span> <span class="fl">10</span>, interaction.depth <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
@@ -605,64 +608,64 @@
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 
-<span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">elnet</span>,       real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Régression linéaire"</span>,                methode_abrev<span class="op">=</span><span class="st">"lm"</span><span class="op">)</span>
+<span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">reg_lin</span>,     real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Régression linéaire"</span>,                methode_abrev<span class="op">=</span><span class="st">"lm"</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Confusion matrix :"</span>
 <span class="co">#&gt;            prev</span>
 <span class="co">#&gt; real            0     1</span>
-<span class="co">#&gt;   Blessures 32389  9926</span>
-<span class="co">#&gt;   Indemne    7690 22013</span>
+<span class="co">#&gt;   Blessures 32362  9953</span>
+<span class="co">#&gt;   Indemne    7719 21984</span>
 <span class="co">#&gt; [1] "Confusion matrix (%) :"</span>
 <span class="co">#&gt;            prev</span>
 <span class="co">#&gt; real           0    1</span>
-<span class="co">#&gt;   Blessures 45.0 13.8</span>
-<span class="co">#&gt;   Indemne   10.7 30.6</span>
+<span class="co">#&gt;   Blessures 44.9 13.8</span>
+<span class="co">#&gt;   Indemne   10.7 30.5</span>
 <span class="co">#&gt; [1] "Classification error : 0.245"</span>
-<span class="co">#&gt; [1] "Sensitivity : 0.741"</span>
-<span class="co">#&gt; [1] "Precision : 0.689"</span>
+<span class="co">#&gt; [1] "Sensitivity : 0.74"</span>
+<span class="co">#&gt; [1] "Precision : 0.688"</span>
 <span class="co">#&gt; [1] "Accuracy : 0.755"</span>
 <span class="co">#&gt; [1] "Specificity : 0.765"</span>
-<span class="co">#&gt; [1] "F1 : 0.714"</span>
-<span class="co">#&gt; [1] "AUC : 0.83"</span></code></pre></div>
+<span class="co">#&gt; [1] "F1 : 0.713"</span>
+<span class="co">#&gt; [1] "AUC : 0.84"</span></code></pre></div>
 <p><img src="modeles_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">elnet</span>,       real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Régression pénalisée : Ridge"</span>,       methode_abrev<span class="op">=</span><span class="st">"ridge"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">ridge</span>,       real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Régression pénalisée : Ridge"</span>,       methode_abrev<span class="op">=</span><span class="st">"ridge"</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Confusion matrix :"</span>
 <span class="co">#&gt;            prev</span>
 <span class="co">#&gt; real            0     1</span>
-<span class="co">#&gt;   Blessures 32389  9926</span>
-<span class="co">#&gt;   Indemne    7690 22013</span>
+<span class="co">#&gt;   Blessures 32485  9830</span>
+<span class="co">#&gt;   Indemne    7825 21878</span>
 <span class="co">#&gt; [1] "Confusion matrix (%) :"</span>
 <span class="co">#&gt;            prev</span>
 <span class="co">#&gt; real           0    1</span>
-<span class="co">#&gt;   Blessures 45.0 13.8</span>
-<span class="co">#&gt;   Indemne   10.7 30.6</span>
+<span class="co">#&gt;   Blessures 45.1 13.6</span>
+<span class="co">#&gt;   Indemne   10.9 30.4</span>
 <span class="co">#&gt; [1] "Classification error : 0.245"</span>
-<span class="co">#&gt; [1] "Sensitivity : 0.741"</span>
-<span class="co">#&gt; [1] "Precision : 0.689"</span>
+<span class="co">#&gt; [1] "Sensitivity : 0.737"</span>
+<span class="co">#&gt; [1] "Precision : 0.69"</span>
 <span class="co">#&gt; [1] "Accuracy : 0.755"</span>
-<span class="co">#&gt; [1] "Specificity : 0.765"</span>
-<span class="co">#&gt; [1] "F1 : 0.714"</span>
+<span class="co">#&gt; [1] "Specificity : 0.768"</span>
+<span class="co">#&gt; [1] "F1 : 0.713"</span>
 <span class="co">#&gt; [1] "AUC : 0.83"</span></code></pre></div>
 <p><img src="modeles_files/figure-html/unnamed-chunk-10-2.png" width="672"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">elnet</span>,       real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Régression pénalisée : Lasso"</span>,       methode_abrev<span class="op">=</span><span class="st">"lasso"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">lasso</span>,       real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Régression pénalisée : Lasso"</span>,       methode_abrev<span class="op">=</span><span class="st">"lasso"</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Confusion matrix :"</span>
 <span class="co">#&gt;            prev</span>
 <span class="co">#&gt; real            0     1</span>
-<span class="co">#&gt;   Blessures 32389  9926</span>
-<span class="co">#&gt;   Indemne    7690 22013</span>
+<span class="co">#&gt;   Blessures 32340  9975</span>
+<span class="co">#&gt;   Indemne    7639 22064</span>
 <span class="co">#&gt; [1] "Confusion matrix (%) :"</span>
 <span class="co">#&gt;            prev</span>
 <span class="co">#&gt; real           0    1</span>
-<span class="co">#&gt;   Blessures 45.0 13.8</span>
-<span class="co">#&gt;   Indemne   10.7 30.6</span>
+<span class="co">#&gt;   Blessures 44.9 13.9</span>
+<span class="co">#&gt;   Indemne   10.6 30.6</span>
 <span class="co">#&gt; [1] "Classification error : 0.245"</span>
-<span class="co">#&gt; [1] "Sensitivity : 0.741"</span>
+<span class="co">#&gt; [1] "Sensitivity : 0.743"</span>
 <span class="co">#&gt; [1] "Precision : 0.689"</span>
 <span class="co">#&gt; [1] "Accuracy : 0.755"</span>
-<span class="co">#&gt; [1] "Specificity : 0.765"</span>
-<span class="co">#&gt; [1] "F1 : 0.714"</span>
-<span class="co">#&gt; [1] "AUC : 0.83"</span></code></pre></div>
+<span class="co">#&gt; [1] "Specificity : 0.764"</span>
+<span class="co">#&gt; [1] "F1 : 0.715"</span>
+<span class="co">#&gt; [1] "AUC : 0.84"</span></code></pre></div>
 <p><img src="modeles_files/figure-html/unnamed-chunk-10-3.png" width="672"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">elnet</span>,       real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Régression pénalisée : Elastic-net"</span>, methode_abrev<span class="op">=</span><span class="st">"elnet"</span><span class="op">)</span>
@@ -705,7 +708,7 @@
 <span class="co">#&gt; [1] "AUC : 0.84"</span></code></pre></div>
 <p><img src="modeles_files/figure-html/unnamed-chunk-10-5.png" width="672"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">adaboost</span>,      real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Gradient boosting : adaboost"</span>,     methode_abrev<span class="op">=</span><span class="st">"gbm_ada"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">adaboost</span>,    real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Gradient boosting : adaboost"</span>,       methode_abrev<span class="op">=</span><span class="st">"gbm_ada"</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Confusion matrix :"</span>
 <span class="co">#&gt;            prev</span>
 <span class="co">#&gt; real            0     1</span>
@@ -725,7 +728,7 @@
 <span class="co">#&gt; [1] "AUC : 0.85"</span></code></pre></div>
 <p><img src="modeles_files/figure-html/unnamed-chunk-10-6.png" width="672"></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">logitboost</span>,      real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Gradient boosting : logitboost"</span>, methode_abrev<span class="op">=</span><span class="st">"gbm_logit"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">logitboost</span>,  real<span class="op">=</span><span class="va">resultats</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Gradient boosting : logitboost"</span>,     methode_abrev<span class="op">=</span><span class="st">"gbm_logit"</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Confusion matrix :"</span>
 <span class="co">#&gt;            prev</span>
 <span class="co">#&gt; real            0     1</span>
@@ -768,18 +771,18 @@
 <code class="sourceCode R">
 <span class="va">criteres_erreur_classif</span>
 <span class="co">#&gt;   Methode_abrev                            Methode     Error Sensitivity</span>
-<span class="co">#&gt; 1            lm                Régression linéaire 0.2446055   0.7411036</span>
-<span class="co">#&gt; 2         ridge       Régression pénalisée : Ridge 0.2446055   0.7411036</span>
-<span class="co">#&gt; 3         lasso       Régression pénalisée : Lasso 0.2446055   0.7411036</span>
+<span class="co">#&gt; 1            lm                Régression linéaire 0.2453831   0.7401273</span>
+<span class="co">#&gt; 2         ridge       Régression pénalisée : Ridge 0.2451470   0.7365586</span>
+<span class="co">#&gt; 3         lasso       Régression pénalisée : Lasso 0.2445777   0.7428206</span>
 <span class="co">#&gt; 4         elnet Régression pénalisée : Elastic-net 0.2446055   0.7411036</span>
 <span class="co">#&gt; 5            RF                      Random Forest 0.2354134   0.7246743</span>
 <span class="co">#&gt; 6       gbm_ada       Gradient boosting : adaboost 0.2320114   0.7409016</span>
 <span class="co">#&gt; 7     gbm_logit     Gradient boosting : logitboost 0.2864423   0.8052385</span>
 <span class="co">#&gt; 8          nnet          Réseau de neurones : nnet 0.3225444   0.3674713</span>
 <span class="co">#&gt;   Precision  Accuracy Specificity        F1  AUC</span>
-<span class="co">#&gt; 1 0.6892201 0.7553945   0.7654260 0.7142208 0.83</span>
-<span class="co">#&gt; 2 0.6892201 0.7553945   0.7654260 0.7142208 0.83</span>
-<span class="co">#&gt; 3 0.6892201 0.7553945   0.7654260 0.7142208 0.83</span>
+<span class="co">#&gt; 1 0.6883552 0.7546169   0.7647879 0.7133030 0.84</span>
+<span class="co">#&gt; 2 0.6899836 0.7548530   0.7676947 0.7125108 0.83</span>
+<span class="co">#&gt; 3 0.6886607 0.7554223   0.7642680 0.7147161 0.84</span>
 <span class="co">#&gt; 4 0.6892201 0.7553945   0.7654260 0.7142208 0.83</span>
 <span class="co">#&gt; 5 0.7103726 0.7645866   0.7926031 0.7174522 0.84</span>
 <span class="co">#&gt; 6 0.7094455 0.7679886   0.7870022 0.7248324 0.85</span>
@@ -831,8 +834,8 @@
 <a href="#mod%C3%A8le-de-m%C3%A9lange-i-erreur-moyenne-sur-tous-les-mod%C3%A8les" class="anchor"></a>Modèle de mélange I (erreur moyenne sur tous les modèles )</h2>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">moyenne_mod</span> <span class="op">&lt;-</span> <span class="va">resultats</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>moyenne <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">c_across</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">matches</a></span><span class="op">(</span><span class="st">"Y"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu">rowwise</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">mutate</span><span class="op">(</span>moyenne <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu">c_across</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">matches</a></span><span class="op">(</span><span class="st">"Y"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu">eval_prev_classif</span><span class="op">(</span>prev_proba <span class="op">=</span> <span class="va">moyenne_mod</span><span class="op">$</span><span class="va">moyenne</span>,
                   real <span class="op">=</span> <span class="va">moyenne_mod</span><span class="op">$</span><span class="va">Y</span>,
@@ -862,8 +865,8 @@
 <a href="#mod%C3%A8le-de-m%C3%A9lange-ii-max" class="anchor"></a>Modèle de mélange II (max)</h2>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">max_mod</span> <span class="op">&lt;-</span> <span class="va">resultats</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">c_across</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">matches</a></span><span class="op">(</span><span class="st">"Y"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu">rowwise</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">mutate</span><span class="op">(</span>max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu">c_across</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">matches</a></span><span class="op">(</span><span class="st">"Y"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu">eval_prev_classif</span><span class="op">(</span>prev_proba <span class="op">=</span> <span class="va">max_mod</span><span class="op">$</span><span class="va">max</span>,
                   real <span class="op">=</span> <span class="va">max_mod</span><span class="op">$</span><span class="va">Y</span>,
@@ -893,8 +896,8 @@
 <a href="#mod%C3%A8le-de-m%C3%A9lange-iii-min" class="anchor"></a>Modèle de mélange III (min)</h2>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">min_mod</span> <span class="op">&lt;-</span> <span class="va">resultats</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">c_across</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">matches</a></span><span class="op">(</span><span class="st">"Y"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu">rowwise</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">mutate</span><span class="op">(</span>min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="fu">c_across</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">matches</a></span><span class="op">(</span><span class="st">"Y"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu">eval_prev_classif</span><span class="op">(</span>prev_proba <span class="op">=</span> <span class="va">min_mod</span><span class="op">$</span><span class="va">min</span>,
                   real <span class="op">=</span> <span class="va">min_mod</span><span class="op">$</span><span class="va">Y</span>,
@@ -920,15 +923,15 @@
 <p><img src="modeles_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">criteres_erreur_classif</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">Error</span><span class="op">)</span>
+  <span class="fu">arrange</span><span class="op">(</span><span class="va">Error</span><span class="op">)</span>
 <span class="co">#&gt;    Methode_abrev                            Methode     Error Sensitivity</span>
 <span class="co">#&gt; 1        gbm_ada       Gradient boosting : adaboost 0.2320114   0.7409016</span>
 <span class="co">#&gt; 2      agreg_moy                 Agrégation moyenne 0.2352051   0.7498906</span>
 <span class="co">#&gt; 3             RF                      Random Forest 0.2354134   0.7246743</span>
-<span class="co">#&gt; 4             lm                Régression linéaire 0.2446055   0.7411036</span>
-<span class="co">#&gt; 5          ridge       Régression pénalisée : Ridge 0.2446055   0.7411036</span>
-<span class="co">#&gt; 6          lasso       Régression pénalisée : Lasso 0.2446055   0.7411036</span>
-<span class="co">#&gt; 7          elnet Régression pénalisée : Elastic-net 0.2446055   0.7411036</span>
+<span class="co">#&gt; 4          lasso       Régression pénalisée : Lasso 0.2445777   0.7428206</span>
+<span class="co">#&gt; 5          elnet Régression pénalisée : Elastic-net 0.2446055   0.7411036</span>
+<span class="co">#&gt; 6          ridge       Régression pénalisée : Ridge 0.2451470   0.7365586</span>
+<span class="co">#&gt; 7             lm                Régression linéaire 0.2453831   0.7401273</span>
 <span class="co">#&gt; 8      gbm_logit     Gradient boosting : logitboost 0.2864423   0.8052385</span>
 <span class="co">#&gt; 9      agreg_max                 Agrégation moyenne 0.2900803   0.8852641</span>
 <span class="co">#&gt; 10          nnet          Réseau de neurones : nnet 0.3225444   0.3674713</span>
@@ -937,10 +940,10 @@
 <span class="co">#&gt; 1  0.7094455 0.7679886   0.7870022 0.7248324 0.85</span>
 <span class="co">#&gt; 2  0.7007929 0.7647949   0.7752570 0.7245109 0.84</span>
 <span class="co">#&gt; 3  0.7103726 0.7645866   0.7926031 0.7174522 0.84</span>
-<span class="co">#&gt; 4  0.6892201 0.7553945   0.7654260 0.7142208 0.83</span>
+<span class="co">#&gt; 4  0.6886607 0.7554223   0.7642680 0.7147161 0.84</span>
 <span class="co">#&gt; 5  0.6892201 0.7553945   0.7654260 0.7142208 0.83</span>
-<span class="co">#&gt; 6  0.6892201 0.7553945   0.7654260 0.7142208 0.83</span>
-<span class="co">#&gt; 7  0.6892201 0.7553945   0.7654260 0.7142208 0.83</span>
+<span class="co">#&gt; 6  0.6899836 0.7548530   0.7676947 0.7125108 0.83</span>
+<span class="co">#&gt; 7  0.6883552 0.7546169   0.7647879 0.7133030 0.84</span>
 <span class="co">#&gt; 8  0.6170476 0.7135577   0.6492024 0.6986928 0.75</span>
 <span class="co">#&gt; 9  0.6006442 0.7099197   0.5868368 0.7156952 0.81</span>
 <span class="co">#&gt; 10 0.7107971 0.6774556   0.8950490 0.4844759 0.72</span>
@@ -1018,8 +1021,8 @@
 <span class="co">#&gt; 20    1050                 2       0.1             10</span></code></pre></div>
 <p>On peut alors appliquer ce modèle à de nouvelles données.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pred_fin</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span> Y <span class="op">=</span> <span class="va">don_test</span><span class="op">$</span><span class="va">Y</span>,
-                     pred <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/predict.html">predict</a></span><span class="op">(</span><span class="va">modele_fin</span>, <span class="va">don_test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>
+<code class="sourceCode R"><span class="va">pred_fin</span> <span class="op">&lt;-</span>  <span class="fu">tibble</span><span class="op">(</span> Y <span class="op">=</span> <span class="va">don_test</span><span class="op">$</span><span class="va">Y</span>,
+                     pred <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">modele_fin</span>, <span class="va">don_test</span>, type <span class="op">=</span><span class="st">"prob"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>
 <span class="op">)</span>
 
 <span class="fu">eval_prev_classif</span><span class="op">(</span>prev<span class="op">=</span><span class="va">pred_fin</span><span class="op">$</span><span class="va">pred</span>, real<span class="op">=</span><span class="va">pred_fin</span><span class="op">$</span><span class="va">Y</span>, methode<span class="op">=</span><span class="st">"Gradient boosting : adaboost"</span>,     methode_abrev<span class="op">=</span><span class="st">"gbm_ada"</span><span class="op">)</span>
