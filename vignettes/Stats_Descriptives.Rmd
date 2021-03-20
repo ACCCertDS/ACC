@@ -319,7 +319,7 @@ acc_sexe_grav_1
 ```
 
 Nous notons que les femmes ont été 2 fois moins impliquées que les hommes dans 
-un accidents de la route lors des années 2015 à 2019 (180 786 accidents pour les 
+un accident de la route lors des années 2015 à 2019 (180 786 accidents pour les 
 femmes contre 390 791 pour les hommes). Concernant la gravité des accidents, la 
 représentation des classes "Blessé léger" et "Indemne" sont à l'inverse selon 
 le sexe. Les femmes ont une représentation de blessés légers de 42 % (contre 
@@ -398,7 +398,7 @@ Les accidents de la route impliquent le plus souvent des usagers de la classe
 d'âge 18 - 35 ans. Néanmoins, nous pouvons penser que c'est aussi la classe 
 d'âge la plus représentée sur la route, ce qui multiplie donc les risques d'accidents.
 
-On remarque également que un effet entre l'âge et la gravité de l'accident, 
+On remarque également un effet entre l'âge et la gravité de l'accident, 
 en effet, les personnes âgées semblent plus touchées par les accidents mortels.
 
 ## Conditions d'éclairage et gravité de l'accident

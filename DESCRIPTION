@@ -15,7 +15,8 @@ Authors@R:
            role = c("aut" ),
            email = "coralie.bos@gmail.com"))     
 Description: Analyse des données de la base accident.
-URL: https://acccertds.github.io/ACC/, https://github.com/ACCCertDS/ACC 
+URL: https://acccertds.github.io/ACC/,
+    https://github.com/ACCCertDS/ACC 
 License: AGPL (>= 3)
 Encoding: UTF-8
 Language: "fr_FR"
