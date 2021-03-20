@@ -31,11 +31,11 @@ d'accidents de la circulation.
 
 # Téléchargement des données
 
-Ces données sont disponibles sur plateforme open data 
+Ces données sont disponibles sur la plateforme open data 
 [data.gouv.fr](https://www.data.gouv.fr/fr/). 
 
 Le package [BARIS](https://cran.r-project.org/package=BARIS) permet de faire le
-lien entre l'API data.gouv.fr. On peut ainsi obtenir la présentation du *dataset* 
+lien vers l'API data.gouv.fr. On peut ainsi obtenir la présentation du *dataset* 
 à l'aide de `BARIS_explain`.
 
 ```{r, results='asis'}
