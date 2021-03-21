@@ -140,8 +140,7 @@ ui <- fluidPage(
                                    selectInput(
                                      inputId = "secu",
                                      label = "Equipement de sécurité :",
-                                     choices = na.omit(unique(accidents$secu1)),
-                                     selected = "Ceinture",
+                                     choices = na.omit(unique(accidents2$secu1)),
                                      selectize = FALSE
                                    ),
                                    selectInput(
